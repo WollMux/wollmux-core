@@ -15,7 +15,6 @@ import com.sun.star.rdf.XURI;
 import com.sun.star.text.XTextDocument;
 
 import de.muenchen.allg.afid.UNO;
-import de.muenchen.allg.itd51.wollmux.core.document.PersistentDataContainer.DataID;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
 import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 
@@ -52,7 +51,7 @@ public class RDFBasedPersistentDataContainer implements
   /**
    * Speichert die URI für den RDF-Graphen, der die WollMux-Daten enthält.
    */
-  private static XURI wollmuxDatenURI = null;
+  private XURI wollmuxDatenURI = null;
 
   /**
    * Das Dokument, in dem die Daten gespeichert werden.
@@ -73,7 +72,7 @@ public class RDFBasedPersistentDataContainer implements
    * Dient zum Cachen von bereits erzeugten URI-Objekten für verschiedene dataIDs,
    * damit diese Objekte nicht mehrfach erzeugt werden müssen.
    */
-  private static final HashMap<DataID, XURI> mapDataIdToURI =
+  private final HashMap<DataID, XURI> mapDataIdToURI =
     new HashMap<DataID, XURI>();
 
   /**
@@ -89,8 +88,7 @@ public class RDFBasedPersistentDataContainer implements
       xDMA = UNO.XDocumentMetadataAccess(doc);
       if (xDMA == null) throw new RDFMetadataNotSupportedException();
       xRepos = xDMA.getRDFRepository();
-      if (wollmuxDatenURI == null)
-        wollmuxDatenURI = URI.create(UNO.defaultContext, WOLLMUX_DATEN_URI_STR);
+      wollmuxDatenURI = URI.create(UNO.defaultContext, WOLLMUX_DATEN_URI_STR);
       this.doc = doc;
     }
     catch (Throwable e)

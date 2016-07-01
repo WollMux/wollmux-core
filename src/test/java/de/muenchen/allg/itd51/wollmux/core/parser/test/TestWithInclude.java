@@ -2,11 +2,16 @@ package de.muenchen.allg.itd51.wollmux.core.parser.test;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
@@ -29,7 +34,7 @@ import de.muenchen.allg.itd51.wollmux.core.parser.scanner.TokenType;
 
 /**
  * A Test class to verify that the scanner works correctly with includes.
- * 
+ *
  * @author Daniel Sikeler
  */
 public class TestWithInclude
@@ -56,8 +61,13 @@ public class TestWithInclude
       new Token("", TokenType.END_FILE), };
 
   /**
+   * Map to store the file content mapping.
+   */
+  private final Map<String, String> fileContentMap = new HashMap<String, String>();
+
+  /**
    * Test if the scanner works properly.
-   * 
+   *
    * @throws ScannerException
    *           Scanner problems.
    * @throws MalformedURLException
@@ -82,7 +92,7 @@ public class TestWithInclude
   /**
    * Generate a configuration out of a configuration. Scan it and than write it
    * again.
-   * 
+   *
    * @throws XMLGeneratorException
    *           Generator problems.
    * @throws SAXException
@@ -113,12 +123,30 @@ public class TestWithInclude
     final Validator validator = schema.newValidator();
     final Source source = new DOMSource(doc);
     validator.validate(source);
-    new ConfGenerator(doc).generateConf();
+    ConfGenerator generator = new ConfGenerator(doc);
+    generator.generateConf();
     // Whitespace was replaced
     assertEquals("Different content length", in.length(), out.length() + 9);
     assertEquals("Different content length 2", in2.length(), out2.length());
     // out.delete();
     // out2.delete();
+    fileContentMap.put("src/test/resources/tmp2.conf",
+        "%include \"tmp.conf\"\n\n");
+    fileContentMap
+        .put(
+            "src/test/resources/tmp.conf",
+            "A 'X\"\"Y'\nB 'X\"Y'\nC \"X''Y\"\nD \"X'Y\"\nNAME \"WollMux\"\nGUI (\n  Dialoge (\n    Dialog1 (\n      (TYPE \"textbox\" LABEL \"Name\")\n    )\n  )\n)\nAnredevarianten (\"Herr\", \"Frau\", \"Pinguin\")\n(\"Dies\", \"ist\", \"eine\", \"unbenannte\", \"Liste\")\nNAME \"WollMux\" # FARBSCHEMA \"Ekelig\"\n\n");
+    Map<String, String> map = generator.generateConfMap("UTF-8");
+    assertEquals("Different number of files", fileContentMap.size(), map.size());
+    Iterator<Entry<String, String>> iter = map.entrySet().iterator();
+    while (iter.hasNext())
+    {
+      Entry<String, String> entry = iter.next();
+      assertTrue("Unknown file " + entry.getKey(),
+          fileContentMap.containsKey(entry.getKey()));
+      assertEquals("Different content", fileContentMap.get(entry.getKey()),
+          entry.getValue());
+    }
   }
 
 }

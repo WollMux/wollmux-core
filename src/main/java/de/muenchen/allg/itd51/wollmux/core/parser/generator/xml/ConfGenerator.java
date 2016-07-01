@@ -1,11 +1,15 @@
 package de.muenchen.allg.itd51.wollmux.core.parser.generator.xml;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
+import java.io.UnsupportedEncodingException;
 import java.nio.charset.Charset;
+import java.util.LinkedHashMap;
+import java.util.Map;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -15,9 +19,9 @@ import de.muenchen.allg.itd51.wollmux.core.parser.Trimmer;
 
 /**
  * Generates a configuration out of a XML-document.
- * 
+ *
  * @author daniel.sikeler
- * 
+ *
  */
 public class ConfGenerator
 {
@@ -28,7 +32,7 @@ public class ConfGenerator
 
   /**
    * Create a new ConfGenerator.
-   * 
+   *
    * @param document
    *          The document with the configuration.
    * @throws XMLGeneratorException
@@ -52,8 +56,8 @@ public class ConfGenerator
   }
 
   /**
-   * Print the first file entry of the XML-document to this stream.
-   * 
+   * Print a file entry of the XML-document to this stream.
+   *
    * @param stream
    *          The stream
    * @param file
@@ -62,7 +66,7 @@ public class ConfGenerator
    *           Invalid XML-document or unable to generate the configuration
    *           file.
    */
-  public void generateConf(OutputStream stream, int file)
+  public void generateConf(final OutputStream stream, final int file)
       throws XMLGeneratorException
   {
     try
@@ -77,8 +81,63 @@ public class ConfGenerator
   }
 
   /**
-   * Generate a configuration file from an XML-document.
-   * 
+   * Convert the first file entry of the configuration into a string. The first
+   * file is the file, which was named for generating the configuration as XML.
+   * The data from other files is not part of the string.
+   *
+   * @param encoding
+   *          The encoding of the string.
+   * @return The first file of the configuration as string.
+   * @throws XMLGeneratorException
+   *           Invalid XML-document or unsupported encoding.
+   */
+  public String generateConf(final String encoding) throws XMLGeneratorException
+  {
+    try
+    {
+      ByteArrayOutputStream os = new ByteArrayOutputStream();
+      generateConf(os, 0);
+      return os.toString(encoding);
+    } catch (UnsupportedEncodingException e)
+    {
+      throw new XMLGeneratorException("Unsupported encoding", e);
+    }
+  }
+
+  /**
+   * Convert the configuration into strings. For each file entry a separate
+   * string is build.
+   *
+   * @param encoding
+   *          The encoding of the string.
+   * @return A map mapping filenames to content (as string).
+   * @throws XMLGeneratorException
+   *           Invalid XML-document or unsupported encoding.
+   */
+  public Map<String, String> generateConfMap(final String encoding)
+      throws XMLGeneratorException
+  {
+    try
+    {
+      Map<String, String> map = new LinkedHashMap<String, String>(nodes.getLength());
+      for (int file = 0; file < nodes.getLength(); file++)
+      {
+        ByteArrayOutputStream os = new ByteArrayOutputStream();
+        String filename = ((Element) nodes.item(file)).getAttribute("filename");
+        generateConf(os, file);
+        map.put(filename, os.toString(encoding));
+      }
+      return map;
+    } catch (UnsupportedEncodingException e)
+    {
+      throw new XMLGeneratorException("Unsupported encoding", e);
+    }
+  }
+
+  /**
+   * Generate a configuration file from an XML-document. The whole data form the
+   * document is writen to the files specified in the configuration.
+   *
    * @throws XMLGeneratorException
    *           Invalid XML-document or unable to generate the configuration
    *           file.
@@ -104,7 +163,7 @@ public class ConfGenerator
 
   /**
    * Print the children of a file tag.
-   * 
+   *
    * @param children
    *          The children.
    * @param printer
@@ -151,7 +210,7 @@ public class ConfGenerator
 
   /**
    * Print a key element and its children.
-   * 
+   *
    * @param elem
    *          The key element.
    * @param grouped
@@ -206,7 +265,7 @@ public class ConfGenerator
 
   /**
    * Print a comment element.
-   * 
+   *
    * @param elem
    *          The element.
    * @param printer
@@ -223,7 +282,7 @@ public class ConfGenerator
 
   /**
    * Print a value in a group.
-   * 
+   *
    * @param value
    *          The value.
    * @param whitespace
@@ -247,7 +306,7 @@ public class ConfGenerator
 
   /**
    * Print the elements of a group tag.
-   * 
+   *
    * @param elements
    *          The elements.
    * @param isList
@@ -289,7 +348,7 @@ public class ConfGenerator
 
   /**
    * Print a group element.
-   * 
+   *
    * @param elem
    *          The element.
    * @param named

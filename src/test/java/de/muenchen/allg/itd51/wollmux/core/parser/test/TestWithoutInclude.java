@@ -31,7 +31,7 @@ import de.muenchen.allg.itd51.wollmux.core.parser.scanner.TokenType;
 
 /**
  * A Test class to verify that the scanner works correctly without includes.
- * 
+ *
  * @author Daniel Sikeler
  */
 public class TestWithoutInclude
@@ -82,8 +82,13 @@ public class TestWithoutInclude
       new Token("", TokenType.END_FILE), };
 
   /**
+   * The content of the file.
+   */
+  private final String config = "A 'X\"\"Y'\nB 'X\"Y'\nC \"X''Y\"\nD \"X'Y\"\nNAME \"WollMux\"\nGUI (\n  Dialoge (\n    Dialog1 (\n      (TYPE \"textbox\" LABEL \"Name\")\n    )\n  )\n)\nAnredevarianten (\"Herr\", \"Frau\", \"Pinguin\")\n(\"Dies\", \"ist\", \"eine\", \"unbenannte\", \"Liste\")\nNAME \"WollMux\" # FARBSCHEMA \"Ekelig\"\n\n";
+
+  /**
    * Scan a file and test whether the correct tokens occur.
-   * 
+   *
    * @throws ScannerException
    *           Problems with scanner.
    * @throws MalformedURLException
@@ -109,7 +114,7 @@ public class TestWithoutInclude
   /**
    * Scan a configuration and create a new configuration out of the resulting
    * XML-document.
-   * 
+   *
    * @throws XMLGeneratorException
    *           Problems with generator.
    * @throws SAXException
@@ -136,11 +141,13 @@ public class TestWithoutInclude
     final Validator validator = schema.newValidator();
     final Source source = new DOMSource(doc);
     validator.validate(source);
-    new ConfGenerator(doc).generateConf(new FileOutputStream(
-        "src/test/resources/tmp.conf"), 0);
+    ConfGenerator generator = new ConfGenerator(doc);
+    generator.generateConf(new FileOutputStream("src/test/resources/tmp.conf"),
+        0);
     // Whitespace was replaced
     assertEquals("Different content length", in.length(), out.length() + 9);
     // out.delete();
+    assertEquals("wrong string", config, generator.generateConf("UTF-8"));
   }
 
 }

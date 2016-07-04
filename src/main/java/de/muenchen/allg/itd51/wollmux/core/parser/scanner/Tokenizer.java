@@ -6,6 +6,7 @@ import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.net.URL;
 import java.nio.charset.Charset;
 import java.util.Iterator;
 import java.util.NoSuchElementException;
@@ -16,7 +17,7 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 /**
  * Reads a file and and produces a list of tokens in order with the appearance
  * in the file.
- * 
+ *
  * @author Daniel Sikeler daniel.sikeler@muenchen.de
  */
 public class Tokenizer implements Iterator<Token>, Closeable
@@ -28,22 +29,25 @@ public class Tokenizer implements Iterator<Token>, Closeable
   private final BufferedReader reader;
   /** The current line to tokenize. */
   private String line;
+  /** The file from which this scanner reads. */
+  private final URL filename;
 
   /**
-   * Create a new ScannerReader and read the UTF-8 byte ordering mark if there
-   * is one.
-   * 
-   * @param stream
+   * Create a new Tokenizer and read the UTF-8 byte ordering mark if there is
+   * one.
+   *
+   * @param filename
    *          The file to scan.
    * @throws ScannerException
-   *           The ScannerReader can't be initialized, because there is no file
-   *           or it can't be read.
+   *           The Tokenizer can't be initialized, because there is no file or
+   *           it can't be read.
    */
-  Tokenizer(final InputStream stream) throws ScannerException
+  Tokenizer(final URL filename) throws ScannerException
   {
     try
     {
-      reader = new BufferedReader(new InputStreamReader(stream,
+      this.filename = filename;
+      reader = new BufferedReader(new InputStreamReader(filename.openStream(),
           Charset.forName("UTF-8")));
       reader.mark(BYTE_ORDERING_MARK_LENGTH);
       if ('\ufeff' != reader.read())
@@ -58,6 +62,43 @@ public class Tokenizer implements Iterator<Token>, Closeable
     {
       throw new ScannerException("The BOM can't be read", e);
     }
+  }
+
+  /**
+   * Create a new Tokenizer and read the UTF-8 byte ordering mark if there is
+   * one.
+   *
+   * @param stream
+   *          The stream to scan.
+   * @throws ScannerException
+   *           The Tokenizer can't be initialized, because there is no stream or
+   *           it can't be read.
+   */
+  Tokenizer(final InputStream stream) throws ScannerException
+  {
+    try
+    {
+      reader = new BufferedReader(new InputStreamReader(stream,
+          Charset.forName("UTF-8")));
+      reader.mark(BYTE_ORDERING_MARK_LENGTH);
+      if ('\ufeff' != reader.read())
+      {
+        reader.reset();
+      }
+      line = reader.readLine();
+      this.filename = new URL("file:.");
+    } catch (final FileNotFoundException e)
+    {
+      throw new ScannerException(e);
+    } catch (final IOException e)
+    {
+      throw new ScannerException("The BOM can't be read", e);
+    }
+  }
+
+  public URL getFilename()
+  {
+    return filename;
   }
 
   @Override
@@ -112,7 +153,7 @@ public class Tokenizer implements Iterator<Token>, Closeable
 
   /**
    * Extracts the next token from the current line.
-   * 
+   *
    * @return The next token.
    */
   private Token parseLine()

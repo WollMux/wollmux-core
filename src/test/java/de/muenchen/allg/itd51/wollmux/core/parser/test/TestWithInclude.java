@@ -135,7 +135,7 @@ public class TestWithInclude
     fileContentMap
         .put(
             "src/test/resources/tmp.conf",
-            "A 'X\"\"Y'\nB 'X\"Y'\nC \"X''Y\"\nD \"X'Y\"\nNAME \"WollMux\"\nGUI (\n  Dialoge (\n    Dialog1 (\n      (TYPE \"textbox\" LABEL \"Name\")\n    )\n  )\n)\nAnredevarianten (\"Herr\", \"Frau\", \"Pinguin\")\n(\"Dies\", \"ist\", \"eine\", \"unbenannte\", \"Liste\")\nNAME \"WollMux\" # FARBSCHEMA \"Ekelig\"\n\n");
+            "A 'X\"\"Y'\nB 'X\"Y'\nC \"X''Y\"\nD \"X'Y\"\nGUI (\n  Dialoge (\n    Dialog1 (\n      (TYPE \"textbox\" LABEL \"Name\")\n    )\n  )\n)\nAnredevarianten (\"Herr\", \"Frau\", \"Pinguin\")\n(\"Dies\", \"ist\", \"eine\", \"unbenannte\", \"Liste\")\nNAME \"WollMux%%%n\" # FARBSCHEMA \"Ekelig\"\n\n");
     Map<String, String> map = generator.generateConfMap("UTF-8");
     assertEquals("Different number of files", fileContentMap.size(), map.size());
     Iterator<Entry<String, String>> iter = map.entrySet().iterator();

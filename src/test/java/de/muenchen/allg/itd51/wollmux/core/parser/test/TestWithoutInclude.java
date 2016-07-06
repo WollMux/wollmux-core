@@ -16,6 +16,10 @@ import javax.xml.transform.dom.DOMSource;
 import javax.xml.validation.Schema;
 import javax.xml.validation.SchemaFactory;
 import javax.xml.validation.Validator;
+import javax.xml.xpath.XPath;
+import javax.xml.xpath.XPathConstants;
+import javax.xml.xpath.XPathExpressionException;
+import javax.xml.xpath.XPathFactory;
 
 import org.junit.Test;
 import org.w3c.dom.Document;
@@ -46,8 +50,6 @@ public class TestWithoutInclude
       new Token("B", TokenType.KEY), new Token("'X\"Y'", TokenType.VALUE),
       new Token("C", TokenType.KEY), new Token("\"X''Y\"", TokenType.VALUE),
       new Token("D", TokenType.KEY), new Token("\"X'Y\"", TokenType.VALUE),
-      new Token("NAME", TokenType.KEY),
-      new Token("\"WollMux\"", TokenType.VALUE),
       new Token("GUI", TokenType.KEY),
       new Token("(", TokenType.OPENING_BRACKET),
       new Token("Dialoge", TokenType.KEY),
@@ -77,14 +79,14 @@ public class TestWithoutInclude
       new Token("\"Liste\"", TokenType.VALUE),
       new Token(")", TokenType.CLOSING_BRACKET),
       new Token("NAME", TokenType.KEY),
-      new Token("\"WollMux\"", TokenType.VALUE),
+      new Token("\"WollMux%%%n\"", TokenType.VALUE),
       new Token("# FARBSCHEMA \"Ekelig\"", TokenType.COMMENT),
       new Token("", TokenType.END_FILE), };
 
   /**
    * The content of the file.
    */
-  private final String config = "A 'X\"\"Y'\nB 'X\"Y'\nC \"X''Y\"\nD \"X'Y\"\nNAME \"WollMux\"\nGUI (\n  Dialoge (\n    Dialog1 (\n      (TYPE \"textbox\" LABEL \"Name\")\n    )\n  )\n)\nAnredevarianten (\"Herr\", \"Frau\", \"Pinguin\")\n(\"Dies\", \"ist\", \"eine\", \"unbenannte\", \"Liste\")\nNAME \"WollMux\" # FARBSCHEMA \"Ekelig\"\n\n";
+  private final String config = "A 'X\"\"Y'\nB 'X\"Y'\nC \"X''Y\"\nD \"X'Y\"\nGUI (\n  Dialoge (\n    Dialog1 (\n      (TYPE \"textbox\" LABEL \"Name\")\n    )\n  )\n)\nAnredevarianten (\"Herr\", \"Frau\", \"Pinguin\")\n(\"Dies\", \"ist\", \"eine\", \"unbenannte\", \"Liste\")\nNAME \"WollMux%%%n\" # FARBSCHEMA \"Ekelig\"\n\n";
 
   /**
    * Scan a file and test whether the correct tokens occur.
@@ -141,6 +143,15 @@ public class TestWithoutInclude
     final Validator validator = schema.newValidator();
     final Source source = new DOMSource(doc);
     validator.validate(source);
+    final XPath xpath = XPathFactory.newInstance().newXPath();
+    try
+    {
+      String name = (String) xpath.evaluate("config/file/key[@id='NAME']/value", doc, XPathConstants.STRING);
+      assertEquals("name with \\n", "WollMux%\n", name);
+    } catch (XPathExpressionException e)
+    {
+      assertFalse("No key 'NAME'", true);
+    }
     ConfGenerator generator = new ConfGenerator(doc);
     generator.generateConf(new FileOutputStream("src/test/resources/tmp.conf"),
         0);

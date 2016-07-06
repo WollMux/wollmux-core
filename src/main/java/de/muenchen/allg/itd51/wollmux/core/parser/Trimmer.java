@@ -13,7 +13,8 @@ public final class Trimmer
   }
 
   /**
-   * Remove the first and last quote of the string.
+   * Remove the first and last quote of the string. Replace escape Sequence '%n'
+   * with '\n' and '%%' with '%'.
    *
    * @param value
    *          The string to change.
@@ -21,19 +22,22 @@ public final class Trimmer
    */
   public static String trimQuotes(final String value)
   {
+    String replace = value.replace("%n", "\n");
+    replace = replace.replace("%%", "%");
     int start = 0;
-    int end = value.length();
-    if ((value.startsWith("\"") && value.endsWith("\""))
-        || (value.startsWith("'") && value.endsWith("'")))
+    int end = replace.length();
+    if ((replace.startsWith("\"") && replace.endsWith("\""))
+        || (replace.startsWith("'") && replace.endsWith("'")))
     {
       start = 1;
       end--;
     }
-    return value.substring(start, end);
+    return replace.substring(start, end);
   }
 
   /**
-   * Add quotes around the string.
+   * Add quotes around the string. Escape Sequence '\n' with '%n' and '%' with
+   * '%%'.
    *
    * @param value
    *          The string.
@@ -41,15 +45,17 @@ public final class Trimmer
    */
   public static String addQuoates(final String value)
   {
-    if (!value.contains("\""))
+    String replace = value.replace("%", "%%");
+    replace = replace.replace("\n", "%n");
+    if (!replace.contains("\""))
     {
-      return "\"" + value + "\"";
-    } else if (!value.contains("'"))
+      return "\"" + replace + "\"";
+    } else if (!replace.contains("'"))
     {
-      return "'" + value + "'";
+      return "'" + replace + "'";
     } else
     {
-      return "\"" + value.replace("\"", "\"\"") + "\"";
+      return "\"" + replace.replace("\"", "\"\"") + "\"";
     }
   }
 

@@ -977,6 +977,14 @@ public class TextDocumentModel
   {
     return new HashMap<String, String>(formFieldValues);
   }
+  
+  public synchronized void clearFormFieldValues()
+  {
+    for (String key : formFieldValues.keySet())
+    {
+      formFieldValues.put(key, "");
+    }
+  }
 
   /**
    * Liefert den ViewCursor des aktuellen Dokuments oder null, wenn kein Controller

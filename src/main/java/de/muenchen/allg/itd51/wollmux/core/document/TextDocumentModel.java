@@ -71,6 +71,7 @@ import com.sun.star.uno.AnyConverter;
 import com.sun.star.uno.RuntimeException;
 import com.sun.star.uno.UnoRuntime;
 import com.sun.star.util.CloseVetoException;
+import com.sun.star.util.XModifiable2;
 
 import de.muenchen.allg.afid.UNO;
 import de.muenchen.allg.itd51.wollmux.core.document.FormFieldFactory.FormField;
@@ -1214,6 +1215,30 @@ public class TextDocumentModel
     }
     catch (java.lang.Exception x)
     {}
+  }
+
+  /**
+   * Wenn true übergeben wird, wird der Status des Dokuments nie auf
+   * modified gesetzt.
+   * 
+   * @param state
+   */
+  public synchronized void setDocumentModifiable(boolean state)
+  {
+    try
+    {
+      XModifiable2 mod2 = UnoRuntime.queryInterface(XModifiable2.class, doc);
+      if (state)
+      {
+        mod2.enableSetModified();
+      }
+      else
+      {
+        mod2.disableSetModified();
+      }
+    }
+    catch (java.lang.Exception x)
+    {}    
   }
 
   /**

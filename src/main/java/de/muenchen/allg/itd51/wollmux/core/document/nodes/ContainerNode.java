@@ -3,7 +3,6 @@ package de.muenchen.allg.itd51.wollmux.core.document.nodes;
 import java.util.Collection;
 import java.util.Iterator;
 
-import de.muenchen.allg.itd51.wollmux.core.document.DocumentTree;
 import de.muenchen.allg.itd51.wollmux.core.document.DocumentTreeVisitor;
 
 /**

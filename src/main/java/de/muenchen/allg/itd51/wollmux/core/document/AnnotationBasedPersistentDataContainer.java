@@ -21,7 +21,6 @@ import com.sun.star.text.XTextDocument;
 import com.sun.star.text.XTextFramesSupplier;
 
 import de.muenchen.allg.afid.UNO;
-import de.muenchen.allg.itd51.wollmux.core.document.PersistentDataContainer.DataID;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
 import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 

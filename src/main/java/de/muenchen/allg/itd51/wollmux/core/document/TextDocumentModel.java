@@ -243,13 +243,6 @@ public class TextDocumentModel
   private boolean haveUpdatedLastTouchedByVersionInfo = false;
 
   /**
-   * Wird ausschließlich im Konstruktor gesetzt und gibt an, ob das Dokument bereits
-   * beim Öffnen (also vor der Bearbeitung durch den WollMux) Merkmale eines
-   * WollMux-Formulardokuments enthielt.
-   */
-  private boolean alreadyTouchedAsFormDocument;
-
-  /**
    * Wird and FormGUI und FormController in mapIdToPresetValue übergeben, wenn der
    * Wert des entsprechenden Feldes nicht korrekt widerhergestellt werden kann.
    * ACHTUNG! Diese Konstante muss als Objekt übergeben werden, da sie == verglichen
@@ -294,7 +287,6 @@ public class TextDocumentModel
     // Auslesen der Persistenten Daten:
     this.persistentData = persistentDataContainer;
     String setTypeData = persistentData.getData(DataID.SETTYPE);
-    alreadyTouchedAsFormDocument = "formDocument".equals(setTypeData);
     parsePrintFunctions(persistentData.getData(DataID.PRINTFUNCTION));
     parseFormValues(persistentData.getData(DataID.FORMULARWERTE));
     lastTouchedByWollMuxVersion =

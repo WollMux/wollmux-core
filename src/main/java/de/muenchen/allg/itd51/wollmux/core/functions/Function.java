@@ -33,7 +33,6 @@ package de.muenchen.allg.itd51.wollmux.core.functions;
 
 import java.util.Collection;
 
-import de.muenchen.allg.itd51.wollmux.core.functions.Values.None;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
 
 /**

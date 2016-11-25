@@ -247,7 +247,7 @@ public class AttachDatasource implements Datasource
     QueryResults results = source1.getDatasetsByKey(keys, timeout);
     time = (new Date().getTime()) - time;
     timeout -= time;
-    if (timeout <= 0)
+    if (timeout <= 0 && System.getProperty("DEBUG") == null)
       throw new TimeoutException(
         L.m(
           "Datenquelle %1 konnte Anfrage getDatasetsByKey() nicht schnell genug beantworten",

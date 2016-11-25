@@ -162,6 +162,8 @@ public class DatasourceJoiner
   
   protected void init(Map<String, Datasource> dataSources, String mainSourceName, LocalOverrideStorage los, long datasourceTimeout)
   {
+    queryTimeout = datasourceTimeout;
+    
     for (Map.Entry<String, Datasource> ds : dataSources.entrySet())
     {
       if (ds.getValue() != null)

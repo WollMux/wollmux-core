@@ -64,8 +64,7 @@ public interface DJDataset extends Dataset
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public void set(String columnName, String newValue)
-      throws ColumnNotFoundException, UnsupportedOperationException,
-      IllegalArgumentException;
+      throws ColumnNotFoundException;
 
   /**
    * Liefert true, falls die Spalte columnName dieses Datensatzes nicht aus den
@@ -115,7 +114,7 @@ public interface DJDataset extends Dataset
    *           falls this nicht aus dem LOS kommt.
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public void select() throws UnsupportedOperationException;
+  public void select();
 
   /**
    * Verwirft den Wert im LOS für Spalte columnName dieses Datensatzes und verknüpft
@@ -156,5 +155,5 @@ public interface DJDataset extends Dataset
    *           falls dieser Datensatz nicht aus dem LOS kommt.
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public void remove() throws UnsupportedOperationException;
+  public void remove();
 }

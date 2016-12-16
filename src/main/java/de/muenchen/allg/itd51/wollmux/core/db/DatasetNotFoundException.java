@@ -41,7 +41,7 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 public class DatasetNotFoundException extends Exception
 {
   private static final long serialVersionUID = -2369645834768269537L;
-  public DatasetNotFoundException() {};
+  public DatasetNotFoundException() {super();}
   public DatasetNotFoundException(String message) {super(message);}
   public DatasetNotFoundException(String message, Throwable cause) {super(message,cause);}
   public DatasetNotFoundException(Throwable cause) {super(cause);}

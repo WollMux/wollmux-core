@@ -85,9 +85,11 @@ public class Search
    */
   public static QueryResults search(String queryString,
       SearchStrategy searchStrategy, DatasourceJoiner dj, boolean useDjMainDatasource)
-      throws TimeoutException, IllegalArgumentException
+      throws TimeoutException
   {
-    if (queryString == null || searchStrategy == null || dj == null) return null;
+    if (queryString == null || searchStrategy == null || dj == null) {
+      return null;
+    }
 
     List<Query> queries = parseQuery(searchStrategy, queryString);
 
@@ -100,15 +102,17 @@ public class Search
       if (query.numberOfQueryParts() == 0)
       {
         results =
-          (useDjMainDatasource ? dj.getContentsOfMainDatasource()
-                              : dj.getContentsOf(query.getDatasourceName()));
+          useDjMainDatasource ? dj.getContentsOfMainDatasource()
+                              : dj.getContentsOf(query.getDatasourceName());
       }
       else
       {
         results =
-          (useDjMainDatasource ? dj.find(query.getQueryParts()) : dj.find(query));
+          useDjMainDatasource ? dj.find(query.getQueryParts()) : dj.find(query);
       }
-      if (!results.isEmpty()) break;
+      if (!results.isEmpty()) {
+        break;
+      }
     }
     return results;
   }
@@ -165,7 +169,9 @@ public class Search
       }
       else
       {
-        if (suffixStar) queryArray[i] = queryArray[i] + "*";
+        if (suffixStar) {
+          queryArray[i] = queryArray[i] + "*";
+        }
       }
     }
 
@@ -178,7 +184,9 @@ public class Search
     /*
      * keine Suchstrategie gefunden
      */
-    if (count < 0) return queryList;
+    if (count < 0) {
+      return queryList;
+    }
 
     List<Query> templateList = searchStrategy.getTemplate(count);
     Iterator<Query> iter = templateList.iterator();

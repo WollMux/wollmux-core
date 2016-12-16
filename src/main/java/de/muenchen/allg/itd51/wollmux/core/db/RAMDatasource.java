@@ -87,6 +87,14 @@ public class RAMDatasource implements Datasource
   }
 
   /**
+   * Erzeugt eine uninitialisierte RAMDatasource. Eine abgeleitete Klasse, die diesen
+   * Konstruktor verwendet sollte init() aufrufen, um die nötigen Initialisierungen
+   * zu erledigen.
+   */
+  protected RAMDatasource()
+  {}
+
+  /**
    * Führt die Initialisierungsaktionen des Konstruktors mit den gleichen Parametern
    * aus. Diese Methode sollte von abgeleiteten Klassen verwendet werden, wenn sie
    * den Konstruktor ohne Argumente verwenden.
@@ -100,19 +108,13 @@ public class RAMDatasource implements Datasource
     this.name = name;
   }
 
-  /**
-   * Erzeugt eine uninitialisierte RAMDatasource. Eine abgeleitete Klasse, die diesen
-   * Konstruktor verwendet sollte init() aufrufen, um die nötigen Initialisierungen
-   * zu erledigen.
-   */
-  protected RAMDatasource()
-  {};
-
+  @Override
   public Set<String> getSchema()
   { // TESTED
     return new HashSet<String>(schema);
   }
 
+  @Override
   public QueryResults getDatasetsByKey(Collection<String> keys, long timeout)
       throws TimeoutException
   { // TESTED
@@ -121,7 +123,9 @@ public class RAMDatasource implements Datasource
     while (iter.hasNext())
     {
       Dataset ds = iter.next();
-      if (keys.contains(ds.getKey())) res.add(ds);
+      if (keys.contains(ds.getKey())) {
+        res.add(ds);
+      }
     }
 
     return new QueryResultsList(res);
@@ -132,10 +136,13 @@ public class RAMDatasource implements Datasource
    * 
    * @see de.muenchen.allg.itd51.wollmux.db.Datasource#find(java.util.List, long)
    */
+  @Override
   public QueryResults find(List<QueryPart> query, long timeout)
       throws TimeoutException
   { // TESTED
-    if (query.isEmpty()) return new QueryResultsList(new Vector<Dataset>(0));
+    if (query.isEmpty()) {
+      return new QueryResultsList(new Vector<Dataset>(0));
+    }
     DatasetChecker checker = DatasetChecker.makeChecker(query);
 
     List<Dataset> results = new Vector<Dataset>();
@@ -144,11 +151,14 @@ public class RAMDatasource implements Datasource
     while (iter.hasNext())
     {
       Dataset ds = iter.next();
-      if (checker.matches(ds)) results.add(ds);
+      if (checker.matches(ds)) {
+        results.add(ds);
+      }
     }
     return new QueryResultsList(results);
   }
 
+  @Override
   public QueryResults getContents(long timeout) throws TimeoutException
   {
     return new QueryResultsList(new Vector<Dataset>(data));
@@ -159,6 +169,7 @@ public class RAMDatasource implements Datasource
    * 
    * @see de.muenchen.allg.itd51.wollmux.db.Datasource#getName()
    */
+  @Override
   public String getName()
   {
     return name;

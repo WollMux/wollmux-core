@@ -152,14 +152,18 @@ public class UnionDatasource implements Datasource
       while (iter.hasNext())
       {
         buf1.append(iter.next());
-        if (iter.hasNext()) buf1.append(", ");
+        if (iter.hasNext()) {
+          buf1.append(", ");
+        }
       }
       StringBuffer buf2 = new StringBuffer();
       iter = difference2.iterator();
       while (iter.hasNext())
       {
         buf2.append(iter.next());
-        if (iter.hasNext()) buf2.append(", ");
+        if (iter.hasNext()) {
+          buf2.append(", ");
+        }
       }
       throw new ConfigurationErrorException(
         L.m(
@@ -170,11 +174,13 @@ public class UnionDatasource implements Datasource
     schema = new HashSet<String>(schema1);
   }
 
+  @Override
   public Set<String> getSchema()
   {
     return schema;
   }
 
+  @Override
   public QueryResults getDatasetsByKey(Collection<String> keys, long timeout)
       throws TimeoutException
   {
@@ -191,11 +197,13 @@ public class UnionDatasource implements Datasource
     return new QueryResultsUnion(res1, res2);
   }
 
+  @Override
   public QueryResults getContents(long timeout) throws TimeoutException
   {
     return new QueryResultsList(new Vector<Dataset>(0));
   }
 
+  @Override
   public QueryResults find(List<QueryPart> query, long timeout)
       throws TimeoutException
   {
@@ -211,6 +219,7 @@ public class UnionDatasource implements Datasource
     return new QueryResultsUnion(res1, res2);
   }
 
+  @Override
   public String getName()
   {
     return name;

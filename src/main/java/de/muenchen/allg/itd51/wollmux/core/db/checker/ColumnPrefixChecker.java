@@ -41,6 +41,7 @@ public class ColumnPrefixChecker extends DatasetChecker
     this.compare = compareValue.toLowerCase();
   }
 
+  @Override
   public boolean matches(Dataset ds)
   {
     try

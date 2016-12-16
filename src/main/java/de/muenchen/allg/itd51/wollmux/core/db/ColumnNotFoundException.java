@@ -40,7 +40,7 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 public class ColumnNotFoundException extends Exception
 {
   private static final long serialVersionUID = -5096388185337055277L;
-  public ColumnNotFoundException() {};
+  public ColumnNotFoundException() {super();}
   public ColumnNotFoundException(String message) {super(message);}
   public ColumnNotFoundException(String message, Throwable cause) {super(message,cause);}
   public ColumnNotFoundException(Throwable cause) {super(cause);}

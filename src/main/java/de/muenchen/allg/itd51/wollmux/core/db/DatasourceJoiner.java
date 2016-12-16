@@ -158,7 +158,7 @@ public class DatasourceJoiner
    * Konstruktor nicht verwenden können, und stattdessen init() benutzen.
    */
   protected DatasourceJoiner()
-  {};
+  {}
   
   protected void init(Map<String, Datasource> dataSources, String mainSourceName, LocalOverrideStorage los, long datasourceTimeout)
   {
@@ -472,7 +472,7 @@ public class DatasourceJoiner
       Dataset ds = getSelectedDataset();
       ConfigThingy ausgewaehlt = conf.add("Ausgewaehlt");
       ausgewaehlt.add(ds.getKey());
-      ausgewaehlt.add("" + getSelectedDatasetSameKeyIndex());
+      ausgewaehlt.add(Integer.toString(getSelectedDatasetSameKeyIndex()));
     }
     catch (DatasetNotFoundException x)
     {}
@@ -532,7 +532,9 @@ public class DatasourceJoiner
   public Dataset getSelectedDatasetTransformed() throws DatasetNotFoundException
   {
     DJDataset ds = getSelectedDataset();
-    if (columnTransformer == null) return ds;
+    if (columnTransformer == null){
+      return ds;
+    }
     return columnTransformer.transform(ds);
   }
 
@@ -555,7 +557,7 @@ public class DatasourceJoiner
   public DJDataset newDataset()
   {
     return myLOS.newDataset();
-  };
+  }
 
   /**
    * Ein Wrapper um einfache Datasets, wie sie von Datasources als Ergebnisse von
@@ -576,8 +578,7 @@ public class DatasourceJoiner
 
     @Override
     public void set(String columnName, String newValue)
-        throws ColumnNotFoundException, UnsupportedOperationException,
-        IllegalArgumentException
+        throws ColumnNotFoundException
     {
       throw new UnsupportedOperationException(
         L.m("Datensatz kommt nicht aus dem LOS"));
@@ -609,7 +610,7 @@ public class DatasourceJoiner
     }
 
     @Override
-    public void select() throws UnsupportedOperationException
+    public void select()
     {
       throw new UnsupportedOperationException(
         L.m("Datensatz kommt nicht aus dem LOS"));
@@ -629,7 +630,7 @@ public class DatasourceJoiner
     }
 
     @Override
-    public void remove() throws UnsupportedOperationException
+    public void remove()
     {
       throw new UnsupportedOperationException(
         L.m("Datensatz kommt nicht aus dem LOS"));

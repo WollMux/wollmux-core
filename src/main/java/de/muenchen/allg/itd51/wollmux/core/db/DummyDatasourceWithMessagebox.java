@@ -72,6 +72,7 @@ public class DummyDatasourceWithMessagebox implements Datasource
    * 
    * @see de.muenchen.allg.itd51.wollmux.db.Datasource#getSchema()
    */
+  @Override
   public Set<String> getSchema()
   {
     return schema;
@@ -84,21 +85,25 @@ public class DummyDatasourceWithMessagebox implements Datasource
    * de.muenchen.allg.itd51.wollmux.db.Datasource#getDatasetsByKey(java.util.Collection
    * , long)
    */
+  @Override
   public QueryResults getDatasetsByKey(Collection<String> keys, long timeout)
   {
     return emptyResults;
   }
 
+  @Override
   public QueryResults getContents(long timeout) throws TimeoutException
   {
     return emptyResults;
   }
 
+  @Override
   public String getName()
   {
     return name;
   }
 
+  @Override
   public QueryResults find(List<QueryPart> query, long timeout)
       throws TimeoutException
   {

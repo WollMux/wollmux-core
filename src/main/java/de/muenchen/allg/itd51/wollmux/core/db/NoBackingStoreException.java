@@ -40,7 +40,7 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 public class NoBackingStoreException extends Exception
 {
   private static final long serialVersionUID = -1672676873427003242L;
-  public NoBackingStoreException() {};
+  public NoBackingStoreException() {super();}
   public NoBackingStoreException(String message) {super(message);}
   public NoBackingStoreException(String message, Throwable cause) {super(message,cause);}
   public NoBackingStoreException(Throwable cause) {super(cause);}

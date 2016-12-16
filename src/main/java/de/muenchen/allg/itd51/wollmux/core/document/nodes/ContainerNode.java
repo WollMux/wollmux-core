@@ -20,31 +20,41 @@ public class ContainerNode extends Node implements Container
     this.children = children;
   }
 
+  @Override
   public Iterator<Node> iterator()
   {
     return children.iterator();
   }
 
+  @Override
   public String toString()
   {
     return "CONTAINER";
   }
 
+  @Override
   public int getType()
   {
     return CONTAINER_TYPE;
   }
 
+  @Override
   public boolean visit(DocumentTreeVisitor visit)
   {
-    if (!visit.container(this, 0)) return false;
+    if (!visit.container(this, 0)) {
+      return false;
+    }
 
     Iterator<Node> iter = iterator();
     while (iter.hasNext())
     {
-      if (!iter.next().visit(visit)) return false;
+      if (!iter.next().visit(visit)) {
+        return false;
+      }
     }
-    if (!visit.container(this, 1)) return false;
+    if (!visit.container(this, 1)) {
+      return false;
+    }
     return true;
   }
 }

@@ -86,7 +86,9 @@ public class RDFBasedPersistentDataContainer implements
     try
     {
       xDMA = UNO.XDocumentMetadataAccess(doc);
-      if (xDMA == null) throw new RDFMetadataNotSupportedException();
+      if (xDMA == null) {
+        throw new RDFMetadataNotSupportedException();
+      }
       xRepos = xDMA.getRDFRepository();
       wollmuxDatenURI = URI.create(UNO.defaultContext, WOLLMUX_DATEN_URI_STR);
       this.doc = doc;
@@ -129,7 +131,9 @@ public class RDFBasedPersistentDataContainer implements
   private XNamedGraph getOrCreateWollMuxDatenGraph()
   {
     XNamedGraph g = getWollMuxDatenGraph();
-    if (g != null) return g;
+    if (g != null) {
+      return g;
+    }
     try
     {
       XURI uri =
@@ -177,7 +181,9 @@ public class RDFBasedPersistentDataContainer implements
   public String getData(DataID dataId)
   {
     XNamedGraph g = getWollMuxDatenGraph();
-    if (g == null) return null;
+    if (g == null) {
+      return null;
+    }
     try
     {
       XEnumeration xEnum = null;
@@ -211,7 +217,9 @@ public class RDFBasedPersistentDataContainer implements
   public void setData(DataID dataId, String dataValue)
   {
     XNamedGraph g = getOrCreateWollMuxDatenGraph();
-    if (g == null) return;
+    if (g == null) {
+      return;
+    }
 
     try
     {
@@ -244,7 +252,9 @@ public class RDFBasedPersistentDataContainer implements
   public void removeData(DataID dataId)
   {
     XNamedGraph g = getWollMuxDatenGraph();
-    if (g == null) return;
+    if (g == null) {
+      return;
+    }
     try
     {
       g.removeStatements(xDMA, getDataIdURI(dataId), null);

@@ -9,11 +9,13 @@ public class ParagraphNode extends ContainerNode
     super(children);
   }
 
+  @Override
   public String toString()
   {
     return "PARAGRAPH";
   }
 
+  @Override
   public int getType()
   {
     return PARAGRAPH_TYPE;

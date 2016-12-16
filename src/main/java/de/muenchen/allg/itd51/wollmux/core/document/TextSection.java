@@ -82,7 +82,9 @@ public class TextSection implements VisibilityElement
     this.groups = groups;
     this.initialName = null;
     XNamed xNamed = UNO.XNamed(section);
-    if (xNamed != null) initialName = xNamed.getName();
+    if (xNamed != null) {
+      initialName = xNamed.getName();
+    }
   }
 
   /*
@@ -90,6 +92,7 @@ public class TextSection implements VisibilityElement
    * 
    * @see de.muenchen.allg.itd51.wollmux.VisibilityElement#isVisible()
    */
+  @Override
   public boolean isVisible()
   {
     try
@@ -107,6 +110,7 @@ public class TextSection implements VisibilityElement
    * 
    * @see de.muenchen.allg.itd51.wollmux.VisibilityElement#setVisible(boolean)
    */
+  @Override
   public void setVisible(boolean visible)
   {
     UNO.setProperty(section, "IsVisible", Boolean.valueOf(visible));
@@ -118,6 +122,7 @@ public class TextSection implements VisibilityElement
    * 
    * @see de.muenchen.allg.itd51.wollmux.VisibilityElement#getGroups()
    */
+  @Override
   public Set<String> getGroups()
   {
     return groups;
@@ -128,6 +133,7 @@ public class TextSection implements VisibilityElement
    * 
    * @see de.muenchen.allg.itd51.wollmux.VisibilityElement#addGroups(java.util.Set)
    */
+  @Override
   public void addGroups(Set<String> groups)
   {
     this.groups.addAll(groups);
@@ -138,6 +144,7 @@ public class TextSection implements VisibilityElement
    * 
    * @see de.muenchen.allg.itd51.wollmux.VisibilityElement#getAnchor()
    */
+  @Override
   public XTextRange getAnchor()
   {
     try
@@ -163,9 +170,13 @@ public class TextSection implements VisibilityElement
   public String getName()
   {
     XNamed xNamed = UNO.XNamed(section);
-    if (xNamed == null) return null;
+    if (xNamed == null) {
+      return null;
+    }
     String newName = xNamed.getName();
-    if (initialName != null && initialName.equals(newName)) return initialName;
+    if (initialName != null && initialName.equals(newName)) {
+      return initialName;
+    }
     return null;
   }
 
@@ -175,6 +186,7 @@ public class TextSection implements VisibilityElement
    * 
    * @see java.lang.Object#hashCode()
    */
+  @Override
   public int hashCode()
   {
     return (initialName != null) ? initialName.hashCode() : 0;
@@ -185,6 +197,7 @@ public class TextSection implements VisibilityElement
    * 
    * @see java.lang.Object#equals(java.lang.Object)
    */
+  @Override
   public boolean equals(Object obj)
   {
     try
@@ -210,6 +223,7 @@ public class TextSection implements VisibilityElement
     return getAnchor() == null || getName() == null;
   }
   
+  @Override
   public String toString()
   {
     return this.getClass().getName() + "('" + initialName + "')";

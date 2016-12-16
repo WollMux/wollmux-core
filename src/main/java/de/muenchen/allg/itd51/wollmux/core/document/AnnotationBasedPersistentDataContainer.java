@@ -79,7 +79,9 @@ public class AnnotationBasedPersistentDataContainer implements
   {
     Vector<Object> textfields =
       getWollMuxTextFields(dataId.getDescriptor(), false, 0);
-    if (textfields.size() == 0) return null;
+    if (textfields.isEmpty()) {
+      return null;
+    }
     Iterator<Object> iter = textfields.iterator();
     StringBuilder buffy = new StringBuilder();
     while (iter.hasNext())
@@ -111,7 +113,9 @@ public class AnnotationBasedPersistentDataContainer implements
     if (supp != null)
     {
       int blockCount = (size + (TEXTFIELD_MAXLEN - 1)) / TEXTFIELD_MAXLEN;
-      if (blockCount == 0) blockCount = 1;
+      if (blockCount == 0) {
+        blockCount = 1;
+      }
       try
       {
         XNameAccess frameAccess = supp.getTextFrames();
@@ -120,7 +124,9 @@ public class AnnotationBasedPersistentDataContainer implements
           frame = UNO.XShape(frameAccess.getByName(WOLLMUX_FRAME_NAME));
         else
         {
-          if (!create) return textfields;
+          if (!create) {
+            return textfields;
+          }
 
           frame =
             UNO.XShape(UNO.XMultiServiceFactory(doc).createInstance(
@@ -161,7 +167,9 @@ public class AnnotationBasedPersistentDataContainer implements
         while (paragraphEnu.hasMoreElements())
         {
           Object para = paragraphEnu.nextElement();
-          if (create) UNO.setProperty(para, "CharHidden", Boolean.TRUE);
+          if (create) {
+            UNO.setProperty(para, "CharHidden", Boolean.TRUE);
+          }
           XEnumeration textportionEnu =
             UNO.XEnumerationAccess(para).createEnumeration();
           while (textportionEnu.hasMoreElements())
@@ -233,7 +241,7 @@ public class AnnotationBasedPersistentDataContainer implements
     UNO.setProperty(doc, RECORD_CHANGES, false);
     Vector<Object> textfields =
       getWollMuxTextFields(dataId.getDescriptor(), true, dataValue.length());
-    if (textfields.size() == 0)
+    if (textfields.isEmpty())
     {
       Logger.error(L.m("Konnte WollMux-Textfeld(er) \"%1\" nicht anlegen", dataId));
       UNO.setProperty(doc, RECORD_CHANGES, recordChanges);
@@ -247,7 +255,9 @@ public class AnnotationBasedPersistentDataContainer implements
     while (iter.hasNext())
     {
       int blocksize = len - start;
-      if (blocksize > TEXTFIELD_MAXLEN) blocksize = TEXTFIELD_MAXLEN;
+      if (blocksize > TEXTFIELD_MAXLEN) {
+        blocksize = TEXTFIELD_MAXLEN;
+      }
       String str = "";
       if (blocksize > 0)
       {
@@ -272,7 +282,7 @@ public class AnnotationBasedPersistentDataContainer implements
     UNO.setProperty(doc, RECORD_CHANGES, false);
     Vector<Object> textfields =
       getWollMuxTextFields(dataId.getDescriptor(), false, 0);
-    if (textfields.size() > 0)
+    if (!textfields.isEmpty())
     {
       Iterator<Object> iter = textfields.iterator();
       while (iter.hasNext())

@@ -247,19 +247,19 @@ public class DocumentTree
 
       String textPortionType =
         (String) UNO.getProperty(textPortion, "TextPortionType");
-      if (textPortionType.equals("Bookmark"))
+      if ("Bookmark".equals(textPortionType))
       {
         handleBookmark(textPortion, textPortions, doc);
       }
-      else if (textPortionType.equals("TextField"))
+      else if ("TextField".equals(textPortionType))
       {
         handleTextfield(textPortion, textPortions, doc);
       }
-      else if (textPortionType.equals("Frame"))
+      else if ("Frame".equals(textPortionType))
       {
         handleFrame(textPortion, textPortions, doc);
       }
-      else if (textPortionType.equals("Text"))
+      else if ("Text".equals(textPortionType))
       {
         XTextRange textRange = UNO.XTextRange(textPortion);
         if (textRange != null)

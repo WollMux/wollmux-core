@@ -150,15 +150,15 @@ public class VisibleTextFragmentList
   /**
    * Gibt die URLs des unter der frag_id definierten Textfragmente zurück.
    * 
-   * @param frag_id
+   * @param fragId
    *          Die ID des gesuchten Textfragments.
    * @return die URL des unter der frag_id definierten Textfragments.
    * @throws InvalidIdentifierException
    */
-  public static Vector<String> getURLsByID(ConfigThingy conf, String frag_id)
+  public static Vector<String> getURLsByID(ConfigThingy conf, String fragId)
       throws InvalidIdentifierException
   {
-    ConfigThingy.checkIdentifier(frag_id);
+    ConfigThingy.checkIdentifier(fragId);
 
     LinkedList<ConfigThingy> tfListe = new LinkedList<ConfigThingy>();
     ConfigThingy tfConf = conf.query("Textfragmente");
@@ -182,12 +182,14 @@ public class VisibleTextFragmentList
       {
         ConfigThingy mappingConf = iterMappings.next();
 
-        String frag_idConf = null;
+        String fragIdConf = null;
         try
         {
-          frag_idConf = mappingConf.get("FRAG_ID").toString();
+          fragIdConf = mappingConf.get("FRAG_ID").toString();
           // Typischen Konfigurationsfehler korrigieren
-          if (frag_idConf.equals(".*")) frag_idConf = ".+";
+          if (".*".equals(fragIdConf)) {
+            fragIdConf = ".+";
+          }
         }
         catch (NodeNotFoundException e)
         {
@@ -196,10 +198,10 @@ public class VisibleTextFragmentList
           continue;
         }
 
-        Iterator<ConfigThingy> URLIterator = null;
+        Iterator<ConfigThingy> urlIterator = null;
         try
         {
-          URLIterator = mappingConf.get("URL").iterator();
+          urlIterator = mappingConf.get("URL").iterator();
         }
         catch (NodeNotFoundException e)
         {
@@ -207,16 +209,16 @@ public class VisibleTextFragmentList
           continue;
         }
 
-        if (frag_id.matches(frag_idConf))
+        if (fragId.matches(fragIdConf))
         {
 
-          while (URLIterator.hasNext())
+          while (urlIterator.hasNext())
           {
-            ConfigThingy url_next = URLIterator.next();
+            ConfigThingy urlNext = urlIterator.next();
             try
             {
-              String urlStr = expandVariable(url_next, conf);
-              urlStr = frag_id.replaceAll(frag_idConf, urlStr);
+              String urlStr = expandVariable(urlNext, conf);
+              urlStr = fragId.replaceAll(fragIdConf, urlStr);
               urls.add(urlStr);
             }
             catch (EndlessLoopException e)
@@ -224,7 +226,7 @@ public class VisibleTextFragmentList
               Logger.error(
                 L.m(
                   "Die URL zum Textfragment '%1' mit der FRAG_ID '%2' ist fehlerhaft.",
-                  mappingConf.stringRepresentation(), frag_id), e);
+                  mappingConf.stringRepresentation(), fragId), e);
             }
           }
         }

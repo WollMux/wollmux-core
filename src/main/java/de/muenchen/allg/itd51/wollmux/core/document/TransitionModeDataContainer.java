@@ -77,16 +77,20 @@ public class TransitionModeDataContainer implements
   {
     XModifiable mod = UNO.XModifiable(doc);
     boolean modState = false;
-    if (mod != null) modState = mod.isModified();
+    if (mod != null) {
+      modState = mod.isModified();
+    }
 
     c.setData(dataId, data);
 
-    if (mod != null) try
-    {
-      mod.setModified(modState);
+    if (mod != null) {
+      try
+      {
+        mod.setModified(modState);
+      }
+      catch (Exception e)
+      {}
     }
-    catch (Exception e)
-    {}
   }
 
   /*

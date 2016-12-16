@@ -248,7 +248,7 @@ public class TextDocumentModel
    * ACHTUNG! Diese Konstante muss als Objekt übergeben werden, da sie == verglichen
    * wird.
    */
-  public final static String FISHY = L.m("!!!PRÜFEN!!!");
+  public static final String FISHY = L.m("!!!PRÜFEN!!!");
 
   /**
    * Pattern zum Erkennen von InputUser-Feldern, die eine WollMux-Funktion
@@ -300,7 +300,9 @@ public class TextDocumentModel
     if (lastTouchedByWollMuxVersion == null)
       lastTouchedByWollMuxVersion = VERSION_UNKNOWN;
     lastTouchedByOOoVersion = persistentData.getData(DataID.TOUCH_OOOVERSION);
-    if (lastTouchedByOOoVersion == null) lastTouchedByOOoVersion = VERSION_UNKNOWN;
+    if (lastTouchedByOOoVersion == null) {
+      lastTouchedByOOoVersion = VERSION_UNKNOWN;
+    }
 
     // Type auswerten
     this.isTemplate = !hasURL();
@@ -466,7 +468,9 @@ public class TextDocumentModel
    */
   private void parsePrintFunctions(String data)
   {
-    if (data == null || data.length() == 0) return;
+    if (data == null || data.length() == 0) {
+      return;
+    }
 
     final String errmsg =
       L.m("Fehler beim Einlesen des Druckfunktionen-Abschnitts '%1':", data);
@@ -531,7 +535,9 @@ public class TextDocumentModel
    */
   public static void addToFormDescription(ConfigThingy formDesc, String value)
   {
-    if (value == null || value.length() == 0) return;
+    if (value == null || value.length() == 0) {
+      return;
+    }
 
     ConfigThingy conf;
     try
@@ -562,7 +568,9 @@ public class TextDocumentModel
    */
   private void parseFormValues(String werteStr)
   {
-    if (werteStr == null) return;
+    if (werteStr == null) {
+      return;
+    }
 
     // Werte-Abschnitt holen:
     ConfigThingy werte;
@@ -619,7 +627,9 @@ public class TextDocumentModel
   {
     for (FormField field : fields)
     {
-      if (field.getTrafoName() == null) return field.getValue();
+      if (field.getTrafoName() == null) {
+        return field.getValue();
+      }
     }
     return null;
   }
@@ -676,7 +686,7 @@ public class TextDocumentModel
   {
     private static final long serialVersionUID = 6792199728784265252L;
 
-    private String fragId;
+    private final String fragId;
 
     public OverrideFragChainException(String fragId)
     {
@@ -764,7 +774,7 @@ public class TextDocumentModel
    * 
    * @return Liefert true, wenn das Dokument Teil eines Multiformdokuments ist.
    */
-  public boolean isPartOfMultiformDocument()
+  public synchronized boolean isPartOfMultiformDocument()
   {
     return partOfMultiform;
   }
@@ -810,11 +820,13 @@ public class TextDocumentModel
   {
     if (typeStr == null)
       return;
-    else if (typeStr.equalsIgnoreCase("normalTemplate"))
+    else if ("normalTemplate".equalsIgnoreCase(typeStr))
       isTemplate = true;
-    else if (typeStr.equalsIgnoreCase("templateTemplate"))
+    else if ("templateTemplate".equalsIgnoreCase(typeStr))
       isTemplate = false;
-    else if (typeStr.equalsIgnoreCase("formDocument")) isFormDocument = true;
+    else if ("formDocument".equalsIgnoreCase(typeStr)) {
+      isFormDocument = true;
+    }
   }
 
   public void addPrintFunction(String functionName)
@@ -825,7 +837,9 @@ public class TextDocumentModel
 
   public void removePrintFunction(String functionName)
   {
-    if (!printFunctions.remove(functionName)) return;
+    if (!printFunctions.remove(functionName)) {
+      return;
+    }
     storePrintFunctions();
   }
 
@@ -879,7 +893,7 @@ public class TextDocumentModel
        * griffigen Test. In dem Fall ist es am einfachsten unten in der Schleife
        * einfach sobald man auf ein ARG stößt diese Variable hier auf true zu setzen.
        */
-      boolean needConfigThingy = (printFunctions.size() > 1);
+      boolean needConfigThingy = printFunctions.size() > 1;
 
       // Elemente nach Namen sortieren (definierte Reihenfolge bei der Ausgabe)
       ArrayList<String> names = new ArrayList<String>(printFunctions);
@@ -994,10 +1008,14 @@ public class TextDocumentModel
    */
   public synchronized XTextViewCursor getViewCursor()
   {
-    if (UNO.XModel(doc) == null) return null;
+    if (UNO.XModel(doc) == null) {
+      return null;
+    }
     XTextViewCursorSupplier suppl =
       UNO.XTextViewCursorSupplier(UNO.XModel(doc).getCurrentController());
-    if (suppl != null) return suppl.getViewCursor();
+    if (suppl != null) {
+      return suppl.getViewCursor();
+    }
     return null;
   }
 
@@ -1052,7 +1070,7 @@ public class TextDocumentModel
    * 
    * @author Christoph Lutz (D-III-ITD 5.1) TESTED
    */
-  synchronized public ConfigThingy getMailmergeConfig()
+  public synchronized ConfigThingy getMailmergeConfig()
   {
     if (mailmergeConf == null)
     {
@@ -1115,7 +1133,7 @@ public class TextDocumentModel
    */
   public synchronized void focusFormField(String fieldId)
   {
-    FormField field = null;
+    FormField field;
     List<FormField> formFields = getIdToTextFieldFormFields().get(fieldId);
     if (formFields != null)
     {
@@ -1129,7 +1147,9 @@ public class TextDocumentModel
 
     try
     {
-      if (field != null) field.focus();
+      if (field != null) {
+        field.focus();
+      }
     }
     catch (RuntimeException e)
     {
@@ -1149,14 +1169,20 @@ public class TextDocumentModel
    */
   protected static FormField preferUntransformedFormField(List<FormField> formFields)
   {
-    if (formFields == null) return null;
+    if (formFields == null) {
+      return null;
+    }
     Iterator<FormField> iter = formFields.iterator();
     FormField field = null;
     while (iter.hasNext())
     {
       FormField f = iter.next();
-      if (field == null) field = f;
-      if (f.getTrafoName() == null) return f;
+      if (field == null) {
+        field = f;
+      }
+      if (f.getTrafoName() == null) {
+        return f;
+      }
     }
     return field;
   }
@@ -1169,7 +1195,7 @@ public class TextDocumentModel
    * @return Liefert die Gesamtseitenzahl des Dokuments oder 0, wenn die Seitenzahl
    *         nicht bestimmt werden kann.
    */
-  synchronized public int getPageCount()
+  public synchronized int getPageCount()
   {
     try
     {
@@ -1188,7 +1214,7 @@ public class TextDocumentModel
    * 
    * @param state
    */
-  synchronized public boolean isDocumentModified()
+  public synchronized boolean isDocumentModified()
   {
     try
     {
@@ -1205,7 +1231,7 @@ public class TextDocumentModel
    * 
    * @param state
    */
-  synchronized public void setDocumentModified(boolean state)
+  public synchronized void setDocumentModified(boolean state)
   {
     try
     {
@@ -1248,7 +1274,7 @@ public class TextDocumentModel
    * TextDocumentModels standardmäßig macht), so wird nach dem close() auch
    * automatisch die dispose()-Methode aufgerufen.
    */
-  synchronized public void close()
+  public synchronized void close()
   {
     // Damit OOo vor dem Schließen eines veränderten Dokuments den
     // save/dismiss-Dialog anzeigt, muss die suspend()-Methode aller
@@ -1262,12 +1288,12 @@ public class TextDocumentModel
       for (int i = 0; i < frames.length; i++)
       {
         XController c = frames[i].getController();
-        if (c != null && UnoRuntime.areSame(c.getModel(), doc))
+        if (c != null && UnoRuntime.areSame(c.getModel(), doc) && !c.suspend(true))
         {
           // closeOk wird auf false gesetzt, wenn im save/dismiss-Dialog auf die
           // Schaltflächen "Speichern" und "Abbrechen" gedrückt wird. Bei
           // "Verwerfen" bleibt closeOK unverändert (also true).
-          if (c.suspend(true) == false) closeOk = false;
+          closeOk = false;
         }
       }
     }
@@ -1277,13 +1303,15 @@ public class TextDocumentModel
     // "Verwerfen" beendet, so ist closeOK==true und es wird beendet. Wurde der
     // save/dismiss Dialog abgebrochen, so soll das Dokument nicht geschlossen
     // werden.
-    if (closeOk || isDocumentModified() == false)
+    if (closeOk || !isDocumentModified())
     {
 
       // Hier das eigentliche Schließen:
       try
       {
-        if (UNO.XCloseable(doc) != null) UNO.XCloseable(doc).close(true);
+        if (UNO.XCloseable(doc) != null) {
+          UNO.XCloseable(doc).close(true);
+        }
       }
       catch (CloseVetoException e)
       {}
@@ -1299,7 +1327,9 @@ public class TextDocumentModel
       for (int i = 0; i < frames.length; i++)
       {
         XController c = frames[i].getController();
-        if (c != null && UnoRuntime.areSame(c.getModel(), doc)) c.suspend(false);
+        if (c != null && UnoRuntime.areSame(c.getModel(), doc)) {
+          c.suspend(false);
+        }
       }
 
     }
@@ -1346,11 +1376,15 @@ public class TextDocumentModel
    */
   public static String getFunctionNameForUserFieldName(String userFieldName)
   {
-    if (userFieldName == null) return null;
+    if (userFieldName == null) {
+      return null;
+    }
 
     Matcher m = TextDocumentModel.INPUT_USER_FUNCTION.matcher(userFieldName);
 
-    if (!m.matches()) return null;
+    if (!m.matches()) {
+      return null;
+    }
     String confStr = m.group(1);
 
     ConfigThingy conf;
@@ -1401,12 +1435,14 @@ public class TextDocumentModel
     catch (NodeNotFoundException e)
     {}
 
-    if (cmd.equalsIgnoreCase("insertFormValue")) try
-    {
-      return wm.get("TRAFO").toString();
+    if ("insertFormValue".equalsIgnoreCase(cmd)) {
+      try
+      {
+        return wm.get("TRAFO").toString();
+      }
+      catch (NodeNotFoundException e)
+      {}
     }
-    catch (NodeNotFoundException e)
-    {}
     return null;
   }
 
@@ -1425,10 +1461,12 @@ public class TextDocumentModel
    *         modifiziert werden kann.
    * @author Matthias Benkmann, Christoph Lutz (D-III-ITD 5.1) TESTED
    */
-  synchronized public ConfigThingy getFormFieldTrafoFromSelection()
+  public synchronized ConfigThingy getFormFieldTrafoFromSelection()
   {
     XTextCursor vc = getViewCursor();
-    if (vc == null) return null;
+    if (vc == null) {
+      return null;
+    }
 
     HashMap<String, Integer> collectedTrafos = collectTrafosFromEnumeration(vc);
 
@@ -1441,21 +1479,27 @@ public class TextDocumentModel
     {
       String trafo = ent.getKey();
       int complete = ent.getValue().intValue();
-      if (complete == 1) startedFields.add(trafo);
-      if (complete == 2) finishedFields.add(trafo);
-      if (complete == 3) completeFields.add(trafo);
+      if (complete == 1) {
+        startedFields.add(trafo);
+      }
+      if (complete == 2) {
+        finishedFields.add(trafo);
+      }
+      if (complete == 3) {
+        completeFields.add(trafo);
+      }
     }
 
     // Das Feld ist eindeutig bestimmbar, wenn genau ein vollständiges Feld oder
     // als Fallback genau eine Startmarke gefunden wurde.
     String trafoName = null;
-    if (completeFields.size() > 1)
+    if (completeFields.size() > 1 || startedFields.size() > 1)
       return null; // nicht eindeutige Felder
     else if (completeFields.size() == 1)
       trafoName = completeFields.iterator().next();
-    else if (startedFields.size() > 1)
-      return null; // nicht eindeutige Felder
-    else if (startedFields.size() == 1) trafoName = startedFields.iterator().next();
+    else if (startedFields.size() == 1) {
+      trafoName = startedFields.iterator().next();
+    }
 
     // zugehöriges ConfigThingy aus der Formularbeschreibung zurückliefern.
     if (trafoName != null)
@@ -1487,10 +1531,14 @@ public class TextDocumentModel
   {
     HashMap<String, Integer> collectedTrafos = new HashMap<String, Integer>();
 
-    if (textRange == null) return collectedTrafos;
+    if (textRange == null) {
+      return collectedTrafos;
+    }
     XEnumerationAccess parEnumAcc =
       UNO.XEnumerationAccess(textRange.getText().createTextCursorByRange(textRange));
-    if (parEnumAcc == null) return collectedTrafos;
+    if (parEnumAcc == null) {
+      return collectedTrafos;
+    }
 
     XEnumeration parEnum = parEnumAcc.createEnumeration();
     while (parEnum.hasMoreElements())
@@ -1504,7 +1552,9 @@ public class TextDocumentModel
       {
         Logger.error(e);
       }
-      if (porEnumAcc == null) continue;
+      if (porEnumAcc == null) {
+        continue;
+      }
 
       XEnumeration porEnum = porEnumAcc.createEnumeration();
       while (porEnum.hasMoreElements())
@@ -1526,7 +1576,9 @@ public class TextDocumentModel
         {
           String varName = "" + UNO.getProperty(tf, "Content");
           String t = getFunctionNameForUserFieldName(varName);
-          if (t != null) collectedTrafos.put(t, Integer.valueOf(3));
+          if (t != null) {
+            collectedTrafos.put(t, Integer.valueOf(3));
+          }
         }
 
         // Dokumentkommandos (derzeit insertFormValue) verarbeiten
@@ -1556,9 +1608,15 @@ public class TextDocumentModel
             if (t != null)
             {
               Integer s = collectedTrafos.get(t);
-              if (s == null) s = Integer.valueOf(0);
-              if (isStart) s = Integer.valueOf(s.intValue() | 1);
-              if (isEnd) s = Integer.valueOf(s.intValue() | 2);
+              if (s == null) {
+                s = Integer.valueOf(0);
+              }
+              if (isStart) {
+                s = Integer.valueOf(s.intValue() | 1);
+              }
+              if (isEnd) {
+                s = Integer.valueOf(s.intValue() | 2);
+              }
               collectedTrafos.put(t, s);
             }
           }
@@ -1579,7 +1637,9 @@ public class TextDocumentModel
   public static String getDocumentCommandByBookmarkName(String bookmarkName)
   {
     Matcher m = WOLLMUX_BOOKMARK_PATTERN.matcher(bookmarkName);
-    if (m.matches()) return m.group(1);
+    if (m.matches()) {
+      return m.group(1);
+    }
     return null;
   }
 
@@ -1597,7 +1657,7 @@ public class TextDocumentModel
    * 
    * @author Christoph Lutz (D-III-ITD-5.1)
    */
-  synchronized public ReferencedFieldID[] getReferencedFieldIDsThatAreNotInSchema(
+  public synchronized ReferencedFieldID[] getReferencedFieldIDsThatAreNotInSchema(
       Set<String> schema)
   {
     ArrayList<ReferencedFieldID> list = new ArrayList<ReferencedFieldID>();
@@ -1609,16 +1669,22 @@ public class TextDocumentModel
     for (Iterator<String> iter = sortedIDs.iterator(); iter.hasNext();)
     {
       String id = iter.next();
-      if (schema.contains(id)) continue;
+      if (schema.contains(id)) {
+        continue;
+      }
       List<FormField> fields = new ArrayList<FormField>();
-      if (idToFormFields.containsKey(id)) fields.addAll(idToFormFields.get(id));
+      if (idToFormFields.containsKey(id)) {
+        fields.addAll(idToFormFields.get(id));
+      }
       if (getIdToTextFieldFormFields().containsKey(id))
         fields.addAll(getIdToTextFieldFormFields().get(id));
       boolean hasTrafo = false;
       for (Iterator<FormField> fieldIter = fields.iterator(); fieldIter.hasNext();)
       {
         FormField field = fieldIter.next();
-        if (field.getTrafoName() != null) hasTrafo = true;
+        if (field.getTrafoName() != null) {
+          hasTrafo = true;
+        }
       }
       list.add(new ReferencedFieldID(id, hasTrafo));
     }
@@ -1784,7 +1850,9 @@ public class TextDocumentModel
           Object child = xEnum.nextElement();
           XTextField found = findAnnotationFieldRecursive(child);
           // das erste gefundene Element zurückliefern.
-          if (found != null) return found;
+          if (found != null) {
+            return found;
+          }
         }
         catch (Exception e)
         {
@@ -1856,17 +1924,23 @@ public class TextDocumentModel
   
     ConfigThingy conf = new ConfigThingy("Formular");
     conf.add("TITLE").add(newTitle);
-    if (plausiColor != null) conf.add("PLAUSI_MARKER_COLOR").add(plausiColor);
+    if (plausiColor != null) {
+      conf.add("PLAUSI_MARKER_COLOR").add(plausiColor);
+    }
   
     ConfigThingy subConf = conf.add("Fenster");
     int tabNum = -1;
-    if (tabNames.size() > 1) tabNum = 0;
+    if (tabNames.size() > 1) {
+      tabNum = 0;
+    }
     Iterator<String> iter = tabNames.iterator();
     while (iter.hasNext())
     {
       ConfigThingy tabConf = mapFensterIdToConfigThingy.get(iter.next());
       buttonAnpassung(tabNum, tabConf, buttonAnpassung);
-      if (++tabNum == tabNames.size() - 1) tabNum = Integer.MAX_VALUE;
+      if (++tabNum == tabNames.size() - 1) {
+        tabNum = Integer.MAX_VALUE;
+      }
       subConf.addChild(tabConf);
     }
   
@@ -1920,7 +1994,9 @@ public class TextDocumentModel
       {
         ConfigThingy node = iter.next();
         String name = node.getName();
-        if (tabNames != null && !tabNames.contains(name)) tabNames.add(name);
+        if (tabNames != null && !tabNames.contains(name)) {
+          tabNames.add(name);
+        }
         if (!duplicatesAllowed && mapFensterIdToConfigThingy.containsKey(name))
           Logger.error(L.m(
             "Fehler beim Zusammenfassen mehrerer Formulare zum gemeinsamen Ausfüllen: Mehrere \"%1\" Abschnitte enthalten \"%2\"",
@@ -1984,13 +2060,13 @@ public class TextDocumentModel
       while (anpInnerIter.hasNext())
       {
         ConfigThingy neverOrAlwaysConf = anpInnerIter.next();
-        if (neverOrAlwaysConf.getName().equals("NEVER"))
+        if ("NEVER".equals(neverOrAlwaysConf.getName()))
         {
           Iterator<ConfigThingy> neverActionIter = neverOrAlwaysConf.iterator();
           while (neverActionIter.hasNext())
             neverActions.add(neverActionIter.next().toString());
         }
-        else if (neverOrAlwaysConf.getName().equals("ALWAYS"))
+        else if ("ALWAYS".equals(neverOrAlwaysConf.getName()))
         {
           try
           {
@@ -2046,7 +2122,9 @@ public class TextDocumentModel
     while (iter.hasNext())
     {
       ConfigThingy possiblyButtonsConf = iter.next();
-      if (possiblyButtonsConf.getName().equals("Buttons")) iter.remove();
+      if ("Buttons".equals(possiblyButtonsConf.getName())) {
+        iter.remove();
+      }
     }
   
     /*
@@ -2131,7 +2209,7 @@ public class TextDocumentModel
       }
       catch (Exception x)
       {}
-      if (type != null && type.equals("glue"))
+      if (type != null && "glue".equals(type))
         liter.remove();
       else
         break;

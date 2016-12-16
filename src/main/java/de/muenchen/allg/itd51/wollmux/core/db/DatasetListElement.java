@@ -106,6 +106,7 @@ public class DatasetListElement implements Comparable<DatasetListElement>
   /**
    * Liefert den in der Listbox anzuzeigenden String.
    */
+  @Override
   public String toString()
   {
     return getDisplayString(ds);
@@ -156,14 +157,16 @@ public class DatasetListElement implements Comparable<DatasetListElement>
   {
     Pattern p = Pattern.compile("%\\{([a-zA-Z0-9]+)\\}");
     Matcher m = p.matcher(str);
-    if (m.find()) do
+    while (m.find())
     {
       String spalte = m.group(1);
       String wert = spalte;
       try
       {
         String wert2 = datensatz.get(spalte);
-        if (wert2 != null) wert = wert2.replaceAll("%", "");
+        if (wert2 != null) {
+          wert = wert2.replaceAll("%", "");
+        }
       }
       catch (ColumnNotFoundException e)
       {
@@ -171,7 +174,7 @@ public class DatasetListElement implements Comparable<DatasetListElement>
       }
       str = str.substring(0, m.start()) + wert + str.substring(m.end());
       m = p.matcher(str);
-    } while (m.find());
+    }
     return str;
   }
 
@@ -184,6 +187,7 @@ public class DatasetListElement implements Comparable<DatasetListElement>
    * @return Rückgabewert von this.toString().compareTo(o.toString())
    * @author Christoph Lutz (D-III-ITD 5.1)
    */
+  @Override
   public int compareTo(DatasetListElement o)
   {
     return this.toString().compareTo(o.toString());
@@ -196,6 +200,7 @@ public class DatasetListElement implements Comparable<DatasetListElement>
    * 
    * @author Daniel Benkmann (D-III-ITD-D101)
    */
+  @Override
   public boolean equals(Object o)
   {
     if (this == o)
@@ -209,6 +214,7 @@ public class DatasetListElement implements Comparable<DatasetListElement>
     return false;
   }
 
+  @Override
   public int hashCode()
   {
     return this.toString().hashCode();

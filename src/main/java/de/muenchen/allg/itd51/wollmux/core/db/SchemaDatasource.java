@@ -210,22 +210,26 @@ public class SchemaDatasource implements Datasource
 
   }
 
+  @Override
   public Set<String> getSchema()
   {
     return schema;
   }
 
+  @Override
   public QueryResults getDatasetsByKey(Collection<String> keys, long timeout)
       throws TimeoutException
   {
     return wrapDatasets(source.getDatasetsByKey(keys, timeout));
   }
 
+  @Override
   public QueryResults getContents(long timeout) throws TimeoutException
   {
     return new QueryResultsList(new Vector<RenameDataset>(0));
   }
 
+  @Override
   public QueryResults find(List<QueryPart> query, long timeout)
       throws TimeoutException
   {
@@ -252,6 +256,7 @@ public class SchemaDatasource implements Datasource
     return wrapDatasets(source.find(translatedQuery, timeout));
   }
 
+  @Override
   public String getName()
   {
     return name;
@@ -276,6 +281,7 @@ public class SchemaDatasource implements Datasource
       this.ds = ds;
     }
 
+    @Override
     public String get(String columnName) throws ColumnNotFoundException
     {
       // dieser Test ist nicht redundant wegen DROPs
@@ -285,7 +291,9 @@ public class SchemaDatasource implements Datasource
 
       String alteSpalte = mapNewToOld.get(columnName);
 
-      if (alteSpalte == /* nicht equals()!!!! */EMPTY_COLUMN) return null;
+      if (alteSpalte == /* nicht equals()!!!! */EMPTY_COLUMN) {
+        return null;
+      }
 
       if (alteSpalte != null)
         return ds.get(alteSpalte);
@@ -293,6 +301,7 @@ public class SchemaDatasource implements Datasource
         return ds.get(columnName);
     }
 
+    @Override
     public String getKey()
     {
       return ds.getKey();

@@ -57,6 +57,7 @@ public class QueryResultsUnion implements QueryResults
   /* (non-Javadoc)
    * @see de.muenchen.allg.itd51.wollmux.db.QueryResults#size()
    */
+  @Override
   public int size()
   {
     return results1.size() + results2.size();
@@ -65,6 +66,7 @@ public class QueryResultsUnion implements QueryResults
   /* (non-Javadoc)
    * @see de.muenchen.allg.itd51.wollmux.db.QueryResults#iterator()
    */
+  @Override
   public Iterator<Dataset> iterator()
   {
     return new UnionIterator(results1.iterator(), results2.iterator());
@@ -73,6 +75,7 @@ public class QueryResultsUnion implements QueryResults
   /* (non-Javadoc)
    * @see de.muenchen.allg.itd51.wollmux.db.QueryResults#isEmpty()
    */
+  @Override
   public boolean isEmpty()
   {
     return results1.isEmpty() && results2.isEmpty();
@@ -91,20 +94,23 @@ public class QueryResultsUnion implements QueryResults
       this.iter = iter1;
     }
 
+    @Override
     public void remove()
     {
       throw new UnsupportedOperationException();
     }
 
+    @Override
     public boolean hasNext()
     {
-      if (!iter.hasNext())
+      if (!iter.hasNext() && iter == iter1)
       {
-        if (iter == iter1) iter = iter2;
+        iter = iter2;
       }
       return iter.hasNext();
     }
 
+    @Override
     public Dataset next()
     {
       this.hasNext(); //weiterschalten auf iter2 falls nötig

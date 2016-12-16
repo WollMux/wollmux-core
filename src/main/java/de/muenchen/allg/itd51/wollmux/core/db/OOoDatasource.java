@@ -284,13 +284,13 @@ public class OOoDatasource implements Datasource
     try
     {
       String sqlSyntaxStr = sourceDesc.get("SQL_SYNTAX").toString();
-      if (sqlSyntaxStr.equalsIgnoreCase("ansi"))
+      if ("ansi".equalsIgnoreCase(sqlSyntaxStr))
         sqlSyntax = SQL_SYNTAX_ANSI;
-      else if (sqlSyntaxStr.equalsIgnoreCase("oracle"))
+      else if ("oracle".equalsIgnoreCase(sqlSyntaxStr))
         sqlSyntax = SQL_SYNTAX_ORACLE;
-      else if (sqlSyntaxStr.equalsIgnoreCase("mysql"))
+      else if ("mysql".equalsIgnoreCase(sqlSyntaxStr))
         sqlSyntax = SQL_SYNTAX_MYSQL;
-      else if (sqlSyntaxStr.equalsIgnoreCase("pervasivesql"))
+      else if ("pervasivesql".equalsIgnoreCase(sqlSyntaxStr))
         sqlSyntax = SQL_SYNTAX_PERVASIVESQL;
       else
         throw new ConfigurationErrorException(L.m(
@@ -308,10 +308,12 @@ public class OOoDatasource implements Datasource
       while (iter.hasNext())
       {
         String columnName = iter.next().toString();
-        if (firstColumnName == null) firstColumnName = columnName;
+        if (firstColumnName == null) {
+          firstColumnName = columnName;
+        }
         schema.add(columnName);
       }
-      if (schema.size() == 0)
+      if (schema.isEmpty())
         throw new ConfigurationErrorException(L.m(
           "Datenquelle \"%1\": Schema-Abschnitt ist leer", datasourceName));
       ConfigThingy schluesselConf = sourceDesc.query("Schluessel");
@@ -321,7 +323,9 @@ public class OOoDatasource implements Datasource
 
       if (noKey)
       {
-        if (firstColumnName != null) keyColumns = new String[] { firstColumnName };
+        if (firstColumnName != null) {
+          keyColumns = new String[] { firstColumnName };
+        }
       }
       else
         parseKey(schluesselConf); // Test ob kein Schluessel vorhanden siehe weiter
@@ -373,14 +377,16 @@ public class OOoDatasource implements Datasource
         for (int i = 0; i < colNames.length; ++i)
           schema.add(colNames[i]);
 
-        if (schema.size() == 0)
+        if (schema.isEmpty())
           throw new ConfigurationErrorException(L.m(
             "Datenquelle \"%1\": Tabelle \"%2\" hat keine Spalten", datasourceName,
             oooTableName));
 
         if (noKey)
         {
-          if (colNames.length > 0) keyColumns = new String[] { colNames[0] };
+          if (colNames.length > 0) {
+            keyColumns = new String[] { colNames[0] };
+          }
         }
         else
         {
@@ -460,15 +466,19 @@ public class OOoDatasource implements Datasource
     keyColumns = columns.toArray(keyColumns);
   }
 
+  @Override
   public Set<String> getSchema()
   {
     return schema;
   }
 
+  @Override
   public QueryResults getDatasetsByKey(Collection<String> keys, long timeout)
       throws TimeoutException
   { // TESTED
-    if (keys.isEmpty()) return new QueryResultsList(new ArrayList<Dataset>(0));
+    if (keys.isEmpty()) {
+      return new QueryResultsList(new ArrayList<Dataset>(0));
+    }
 
     long endTime = System.currentTimeMillis() + timeout;
     StringBuilder buffy =
@@ -478,14 +488,18 @@ public class OOoDatasource implements Datasource
     boolean first = true;
     while (iter.hasNext())
     {
-      if (!first) buffy.append(" OR ");
+      if (!first) {
+        buffy.append(" OR ");
+      }
       first = false;
       String key = iter.next();
       String[] parts = key.split("#", -1);
       buffy.append('(');
       for (int i = 1; i < parts.length; i += 2)
       {
-        if (i > 1) buffy.append(" AND ");
+        if (i > 1) {
+          buffy.append(" AND ");
+        }
         buffy.append(sqlIdentifier(decode(parts[i - 1])));
         buffy.append('=');
         buffy.append(sqlLiteral(decode(parts[i])));
@@ -496,14 +510,19 @@ public class OOoDatasource implements Datasource
     buffy.append(';');
 
     timeout = endTime - System.currentTimeMillis();
-    if (timeout < 1) timeout = 1;
+    if (timeout < 1) {
+      timeout = 1;
+    }
     return sqlQuery(buffy.toString(), timeout, true);
   }
 
+  @Override
   public QueryResults find(List<QueryPart> query, long timeout)
       throws TimeoutException
   { // TESTED
-    if (query.isEmpty()) return new QueryResultsList(new Vector<Dataset>(0));
+    if (query.isEmpty()) {
+      return new QueryResultsList(new Vector<Dataset>(0));
+    }
 
     StringBuilder buffy =
       new StringBuilder("SELECT * FROM " + sqlIdentifier(oooTableName) + " WHERE ");
@@ -513,7 +532,9 @@ public class OOoDatasource implements Datasource
     while (iter.hasNext())
     {
       QueryPart part = iter.next();
-      if (!first) buffy.append(" AND ");
+      if (!first) {
+        buffy.append(" AND ");
+      }
       first = false;
       buffy.append('(');
       buffy.append(sqlLower());
@@ -522,9 +543,7 @@ public class OOoDatasource implements Datasource
       buffy.append(')');
       buffy.append(" LIKE ");
 
-      switch ( sqlSyntax ) {
-        case SQL_SYNTAX_PERVASIVESQL:{
-
+      if (SQL_SYNTAX_PERVASIVESQL == sqlSyntax) {
           // Rechts vom LIKE können nur einfache Konstanten und keine Funktionen wie
           // lcase oder lower genutzt werden. Daher wird hier über die Java Methode
           // toLowerCase der zu suchende String in Kleinbuchstaben umgewandelt.
@@ -532,16 +551,11 @@ public class OOoDatasource implements Datasource
           // behandelt werden. Somit ist sichergestellt, dass der durchsuchende und der zu
           // suchende String nur Kleinbuchstaben enthält.
           buffy.append(sqlLiteral(sqlSearchPattern(part.getSearchString())).toLowerCase());
-
-        }; break;
-        default:{
-
-          buffy.append(sqlLower());
-          buffy.append('(');
-          buffy.append(sqlLiteral(sqlSearchPattern(part.getSearchString())));
-          buffy.append(") ESCAPE '|'");
-
-        }; break;
+      } else {
+        buffy.append(sqlLower());
+        buffy.append('(');
+        buffy.append(sqlLiteral(sqlSearchPattern(part.getSearchString())));
+        buffy.append(") ESCAPE '|'");
       }
 
       buffy.append(')');
@@ -551,6 +565,7 @@ public class OOoDatasource implements Datasource
     return sqlQuery(buffy.toString(), timeout, true);
   }
 
+  @Override
   public QueryResults getContents(long timeout) throws TimeoutException
   {
     String command = "SELECT * FROM " + sqlIdentifier(oooTableName) + ";";
@@ -596,7 +611,9 @@ public class OOoDatasource implements Datasource
         XDataSource ds =
           UNO.XDataSource(UNO.dbContext.getRegisteredObject(oooDatasourceName));
         long lgto = timeout / 1000;
-        if (lgto < 1) lgto = 1;
+        if (lgto < 1) {
+          lgto = 1;
+        }
         ds.setLoginTimeout((int) lgto);
         conn = ds.getConnection(userName, password);
       }
@@ -646,9 +663,11 @@ public class OOoDatasource implements Datasource
         {
           Map.Entry<String, Integer> entry = iter.next();
           String column = entry.getKey();
-          int idx = ((Number) entry.getValue()).intValue();
+          int idx = entry.getValue().intValue();
           String value = null;
-          if (idx > 0) value = row.getString(idx);
+          if (idx > 0) {
+            value = row.getString(idx);
+          }
           data.put(column, value);
         }
         datasets.add(new OOoDataset(data));
@@ -669,13 +688,17 @@ public class OOoDatasource implements Datasource
     }
     finally
     {
-      if (results != null) UNO.XComponent(results).dispose();
-      if (conn != null) try
-      {
-        conn.close();
+      if (results != null) {
+        UNO.XComponent(results).dispose();
       }
-      catch (Exception e)
-      {}
+      if (conn != null) {
+        try
+        {
+          conn.close();
+        }
+        catch (Exception e)
+        {}
+      }
     }
 
     return new QueryResultsList(datasets);
@@ -717,12 +740,10 @@ public class OOoDatasource implements Datasource
    */
   private String sqlLower()
   {
-    switch (sqlSyntax)
-    {
-      case SQL_SYNTAX_MYSQL:
-        return "lcase";
-      default:
-        return "lower";
+    if (SQL_SYNTAX_MYSQL == sqlSyntax) {
+      return "lcase";
+    } else {
+      return "lower";
     }
   }
 
@@ -749,19 +770,10 @@ public class OOoDatasource implements Datasource
    */
   private String sqlIdentifier(String str)
   {
-    switch (sqlSyntax)
-    {
-      case SQL_SYNTAX_PERVASIVESQL:{
-
+    if (SQL_SYNTAX_PERVASIVESQL == sqlSyntax && str.contains( "." )) {
         // PervasiveSQL unterstützt "DATENBANK.TABELLE" nicht, wird somit in "TABELLE" geändert
-        if ( str.contains( "." ) ) {
-
-          int dot = str.indexOf( "." ) + 1;
-          str = str.substring( dot );
-
-        }
-
-      }; break;
+        int dot = str.indexOf( '.' ) + 1;
+        str = str.substring( dot );
     }
     return "\"" + str.replaceAll("\"", "\"\"") + "\"";
   }
@@ -778,6 +790,7 @@ public class OOoDatasource implements Datasource
       "\\*", "%");
   }
 
+  @Override
   public String getName()
   {
     return datasourceName;
@@ -820,6 +833,7 @@ public class OOoDatasource implements Datasource
       key = buffy.toString();
     }
 
+    @Override
     public String get(String columnName) throws ColumnNotFoundException
     {
       if (!schema.contains(columnName))
@@ -828,6 +842,7 @@ public class OOoDatasource implements Datasource
       return data.get(columnName);
     }
 
+    @Override
     public String getKey()
     {
       return key;
@@ -918,7 +933,6 @@ public class OOoDatasource implements Datasource
         }
         catch (ColumnNotFoundException x)
         {}
-        ;
         System.out.print(spalte + "=" + wert + (spiter.hasNext() ? ", " : ""));
       }
       System.out.println();
@@ -939,8 +953,7 @@ public class OOoDatasource implements Datasource
   {
     List<QueryPart> query = new Vector<QueryPart>();
     query.add(new QueryPart(spaltenName, suchString));
-    QueryResults find = find(query, 3000000);
-    return find;
+    return find(query, 3000000);
   }
 
   /**
@@ -959,8 +972,7 @@ public class OOoDatasource implements Datasource
     List<QueryPart> query = new Vector<QueryPart>();
     query.add(new QueryPart(spaltenName1, suchString1));
     query.add(new QueryPart(spaltenName2, suchString2));
-    QueryResults find = find(query, 3000000);
-    return find;
+    return find(query, 3000000);
   }
 
   /**

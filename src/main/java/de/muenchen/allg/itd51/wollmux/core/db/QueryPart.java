@@ -50,8 +50,12 @@ public class QueryPart
 
   public QueryPart(String spaltenName, String suchString)
   {
-    if (spaltenName == null) throw new NullPointerException();
-    if (suchString == null) suchString = "";
+    if (spaltenName == null) {
+      throw new NullPointerException();
+    }
+    if (suchString == null) {
+      suchString = "";
+    }
     columnName = spaltenName;
     searchString = suchString;
   }
@@ -76,6 +80,7 @@ public class QueryPart
     return searchString;
   }
 
+  @Override
   public String toString()
   {
     return columnName + "=" + searchString;

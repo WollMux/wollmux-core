@@ -57,6 +57,16 @@ public class SearchStrategy
   private Map<Integer, List<Query>> mapWordcountToListOfQuerys;
 
   /**
+   * {@link #mapWordcountToListOfQuerys} wird per Referenz eingebunden und
+   * entsprechende Ergebnisse aus dieser Map werden von {@link #getTemplate(int)}
+   * zurückgeliefert.
+   */
+  private SearchStrategy(Map<Integer, List<Query>> mapWordcountToListOfQuerys)
+  {
+    this.mapWordcountToListOfQuerys = mapWordcountToListOfQuerys;
+  }
+
+  /**
    * Parst den "Suchstrategie"-Abschnitt von conf und liefert eine entsprechende
    * SearchStrategy.
    * 
@@ -91,7 +101,9 @@ public class SearchStrategy
           while (m.find())
           {
             int wordnum = searchString.charAt(m.end() - 2) - '0';
-            if (wordnum > wordcount) wordcount = wordnum;
+            if (wordnum > wordcount) {
+              wordcount = wordnum;
+            }
           }
           listOfQueryParts.add(new QueryPart(columnName, searchString));
         }
@@ -106,16 +118,6 @@ public class SearchStrategy
     }
 
     return new SearchStrategy(mapWordcountToListOfQuerys);
-  }
-
-  /**
-   * {@link #mapWordcountToListOfQuerys} wird per Referenz eingebunden und
-   * entsprechende Ergebnisse aus dieser Map werden von {@link #getTemplate(int)}
-   * zurückgeliefert.
-   */
-  private SearchStrategy(Map<Integer, List<Query>> mapWordcountToListOfQuerys)
-  {
-    this.mapWordcountToListOfQuerys = mapWordcountToListOfQuerys;
   }
 
   /**

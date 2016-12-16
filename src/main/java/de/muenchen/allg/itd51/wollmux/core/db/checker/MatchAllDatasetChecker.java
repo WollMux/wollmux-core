@@ -30,6 +30,7 @@ import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
  */
 public class MatchAllDatasetChecker extends DatasetChecker
 {
+  @Override
   public boolean matches(Dataset ds)
   {
     return true;

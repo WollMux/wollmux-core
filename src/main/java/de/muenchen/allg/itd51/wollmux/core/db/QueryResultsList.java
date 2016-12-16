@@ -58,7 +58,9 @@ public class QueryResultsList implements QueryResults
   public QueryResultsList(Iterator<? extends Dataset> iter, int count)
   {
     List<Dataset> d = new Vector<Dataset>(count);
-    while(iter.hasNext()) d.add(iter.next());
+    while(iter.hasNext()) {
+      d.add(iter.next());
+    }
     data = d;
   }
 
@@ -71,6 +73,7 @@ public class QueryResultsList implements QueryResults
     data = datasets;
   }
   
+  @Override
   public int size() { return data.size();}
   
   @SuppressWarnings("unchecked") 
@@ -79,10 +82,12 @@ public class QueryResultsList implements QueryResults
   // allem gesichert sein muss, dass kein falscher Typ zur List<? extends Dataset>
   // hinzugefügt wird. So etwas ist mit einem Iterator, der nur die Methoden
   // hasNext(), next() und remove() kennt, nicht möglich.
+  @Override
   public Iterator<Dataset> iterator()
   {
     return (Iterator<Dataset>) data.iterator(); 
   }
   
+  @Override
   public boolean isEmpty() { return data.isEmpty(); }
 }

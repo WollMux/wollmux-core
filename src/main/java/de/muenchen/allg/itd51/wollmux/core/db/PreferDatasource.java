@@ -159,14 +159,18 @@ public class PreferDatasource implements Datasource
       while (iter.hasNext())
       {
         buf1.append(iter.next());
-        if (iter.hasNext()) buf1.append(", ");
+        if (iter.hasNext()) {
+          buf1.append(", ");
+        }
       }
       StringBuffer buf2 = new StringBuffer();
       iter = difference2.iterator();
       while (iter.hasNext())
       {
         buf2.append(iter.next());
-        if (iter.hasNext()) buf2.append(", ");
+        if (iter.hasNext()) {
+          buf2.append(", ");
+        }
       }
       throw new ConfigurationErrorException(L.m(
         "Datenquelle \"%1\" fehlen die Spalten: %2", source1Name, buf2)
@@ -177,11 +181,13 @@ public class PreferDatasource implements Datasource
     schema = new HashSet<String>(schema1);
   }
 
+  @Override
   public Set<String> getSchema()
   {
     return schema;
   }
 
+  @Override
   public QueryResults getDatasetsByKey(Collection<String> keys, long timeout)
       throws TimeoutException
   {
@@ -207,11 +213,13 @@ public class PreferDatasource implements Datasource
     return new QueryResultsOverride(results, overrideResults, source1, timeout);
   }
 
+  @Override
   public QueryResults getContents(long timeout) throws TimeoutException
   {
     return new QueryResultsList(new Vector<Dataset>(0));
   }
 
+  @Override
   public QueryResults find(List<QueryPart> query, long timeout)
       throws TimeoutException
   {
@@ -235,6 +243,7 @@ public class PreferDatasource implements Datasource
     return new QueryResultsOverride(results, overrideResults, source1, timeout);
   }
 
+  @Override
   public String getName()
   {
     return name;
@@ -266,10 +275,14 @@ public class PreferDatasource implements Datasource
       {
         Dataset ds = iter.next();
         String key = ds.getKey();
-        if (!keyToCount.containsKey(key)) keyToCount.put(key, new int[] { 0 });
+        if (!keyToCount.containsKey(key)) {
+          keyToCount.put(key, new int[] { 0 });
+        }
         int[] count = keyToCount.get(key);
         ++count[0];
-        if (System.currentTimeMillis() > endTime) throw new TimeoutException();
+        if (System.currentTimeMillis() > endTime) {
+          throw new TimeoutException();
+        }
       }
 
       /**
@@ -279,7 +292,9 @@ public class PreferDatasource implements Datasource
        * Blacklist. Deswegen müssen wir diese Datensätze suchen.
        */
       timeout = endTime - System.currentTimeMillis();
-      if (timeout <= 0) throw new TimeoutException();
+      if (timeout <= 0) {
+        throw new TimeoutException();
+      }
       QueryResults blacklistResults =
         override.getDatasetsByKey(keyToCount.keySet(), timeout);
 
@@ -303,21 +318,26 @@ public class PreferDatasource implements Datasource
             count[0] = 0;
             keyBlacklist.add(key);
           }
-          if (System.currentTimeMillis() > endTime) throw new TimeoutException();
+          if (System.currentTimeMillis() > endTime) {
+            throw new TimeoutException();
+          }
         }
       }
     }
 
+    @Override
     public int size()
     {
       return size;
     }
 
+    @Override
     public Iterator<Dataset> iterator()
     {
       return new MyIterator();
     }
 
+    @Override
     public boolean isEmpty()
     {
       return size == 0;
@@ -338,25 +358,32 @@ public class PreferDatasource implements Datasource
         remaining = size;
       }
 
+      @Override
       public void remove()
       {
         throw new UnsupportedOperationException();
       }
 
+      @Override
       public boolean hasNext()
       {
-        return (remaining > 0);
+        return remaining > 0;
       }
 
+      @Override
       public Dataset next()
       {
-        if (remaining == 0) throw new NoSuchElementException();
+        if (remaining == 0) {
+          throw new NoSuchElementException();
+        }
 
         --remaining;
 
         if (inOverride)
         {
-          if (iter.hasNext()) return iter.next();
+          if (iter.hasNext()) {
+            return iter.next();
+          }
           inOverride = false;
           iter = results.iterator();
         }

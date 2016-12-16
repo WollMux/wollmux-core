@@ -92,6 +92,7 @@ public class SimpleDataset implements Dataset
    * 
    * @see de.muenchen.allg.itd51.wollmux.db.Dataset#get(java.lang.String)
    */
+  @Override
   public String get(String columnName) throws ColumnNotFoundException
   {
     if (!data.containsKey(columnName))
@@ -105,6 +106,7 @@ public class SimpleDataset implements Dataset
    * 
    * @see de.muenchen.allg.itd51.wollmux.db.Dataset#getKey()
    */
+  @Override
   public String getKey()
   {
     return key;

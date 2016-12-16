@@ -98,15 +98,19 @@ public class TestDJDataset extends DJDatasetBase
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
+  @Override
   public Map<String, String> getBS()
   {
     return myBS;
   }
 
+  @Override
   public String get(String spaltenName) throws ColumnNotFoundException
   {
     String str = super.get(spaltenName);
-    if (str != null) return str;
+    if (str != null) {
+      return str;
+    }
 
     if (fallback != null && fallback.containsKey(spaltenName))
       return get(fallback.get(spaltenName));
@@ -114,27 +118,34 @@ public class TestDJDataset extends DJDatasetBase
     return spaltenName;
   }
 
+  @Override
   public DJDataset copy()
   {
     return new TestDJDataset(hasBackingStore() ? new HashMap<String, String>(myBS)
                                               : null, schema, true, fallback);
   }
 
+  @Override
   public void remove()
   {}
 
+  @Override
   public boolean isSelectedDataset()
   {
     return false;
   }
 
-  public void select() throws UnsupportedOperationException
+  @Override
+  public void select()
   {
-    if (!isFromLOS()) throw new UnsupportedOperationException();
+    if (!isFromLOS()) {
+      throw new UnsupportedOperationException();
+    }
   }
 
+  @Override
   public String getKey()
   {
-    return "" + this.hashCode();
-  };
+    return Integer.toString(this.hashCode());
+  }
 }

@@ -56,7 +56,9 @@ public class HashableComponent
   public HashableComponent(Object compo)
   {
     this.compo = UNO.XInterface(compo);
-    if (this.compo == null) throw new ClassCastException();
+    if (this.compo == null) {
+      throw new ClassCastException();
+    }
   }
 
   /**
@@ -69,12 +71,16 @@ public class HashableComponent
     return compo;
   }
 
+  @Override
   public int hashCode()
   {
-    if (compo != null) return UnoRuntime.generateOid(compo).hashCode();
+    if (compo != null) {
+      return UnoRuntime.generateOid(compo).hashCode();
+    }
     return 0;
   }
 
+  @Override
   public boolean equals(Object b)
   {
     if (b != null && b instanceof HashableComponent)

@@ -69,7 +69,7 @@ public class SyncActionListener implements ActionListener
     {
       synchronized (lock)
       {
-        while (lock[0] == true)
+        while (lock[0])
           lock.wait();
       }
     }
@@ -83,6 +83,7 @@ public class SyncActionListener implements ActionListener
    * 
    * @see java.awt.event.ActionListener#actionPerformed(java.awt.event.ActionEvent)
    */
+  @Override
   public void actionPerformed(ActionEvent arg0)
   {
     result = arg0;

@@ -16,11 +16,14 @@ public class Workarounds
   public static final Pattern INSERTFORMVALUE_BOOKMARK_TEXT_THAT_CAN_BE_SAFELY_DELETED_WORKAROUND =
     Pattern.compile("\\A.*[<\\[{].*[\\]>}]\\z");
 
-  public static Boolean workaround100374 = null;
+  private static Boolean workaround100374 = null;
 
-  public static Boolean workaround68261 = null;
+  private static Boolean workaround68261 = null;
   
-  public static Pattern workaround101249 = null;
+  private static Pattern workaround101249 = null;
+
+  private Workarounds()
+  {}
 
   public static Boolean applyWorkaround(String issueNumber)
   {

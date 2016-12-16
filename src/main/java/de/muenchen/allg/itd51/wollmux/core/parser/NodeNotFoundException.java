@@ -37,7 +37,7 @@ package de.muenchen.allg.itd51.wollmux.core.parser;
 public class NodeNotFoundException extends Exception
 {
   private static final long serialVersionUID = 3441011738115879891L;
-  public NodeNotFoundException() {};
+  public NodeNotFoundException() {super();}
   public NodeNotFoundException(String message) {super(message);}
   public NodeNotFoundException(String message, Throwable cause) {super(message,cause);}
   public NodeNotFoundException(Throwable cause) {super(cause);}

@@ -42,7 +42,7 @@ public class ConfigurationErrorException extends RuntimeException
    * keine Ahnung, was das soll, aber es macht Eclipse glücklich.
    */
   private static final long serialVersionUID = -2457549809413613658L;
-  public ConfigurationErrorException() {};
+  public ConfigurationErrorException() {super();}
   public ConfigurationErrorException(String message) {super(message);}
   public ConfigurationErrorException(String message, Throwable cause) {super(message,cause);}
   public ConfigurationErrorException(Throwable cause) {super(cause);}

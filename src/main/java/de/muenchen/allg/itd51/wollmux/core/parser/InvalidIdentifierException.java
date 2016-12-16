@@ -6,7 +6,7 @@ public class InvalidIdentifierException extends Exception
 {
   private static final long serialVersionUID = 495666967644874471L;
 
-  private String invalidId;
+  private final String invalidId;
 
   public InvalidIdentifierException(String invalidId)
   {

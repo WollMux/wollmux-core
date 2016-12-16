@@ -140,6 +140,12 @@ public class ConfigThingy implements Iterable<ConfigThingy>
    */
   private static final int DEFAULT_MINLEVEL = 1;
 
+  private static final int ST_VALUE_LIST = 0;
+
+  private static final int ST_PAIR_LIST = 1;
+
+  private static final int ST_OTHER = 2;
+
   /** Die Kindknoten. */
   private List<ConfigThingy> children;
 
@@ -269,7 +275,8 @@ public class ConfigThingy implements Iterable<ConfigThingy>
       stack.push(this);
       List<StringContentToken> tokens = tokenize(url, read);
       Iterator<StringContentToken> liter = tokens.iterator();
-      Token token1, token2;
+      Token token1;
+      Token token2;
       do
       {
         token1 = liter.next();
@@ -278,7 +285,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
         {
           case Token.INCLUDE:
             token2 = liter.next();
-            if (token2.type() == Token.STRING && !token2.contentString().equals(""))
+            if (token2.type() == Token.STRING && !token2.contentString().isEmpty())
             {
               try
               {
@@ -367,7 +374,6 @@ public class ConfigThingy implements Iterable<ConfigThingy>
       }
       catch (Exception x)
       {}
-      ;
     }
   }
 
@@ -489,14 +495,18 @@ public class ConfigThingy implements Iterable<ConfigThingy>
     Vector<ConfigThingy> v = new Vector<ConfigThingy>();
     for (ConfigThingy child : root)
     {
-      if (child.getName().equals(nodeNameToScanFor)) v.add(child);
+      if (child.getName().equals(nodeNameToScanFor)) {
+        v.add(child);
+      }
     }
 
     s.push(v);
 
     for (ConfigThingy child : root)
     {
-      if (getNodesVisibleAt(node, nodeNameToScanFor, s, child, result)) return true;
+      if (getNodesVisibleAt(node, nodeNameToScanFor, s, child, result)) {
+        return true;
+      }
     }
 
     s.pop();
@@ -608,7 +618,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
       {
         if (getParents)
         {
-          if (!found.contains(parent)) found.add(parent);
+          if (!found.contains(parent)) {
+            found.add(parent);
+          }
         }
         else
           found.add(this);
@@ -693,7 +705,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
     if (res.count() == 0)
       throw new NodeNotFoundException("Knoten " + getName()
         + " hat keinen Nachfahren '" + name + "'");
-    if (res.count() == 1) res = res.iterator().next();
+    if (res.count() == 1) {
+      res = res.iterator().next();
+    }
     return res;
   }
 
@@ -785,7 +799,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
     if (res.count() == 0)
       throw new NodeNotFoundException("Knoten " + getName()
         + " hat keinen Nachfahren '" + name + "'");
-    if (res.count() == 1) res = res.iterator().next();
+    if (res.count() == 1) {
+      res = res.iterator().next();
+    }
     return res;
   }
 
@@ -840,7 +856,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
   {
     ArrayList<ConfigThingy> found = new ArrayList<ConfigThingy>();
     
-    boolean hasMore = false;
+    boolean hasMore;
     
     int searchlevel = 1;
     do
@@ -867,12 +883,16 @@ public class ConfigThingy implements Iterable<ConfigThingy>
     int searchlevel = minlevel;
     do
     {
-      if (searchlevel > maxlevel) break;
+      if (searchlevel > maxlevel) {
+        break;
+      }
       haveMore = rollcall(this, name, found, -1, searchlevel, getParents);
       ++searchlevel;
     } while (found.isEmpty() && haveMore);
 
-    if (found.size() == 0) return new ConfigThingy("<query results>");
+    if (found.isEmpty()) {
+      return new ConfigThingy("<query results>");
+    }
     return new ConfigThingy("<query results>", found);
   }
 
@@ -895,10 +915,14 @@ public class ConfigThingy implements Iterable<ConfigThingy>
   @Override
   public String toString()
   {
-    if (children.isEmpty()) return name;
+    if (children.isEmpty()) {
+      return name;
+    }
 
     // Optimierung: Nicht unnötig StringBuilder produzieren
-    if (children.size() == 1) return children.get(0).toString();
+    if (children.size() == 1) {
+      return children.get(0).toString();
+    }
 
     StringBuilder buf = new StringBuilder();
     for (ConfigThingy child : children)
@@ -924,7 +948,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public String stringRepresentation(boolean childrenOnly, char stringChar,
-      boolean escapeAll) throws java.lang.IllegalArgumentException
+      boolean escapeAll)
   {
     if (stringChar != '"' && stringChar != '\'')
       throw new java.lang.IllegalArgumentException(
@@ -951,7 +975,6 @@ public class ConfigThingy implements Iterable<ConfigThingy>
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public String stringRepresentation(boolean childrenOnly, char stringChar)
-      throws java.lang.IllegalArgumentException
   {
     return stringRepresentation(childrenOnly, stringChar, false);
   }
@@ -1060,7 +1083,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
 
       getFirstChildNoThrow().stringRepresentation(buf, childPrefix, stringChar,
         escapeAll);
-      if (getName().length() == 0) buf.append(')');
+      if (getName().length() == 0) {
+        buf.append(')');
+      }
     }
     else
     {
@@ -1078,7 +1103,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
           child.stringRepresentation(buf, childPrefix, stringChar, escapeAll);
           if (iter.hasNext())
           {
-            if (type == ST_VALUE_LIST) buf.append(',');
+            if (type == ST_VALUE_LIST) {
+              buf.append(',');
+            }
             buf.append(' ');
           }
         }
@@ -1110,21 +1137,23 @@ public class ConfigThingy implements Iterable<ConfigThingy>
     }
   }
 
-  private static final int ST_VALUE_LIST = 0;
-
-  private static final int ST_PAIR_LIST = 1;
-
-  private static final int ST_OTHER = 2;
-
   private int structureType()
   {
     int count = -1;
     for (ConfigThingy child : children)
     {
-      if (count == -1) count = child.count();
-      if (count != child.count()) return ST_OTHER;
-      if (count > 1) return ST_OTHER;
-      if (count == 1 && child.getFirstChildNoThrow().count() > 0) return ST_OTHER;
+      if (count == -1) {
+        count = child.count();
+      }
+      if (count != child.count()) {
+        return ST_OTHER;
+      }
+      if (count > 1) {
+        return ST_OTHER;
+      }
+      if (count == 1 && child.getFirstChildNoThrow().count() > 0) {
+        return ST_OTHER;
+      }
     }
 
     return count == 0 ? ST_VALUE_LIST : ST_PAIR_LIST;
@@ -1216,7 +1245,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  private static abstract class StringContentToken implements Token
+  private abstract static class StringContentToken implements Token
   {
     protected String content;
 
@@ -1277,7 +1306,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
       super(url, line, position);
 
       int len = atStartOf(tokenData);
-      if (len < 2) throw new IllegalArgumentException("String token expected!");
+      if (len < 2) {
+        throw new IllegalArgumentException("String token expected!");
+      }
 
       char quote = tokenData.charAt(0);
 
@@ -1293,7 +1324,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
         idx = buffy.indexOf("%", startidx);
         int idx2 = buffy.indexOf(quoteStr, startidx);
 
-        if (idx < 0 && idx2 < 0) break;
+        if (idx < 0 && idx2 < 0) {
+          break;
+        }
 
         String repstr;
         int replen;
@@ -1307,7 +1340,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
         else
         // if (idx >= 0 && (idx2 < 0 || idx2 >= idx)) // %-Escape
         {
-          if (idx + 1 >= buffy.length()) break;
+          if (idx + 1 >= buffy.length()) {
+            break;
+          }
 
           // default: durch selbes Zeichen, also % ersetzen
           repstr = "" + buffy.charAt(idx);
@@ -1374,17 +1409,25 @@ public class ConfigThingy implements Iterable<ConfigThingy>
      */
     public static int atStartOf(String str)
     {
-      if (str.length() < 2) return 0;
+      if (str.length() < 2) {
+        return 0;
+      }
       char quote = str.charAt(0);
-      if (quote != '"' && quote != '\'') return 0;
+      if (quote != '"' && quote != '\'') {
+        return 0;
+      }
 
       int idx = 1;
       while (true)
       {
         idx = str.indexOf(quote, idx);
-        if (idx < 0) return 0;
+        if (idx < 0) {
+          return 0;
+        }
         ++idx;
-        if (idx >= str.length() || str.charAt(idx) != quote) return idx;
+        if (idx >= str.length() || str.charAt(idx) != quote) {
+          return idx;
+        }
         ++idx;
       }
     }
@@ -1413,7 +1456,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
     {
       super(url, line, position);
       Matcher m = p.matcher(tokenData);
-      if (!m.find()) throw new IllegalArgumentException("Key token expected!");
+      if (!m.find()) {
+        throw new IllegalArgumentException("Key token expected!");
+      }
       content = m.group(1);
     }
 
@@ -1432,7 +1477,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
     public static int atStartOf(String str)
     {
       Matcher m = p.matcher(str);
-      if (!m.find()) return 0;
+      if (!m.find()) {
+        return 0;
+      }
       return m.end();
     }
   }
@@ -1504,12 +1551,12 @@ public class ConfigThingy implements Iterable<ConfigThingy>
    */
   private static class IncludeToken extends StringContentToken
   {
-    private static final String inc = "%include";
+    private static final String INC = "%include";
 
     public IncludeToken(URL url, int line, int position)
     {
       super(url, line, position);
-      content = inc;
+      content = INC;
     }
 
     @Override
@@ -1526,7 +1573,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
      */
     public static int atStartOf(String str)
     {
-      return str.startsWith(inc) ? inc.length() : 0;
+      return str.startsWith(INC) ? INC.length() : 0;
     }
   }
 
@@ -1623,7 +1670,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
         {
           pos += wsm.end();
           line = line.substring(wsm.end());
-          if (line.length() == 0) continue;
+          if (line.length() == 0) {
+            continue;
+          }
         }
 
         int tokenLength;
@@ -1768,7 +1817,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
         {
           conf = null;
         }
-        if (conf == null) break;
+        if (conf == null) {
+          break;
+        }
       }
 
       if (conf == null)

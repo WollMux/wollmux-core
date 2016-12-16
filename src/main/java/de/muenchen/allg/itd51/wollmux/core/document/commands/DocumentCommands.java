@@ -161,23 +161,6 @@ public class DocumentCommands implements Iterable<DocumentCommand>
     getPatternForCommand("((insertValue)|(insertFormValue))");
 
   /**
-   * Liefert ein {@link Pattern}, das auf Bookmarknamen für das WollMux-Kommando
-   * wollmuxCommand matcht. Das Pattern berücksichtigt optionale Whitespace sowie die
-   * optionale Zahl am Ende des Bookmarknamens. wollmuxCommand wird direkt ohne
-   * Escaping in den regulären Ausdruck eingebaut. Es ist also möglich, \w* zu
-   * übergeben, um alle Kommandos zu matchen. Gruppe 1 des Ausdrucks umschließt das
-   * ganze Kommando ab "WM" bis inklusive der letzten Klammer vor dem optionalen
-   * Zahlenteil am Ende.
-   * 
-   * @author Matthias Benkmann (D-III-ITD-D101)
-   */
-  public static Pattern getPatternForCommand(String wollmuxCommand)
-  {
-    return Pattern.compile("\\A\\s*(WM\\s*\\(.*CMD\\s*'" + wollmuxCommand
-      + "'.*\\))\\s*\\d*\\z");
-  }
-
-  /**
    * Erzeugt einen neuen Container für DocumentCommands im TextDocument doc.
    * 
    * @param doc
@@ -195,6 +178,23 @@ public class DocumentCommands implements Iterable<DocumentCommand>
     this.copyOnlyCommands = new HashSet<DocumentCommand>();
     this.allVersionsCommands = new HashSet<DocumentCommand>();
     this.allTextSectionsWithGROUPS = new HashSet<TextSection>();
+  }
+
+  /**
+   * Liefert ein {@link Pattern}, das auf Bookmarknamen für das WollMux-Kommando
+   * wollmuxCommand matcht. Das Pattern berücksichtigt optionale Whitespace sowie die
+   * optionale Zahl am Ende des Bookmarknamens. wollmuxCommand wird direkt ohne
+   * Escaping in den regulären Ausdruck eingebaut. Es ist also möglich, \w* zu
+   * übergeben, um alle Kommandos zu matchen. Gruppe 1 des Ausdrucks umschließt das
+   * ganze Kommando ab "WM" bis inklusive der letzten Klammer vor dem optionalen
+   * Zahlenteil am Ende.
+   *
+   * @author Matthias Benkmann (D-III-ITD-D101)
+   */
+  public static Pattern getPatternForCommand(String wollmuxCommand)
+  {
+    return Pattern.compile("\\A\\s*(WM\\s*\\(.*CMD\\s*'" + wollmuxCommand
+      + "'.*\\))\\s*\\d*\\z");
   }
 
   /**
@@ -240,7 +240,9 @@ public class DocumentCommands implements Iterable<DocumentCommand>
    */
   public void addNewDocumentCommand(XTextRange r, String cmdStr)
   {
-    if (r == null) return;
+    if (r == null) {
+      return;
+    }
     new Bookmark(cmdStr, UNO.XTextDocument(doc), r);
     update();
   }
@@ -259,7 +261,9 @@ public class DocumentCommands implements Iterable<DocumentCommand>
    */
   private boolean updateBookmarks()
   {
-    if (doc == null) return false;
+    if (doc == null) {
+      return false;
+    }
     long startTime = System.currentTimeMillis();
 
     // HashSets mit den Namen der bekannten, gültigen Dokumentkommandos
@@ -289,7 +293,9 @@ public class DocumentCommands implements Iterable<DocumentCommand>
         if (m.find() && !knownBookmarks.contains(name))
         {
           DocumentCommand cmd = createCommand(name, m.group(1), doc);
-          if (cmd != null) newDocumentCommands.add(cmd);
+          if (cmd != null) {
+            newDocumentCommands.add(cmd);
+          }
         }
       }
 
@@ -306,7 +312,7 @@ public class DocumentCommands implements Iterable<DocumentCommand>
       "updateBookmarks fertig nach %1 ms. Entfernte/Neue Dokumentkommandos: ",
       Integer.valueOf((int) (System.currentTimeMillis() - startTime)))
       + retiredDocumentCommands.size() + " / " + newDocumentCommands.size());
-    return retiredDocumentCommands.size() > 0 || newDocumentCommands.size() > 0;
+    return !retiredDocumentCommands.isEmpty() || !newDocumentCommands.isEmpty();
   }
 
   /**
@@ -323,7 +329,9 @@ public class DocumentCommands implements Iterable<DocumentCommand>
   private boolean updateTextSections()
   {
     XTextSectionsSupplier supp = UNO.XTextSectionsSupplier(doc);
-    if (supp == null) return false;
+    if (supp == null) {
+      return false;
+    }
     long startTime = System.currentTimeMillis();
 
     // HashSets mit den Namen der bekannten, gültigen TextSections
@@ -351,7 +359,9 @@ public class DocumentCommands implements Iterable<DocumentCommand>
       {
         TextSection s =
           createTextSection(name, m.group(1), UNO.XTextSectionsSupplier(doc));
-        if (s != null) newTextSections.add(s);
+        if (s != null) {
+          newTextSections.add(s);
+        }
       }
     }
 
@@ -363,7 +373,7 @@ public class DocumentCommands implements Iterable<DocumentCommand>
       "updateTextSections fertig nach %1 ms. Entfernte/Neue TextSections: ",
       Integer.valueOf((int) (System.currentTimeMillis() - startTime)))
       + invalidTextSections.size() + " / " + newTextSections.size());
-    return invalidTextSections.size() > 0 || newTextSections.size() > 0;
+    return !invalidTextSections.isEmpty() || !newTextSections.isEmpty();
   }
 
   /**
@@ -378,9 +388,9 @@ public class DocumentCommands implements Iterable<DocumentCommand>
    */
   private void addNewDocumentCommands(HashSet<DocumentCommand> newDocumentCommands)
   {
-    long times[] = new long[] {
+    long[] times = new long[] {
       0, 0, 0, 0, 0, 0, 0, 0 };
-    long counters[] = new long[] {
+    long[] counters = new long[] {
       0, 0, 0, 0, 0, 0, 0, 0 };
     Logger.debug2("addNewDocumentCommands");
 
@@ -486,7 +496,9 @@ public class DocumentCommands implements Iterable<DocumentCommand>
   {
     boolean inserted = false;
     XTextRange anchor = element.getAnchor();
-    if (anchor == null) return;
+    if (anchor == null) {
+      return;
+    }
 
     ListIterator<VisibilityElement> iter = visibilityElements.listIterator();
     while (iter.hasNext())
@@ -519,7 +531,9 @@ public class DocumentCommands implements Iterable<DocumentCommand>
         iter.next();
       }
     }
-    if (!inserted) visibilityElements.add(element);
+    if (!inserted) {
+      visibilityElements.add(element);
+    }
   }
 
   /**
@@ -776,7 +790,9 @@ public class DocumentCommands implements Iterable<DocumentCommand>
   private static TextSection createTextSection(String name, String groupsStr,
       XTextSectionsSupplier doc)
   {
-    if (doc == null) return null;
+    if (doc == null) {
+      return null;
+    }
     XNameAccess sectionsAccess = doc.getTextSections();
 
     // HashSet mit allen Gruppen GROUPS aufbauen:

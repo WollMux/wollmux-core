@@ -100,7 +100,9 @@ public final class FormFieldFactory
   {
     String bookmarkName = cmd.getBookmarkName();
     FormField formField = bookmarkNameToFormField.get(bookmarkName);
-    if (formField != null) return formField;
+    if (formField != null) {
+      return formField;
+    }
 
     /*
      * Falls die range in einer Tabellenzelle liegt, wird sie auf die ganze Zelle
@@ -111,7 +113,9 @@ public final class FormFieldFactory
     if (de.muenchen.allg.itd51.wollmux.core.Workarounds.applyWorkaroundForOOoIssue68261())
     {
       range = cmd.getAnchor();
-      if (range != null) range = range.getText();
+      if (range != null) {
+        range = range.getText();
+      }
       XCell cell = UNO.XCell(range);
       if (cell == null) // range nicht in Tabellenzelle?
       {
@@ -122,7 +126,9 @@ public final class FormFieldFactory
       Logger.debug(L.m("Scanne Zelle %1", cellName));
     }
 
-    if (range == null) range = cmd.getTextCursor();
+    if (range == null) {
+      range = cmd.getTextCursor();
+    }
 
     if (range != null)
     {
@@ -260,7 +266,7 @@ public final class FormFieldFactory
       {
         continue;
       }
-      if (textPortionType.equals("Bookmark"))
+      if ("Bookmark".equals(textPortionType))
       {
         XNamed bookmark = null;
         boolean isStart = false;
@@ -271,14 +277,18 @@ public final class FormFieldFactory
             ((Boolean) UNO.getProperty(textPortion, "IsStart")).booleanValue();
           isCollapsed =
             ((Boolean) UNO.getProperty(textPortion, "IsCollapsed")).booleanValue();
-          if (isCollapsed) isStart = true;
+          if (isCollapsed) {
+            isStart = true;
+          }
           bookmark = UNO.XNamed(UNO.getProperty(textPortion, "Bookmark"));
         }
         catch (java.lang.Exception x)
         {
           continue;
         }
-        if (bookmark == null) continue;
+        if (bookmark == null) {
+          continue;
+        }
 
         String name = bookmark.getName();
         Matcher m = INSERTFORMVALUE.matcher(name);
@@ -289,18 +299,15 @@ public final class FormFieldFactory
             lastInsertFormValueStart = name;
             lastInsertFormValueBookmark = bookmark;
           }
-          if (!isStart || isCollapsed)
+          if ((!isStart || isCollapsed) && name.equals(lastInsertFormValueStart))
           {
-            if (name.equals(lastInsertFormValueStart))
-            {
-              handleNewInputField(lastInsertFormValueStart, bookmark,
-                mapBookmarkNameToFormField, doc);
-              lastInsertFormValueStart = null;
-            }
+            handleNewInputField(lastInsertFormValueStart, bookmark,
+              mapBookmarkNameToFormField, doc);
+            lastInsertFormValueStart = null;
           }
         }
       }
-      else if (textPortionType.equals("TextField"))
+      else if ("TextField".equals(textPortionType))
       {
         XDependentTextField textField = null;
         int textfieldType = 0; // 0:input, 1:dropdown, 2: reference
@@ -334,7 +341,7 @@ public final class FormFieldFactory
         }
         lastInsertFormValueStart = null;
       }
-      else if (textPortionType.equals("Frame"))
+      else if ("Frame".equals(textPortionType))
       {
         XControlModel model = null;
         try
@@ -540,24 +547,11 @@ public final class FormFieldFactory
     InputUserFormField
   }
 
-  private static abstract class BasicFormField implements FormField
+  private abstract static class BasicFormField implements FormField
   {
     protected XTextDocument doc;
 
     protected InsertFormValue cmd;
-
-    @Override
-    public void setCommand(InsertFormValue cmd)
-    {
-      this.cmd = cmd;
-    }
-
-    @Override
-    public String getId()
-    {
-      if (cmd != null) return cmd.getID();
-      return null;
-    }
 
     /**
      * Erzeugt ein Formularfeld im Dokument doc an der Stelle des
@@ -581,6 +575,21 @@ public final class FormFieldFactory
     {
       this.doc = doc;
       this.cmd = cmd;
+    }
+
+    @Override
+    public void setCommand(InsertFormValue cmd)
+    {
+      this.cmd = cmd;
+    }
+
+    @Override
+    public String getId()
+    {
+      if (cmd != null) {
+        return cmd.getID();
+      }
+      return null;
     }
 
     /*
@@ -622,13 +631,17 @@ public final class FormFieldFactory
     @Override
     public void focus()
     {
-      if (cmd == null) return;
+      if (cmd == null) {
+        return;
+      }
       try
       {
         XController controller = UNO.XModel(doc).getCurrentController();
         XTextCursor cursor = UNO.XTextViewCursorSupplier(controller).getViewCursor();
         XTextRange focusRange = cmd.getTextCursor();
-        if (focusRange != null) cursor.gotoRange(focusRange, false);
+        if (focusRange != null) {
+          cursor.gotoRange(focusRange, false);
+        }
       }
       catch (java.lang.Exception e)
       {}
@@ -664,7 +677,9 @@ public final class FormFieldFactory
         return 1;
       else if (rel.isALessThanB())
         return -1;
-      else if (rel.isAEqualB()) return 0;
+      else if (rel.isAEqualB()) {
+        return 0;
+      }
 
       return -1;
     }
@@ -672,7 +687,9 @@ public final class FormFieldFactory
     @Override
     public boolean substituteFieldID(String oldFieldId, String newFieldId)
     {
-      if (oldFieldId == null || newFieldId == null) return false;
+      if (oldFieldId == null || newFieldId == null) {
+        return false;
+      }
       if (cmd.getID().equals(oldFieldId))
       {
         cmd.setID(newFieldId);
@@ -735,7 +752,9 @@ public final class FormFieldFactory
       if (inputField != null)
       {
         Object content = UNO.getProperty(inputField, "Content");
-        if (content != null) return content.toString();
+        if (content != null) {
+          return content.toString();
+        }
       }
       return "";
     }
@@ -827,7 +846,9 @@ public final class FormFieldFactory
     @Override
     public void setValue(String value)
     {
-      if (cmd == null) return;
+      if (cmd == null) {
+        return;
+      }
 
       if (value.length() == 0)
       {
@@ -841,14 +862,18 @@ public final class FormFieldFactory
       else
       {
         // Erzeuge Formularelement wenn notwendig
-        if (inputField == null) createInputField();
+        if (inputField == null) {
+          createInputField();
+        }
       }
       super.setValue(value);
     }
 
     private void createInputField()
     {
-      if (cmd == null) return;
+      if (cmd == null) {
+        return;
+      }
 
       String bookmarkName = cmd.getBookmarkName();
 
@@ -909,7 +934,9 @@ public final class FormFieldFactory
       // werden. Die Verwendung des Leerstrings fürht dazu, dass ein anderes als
       // das ausgewählte Element angezeigt wird. Daher werden Leerstrings auf
       // ein Leerzeichen umgeschrieben. OOo-Issue: #70087
-      if (value.equals("")) value = " ";
+      if (value.isEmpty()) {
+        value = " ";
+      }
 
       if (dropdownField != null && doc != null)
       {
@@ -966,7 +993,9 @@ public final class FormFieldFactory
       if (dropdownField != null)
       {
         Object content = UNO.getProperty(dropdownField, "SelectedItem");
-        if (content != null) return content.toString();
+        if (content != null) {
+          return content.toString();
+        }
       }
       return "";
     }
@@ -1096,7 +1125,9 @@ public final class FormFieldFactory
     @Override
     public void setValue(String value)
     {
-      if (value == null) return;
+      if (value == null) {
+        return;
+      }
       UNO.setProperty(textfield, "Content", value);
       UNO.setProperty(textfield, "CurrentPresentation", value);
     }
@@ -1107,7 +1138,9 @@ public final class FormFieldFactory
       String cont = (String) UNO.getProperty(textfield, "Content");
       if (cont == null)
         cont = (String) UNO.getProperty(textfield, "CurrentPresentation");
-      if (cont != null) return cont;
+      if (cont != null) {
+        return cont;
+      }
       return "";
     }
 
@@ -1119,7 +1152,9 @@ public final class FormFieldFactory
         XController controller = UNO.XModel(doc).getCurrentController();
         XTextCursor cursor = UNO.XTextViewCursorSupplier(controller).getViewCursor();
         XTextRange focusRange = UNO.XTextContent(textfield).getAnchor();
-        if (focusRange != null) cursor.gotoRange(focusRange, false);
+        if (focusRange != null) {
+          cursor.gotoRange(focusRange, false);
+        }
       }
       catch (java.lang.Exception e)
       {}
@@ -1152,7 +1187,9 @@ public final class FormFieldFactory
     @Override
     public void dispose()
     {
-      if (textfield != null) textfield.dispose();
+      if (textfield != null) {
+        textfield.dispose();
+      }
     }
 
     @Override
@@ -1246,7 +1283,9 @@ public final class FormFieldFactory
     @Override
     public String getValue()
     {
-      if (master == null) return "";
+      if (master == null) {
+        return "";
+      }
       return "" + UNO.getProperty(master, "Content");
     }
 
@@ -1258,7 +1297,9 @@ public final class FormFieldFactory
         XController controller = UNO.XModel(doc).getCurrentController();
         XTextCursor cursor = UNO.XTextViewCursorSupplier(controller).getViewCursor();
         XTextRange focusRange = UNO.XTextContent(textfield).getAnchor();
-        if (focusRange != null) cursor.gotoRange(focusRange, false);
+        if (focusRange != null) {
+          cursor.gotoRange(focusRange, false);
+        }
       }
       catch (java.lang.Exception e)
       {}
@@ -1291,7 +1332,9 @@ public final class FormFieldFactory
     @Override
     public void dispose()
     {
-      if (textfield != null) textfield.dispose();
+      if (textfield != null) {
+        textfield.dispose();
+      }
     }
 
     @Override

@@ -66,7 +66,7 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
  * 
  * @author Christoph Lutz (D-III-ITD 5.1)
  */
-abstract public class DocumentCommand
+public abstract class DocumentCommand
 {
   /**
    * Das geparste ConfigThingy des zugehörenden Bookmarks.
@@ -333,7 +333,6 @@ abstract public class DocumentCommand
    * @author Daniel Benkmann (D-III-ITD-D101)
    */
   public void insertTextContentIntoBookmark(XTextContent textContent, boolean replace)
-      throws IllegalArgumentException
   {
     if (textContent != null)
     {
@@ -377,7 +376,9 @@ abstract public class DocumentCommand
   public XParagraphCursor[] getStartMark()
   {
     XTextRange range = bookmark.getTextCursor();
-    if (range == null || !hasInsertMarks) return null;
+    if (range == null || !hasInsertMarks) {
+      return null;
+    }
     XParagraphCursor[] cursor = new XParagraphCursor[2];
     XText text = range.getText();
     cursor[0] = UNO.XParagraphCursor(text.createTextCursorByRange(range.getStart()));
@@ -396,7 +397,9 @@ abstract public class DocumentCommand
   public XParagraphCursor[] getEndMark()
   {
     XTextRange range = bookmark.getTextCursor();
-    if (range == null || !hasInsertMarks) return null;
+    if (range == null || !hasInsertMarks) {
+      return null;
+    }
     XParagraphCursor[] cursor = new XParagraphCursor[2];
     XText text = range.getText();
     cursor[0] = UNO.XParagraphCursor(text.createTextCursorByRange(range.getEnd()));
@@ -435,7 +438,9 @@ abstract public class DocumentCommand
    */
   public boolean isRetired()
   {
-    if (bookmark != null) return bookmark.getAnchor() == null;
+    if (bookmark != null) {
+      return bookmark.getAnchor() == null;
+    }
     return false;
   }
 
@@ -453,10 +458,7 @@ abstract public class DocumentCommand
     else if (isDefinedState("DONE"))
     {
       String doneStr = getState("DONE").toString();
-      if (doneStr.compareToIgnoreCase("true") == 0)
-        return true;
-      else
-        return false;
+      return doneStr.compareToIgnoreCase("true") == 0;
     }
     else
       return STATE_DEFAULT_DONE.booleanValue();
@@ -597,7 +599,9 @@ abstract public class DocumentCommand
       // Neuen Status rausschreiben, wenn er sich geändert hat:
       String name = bookmark.getName();
       name = name.replaceFirst("\\s*\\d+\\s*$", "");
-      if (!wmCmdString.equals(name)) bookmark.rename(wmCmdString);
+      if (!wmCmdString.equals(name)) {
+        bookmark.rename(wmCmdString);
+      }
 
       return bookmark.getName();
     }
@@ -612,7 +616,7 @@ abstract public class DocumentCommand
    */
   protected boolean isDefinedState(String key)
   {
-    return (getState(key) != null);
+    return getState(key) != null;
   }
 
   /**
@@ -781,7 +785,7 @@ abstract public class DocumentCommand
    * Eine Exception die geworfen wird, wenn ein Dokumentkommando als ungültig erkannt
    * wurde, z,b, aufgrund eines fehlenden Parameters.
    */
-  static public class InvalidCommandException extends com.sun.star.uno.Exception
+  public static class InvalidCommandException extends com.sun.star.uno.Exception
   {
     private static final long serialVersionUID = -3960668930339529734L;
 
@@ -800,7 +804,7 @@ abstract public class DocumentCommand
    * @author lut
    * 
    */
-  static public class InvalidCommand extends DocumentCommand
+  public static class InvalidCommand extends DocumentCommand
   {
     private java.lang.Exception exception;
 
@@ -843,7 +847,7 @@ abstract public class DocumentCommand
    * Zukunft geplant ist und dess Ausführung daher keine Fehler beim Erzeugen des
    * Briefkopfs liefern darf.
    */
-  static public class NotYetImplemented extends DocumentCommand
+  public static class NotYetImplemented extends DocumentCommand
   {
     public NotYetImplemented(ConfigThingy wmCmd, Bookmark bookmark)
     {
@@ -867,7 +871,7 @@ abstract public class DocumentCommand
    * @author lut
    * 
    */
-  static public class Form extends DocumentCommand
+  public static class Form extends DocumentCommand
   {
     public Form(ConfigThingy wmCmd, Bookmark bookmark)
     {
@@ -885,7 +889,7 @@ abstract public class DocumentCommand
   /**
    * Das Kommando InsertFrag fügt ein externes Textfragment in das Dokument ein.
    */
-  static public class InsertFrag extends DocumentCommand
+  public static class InsertFrag extends DocumentCommand
   {
     private String fragID;
 
@@ -929,7 +933,7 @@ abstract public class DocumentCommand
       try
       {
         mode = wmCmd.get("WM").get("MODE").toString();
-        if (mode.equalsIgnoreCase("manual"))
+        if ("manual".equalsIgnoreCase(mode))
         {
           manualMode = true;
         }
@@ -946,21 +950,14 @@ abstract public class DocumentCommand
         for (Iterator<ConfigThingy> iter = stylesConf.iterator(); iter.hasNext();)
         {
           String s = iter.next().toString();
-          if (s.equalsIgnoreCase("all"))
+          if ("all".equalsIgnoreCase(s))
           {
             styles.add("textstyles");
             styles.add("pagestyles");
             styles.add("numberingstyles");
           }
-          else if (s.equalsIgnoreCase("textStyles"))
-          {
-            styles.add(s.toLowerCase());
-          }
-          else if (s.equalsIgnoreCase("pageStyles"))
-          {
-            styles.add(s.toLowerCase());
-          }
-          else if (s.equalsIgnoreCase("numberingStyles"))
+          else if ("textStyles".equalsIgnoreCase(s) || "pageStyles".equalsIgnoreCase(s)
+              || "numberingStyles".equalsIgnoreCase(s))
           {
             styles.add(s.toLowerCase());
           }
@@ -992,7 +989,7 @@ abstract public class DocumentCommand
 
     public boolean importStylesOnly()
     {
-      return styles.size() > 0;
+      return !styles.isEmpty();
     }
 
     public Set<String> getStyles()
@@ -1018,7 +1015,7 @@ abstract public class DocumentCommand
    * Das Kommando InsertContent dient zum Mischen von Dokumenten und ist im Handbuch
    * des WollMux ausführlicher beschrieben.
    */
-  static public class InsertContent extends DocumentCommand
+  public static class InsertContent extends DocumentCommand
   {
     public InsertContent(ConfigThingy wmCmd, Bookmark bookmark)
     {
@@ -1042,7 +1039,7 @@ abstract public class DocumentCommand
   /**
    * Dieses Kommando fügt den Wert eines Absenderfeldes in den Briefkopf ein.
    */
-  static public class InsertValue extends DocumentCommand implements
+  public static class InsertValue extends DocumentCommand implements
       OptionalTrafoProvider
   {
     private String dbSpalte;
@@ -1075,7 +1072,9 @@ abstract public class DocumentCommand
       {
         ConfigThingy as = autoseps.next();
         String sep = currentSep;
-        if (seps.hasNext()) sep = seps.next().toString();
+        if (seps.hasNext()) {
+          sep = seps.next().toString();
+        }
 
         if (as.toString().compareToIgnoreCase("left") == 0)
         {
@@ -1149,7 +1148,7 @@ abstract public class DocumentCommand
   /**
    * Dieses Kommando fügt den Wert eines Absenderfeldes in den Briefkopf ein.
    */
-  static public class InsertFormValue extends DocumentCommand implements
+  public static class InsertFormValue extends DocumentCommand implements
       OptionalTrafoProvider
   {
     private String id = null;
@@ -1238,7 +1237,7 @@ abstract public class DocumentCommand
    * Dieses Kommando sorgt dafür, dass alle unter dem Bookmark liegenden TextFields
    * geupdatet werden.
    */
-  static public class UpdateFields extends DocumentCommand
+  public static class UpdateFields extends DocumentCommand
   {
     public UpdateFields(ConfigThingy wmCmd, Bookmark bookmark)
     {
@@ -1260,7 +1259,7 @@ abstract public class DocumentCommand
    * OnProcessTextDocument-Event verarbeitet und spielen daher keine Rolle mehr für
    * den DocumentCommandInterpreter.
    */
-  static public class SetType extends DocumentCommand
+  public static class SetType extends DocumentCommand
   {
     private String type;
 
@@ -1301,7 +1300,7 @@ abstract public class DocumentCommand
    * Dieses Kommando dient zum Überschreiben von FRAG_IDs, die mit insertFrag oder
    * insertContent eingefügt werden sollen.
    */
-  static public class OverrideFrag extends DocumentCommand
+  public static class OverrideFrag extends DocumentCommand
   {
     private String fragId;
 
@@ -1343,7 +1342,9 @@ abstract public class DocumentCommand
      */
     public String getNewFragID()
     {
-      if (newFragId == null) return "";
+      if (newFragId == null) {
+        return "";
+      }
       return newFragId;
     }
 
@@ -1361,7 +1362,7 @@ abstract public class DocumentCommand
    * im OnProcessTextDocument-Event verarbeitet und spielen daher keine Rolle mehr
    * für den DocumentCommandInterpreter.
    */
-  static public class SetPrintFunction extends DocumentCommand
+  public static class SetPrintFunction extends DocumentCommand
   {
     private String funcName;
 
@@ -1399,7 +1400,7 @@ abstract public class DocumentCommand
    * Dokumentkommandos, die auch das GROUPS Attribut unterstützen, besitzt dieses
    * Kommando ausser der Zuordnung von Gruppen keine weitere Funktion.
    */
-  static public class SetGroups extends DocumentCommand implements VisibilityElement
+  public static class SetGroups extends DocumentCommand implements VisibilityElement
   {
     private Set<String> groupsSet;
 
@@ -1478,7 +1479,7 @@ abstract public class DocumentCommand
    * DraftOnly-Kommando können Blöcke im Text definiert werden (auch an anderen
    * Stellen), die ausschließlich im Entwurf angezeigt werden sollen.
    */
-  static public class DraftOnly extends DocumentCommand implements
+  public static class DraftOnly extends DocumentCommand implements
       OptionalHighlightColorProvider
   {
     String highlightColor = null;
@@ -1518,7 +1519,7 @@ abstract public class DocumentCommand
    * in allen anderen Ausdrucken, die nicht das Original sind (wie z.B. Abdrücke und
    * Entwurf).
    */
-  static public class NotInOriginal extends DocumentCommand implements
+  public static class NotInOriginal extends DocumentCommand implements
       OptionalHighlightColorProvider
   {
     String highlightColor = null;
@@ -1556,7 +1557,7 @@ abstract public class DocumentCommand
    * Original bezeichnet. Mit dem OriginalOnly Kommando ist es möglich Blöcke im Text
    * zu definieren, die ausschließlich in Originalen abgedruckt werden sollen.
    */
-  static public class OriginalOnly extends DocumentCommand implements
+  public static class OriginalOnly extends DocumentCommand implements
       OptionalHighlightColorProvider
   {
     String highlightColor = null;
@@ -1595,7 +1596,7 @@ abstract public class DocumentCommand
    * CopyOnly-Kommando können Blöcke im Text definiert werden (auch an anderen
    * Stellen), die ausschließlich in Abdrucken angezeigt werden sollen.
    */
-  static public class CopyOnly extends DocumentCommand implements
+  public static class CopyOnly extends DocumentCommand implements
       OptionalHighlightColorProvider
   {
     String highlightColor = null;
@@ -1634,7 +1635,7 @@ abstract public class DocumentCommand
    * Kommando ist es möglich Blöcke im Text zu definieren, die IMMER ausgedruckt
    * werden sollen, d.h. sowohl bei Originalen, als auch bei Abdrucken und Entwürfen.
    */
-  static public class AllVersions extends DocumentCommand implements
+  public static class AllVersions extends DocumentCommand implements
       OptionalHighlightColorProvider
   {
     String highlightColor = null;
@@ -1673,7 +1674,7 @@ abstract public class DocumentCommand
    * vorhanden und keine Platzhalter vorhanden ist, mit PlatzhalterAnspringen
    * angesprungen.
    */
-  static public class SetJumpMark extends DocumentCommand
+  public static class SetJumpMark extends DocumentCommand
   {
     public SetJumpMark(ConfigThingy wmCmd, Bookmark bookmark)
     {

@@ -247,6 +247,7 @@ public class Bookmark
    * Diese Methode liefert eine String-Repräsentation mit dem Aufbau "Bookmark[<name>]"
    * zurück.
    */
+  @Override
   public String toString()
   {
     return "Bookmark[" + getName() + "]";
@@ -279,7 +280,9 @@ public class Bookmark
     // Wir testen aber trotzdem ob das Bookmark BROKEN ist
     if (name.equals(newName))
     {
-      if (!bookmarks.hasByName(name)) name = BROKEN;
+      if (!bookmarks.hasByName(name)) {
+        name = BROKEN;
+      }
       return name;
     }
 
@@ -362,7 +365,9 @@ public class Bookmark
     // http://www.openoffice.org/issues/show_bug.cgi?id=67869 . Ein
     // TextCursor-Objekt verhält sich dahingehend robuster.
     XTextRange range = getAnchor();
-    if (range != null) return range.getText().createTextCursorByRange(range);
+    if (range != null) {
+      return range.getText().createTextCursorByRange(range);
+    }
     return null;
   }
 
@@ -518,7 +523,9 @@ public class Bookmark
   public boolean isCollapsed()
   {
     XTextRange anchor = getTextCursor();
-    if (anchor == null) return false;
+    if (anchor == null) {
+      return false;
+    }
     try
     {
       Object par = UNO.XEnumerationAccess(anchor).createEnumeration().nextElement();
@@ -529,9 +536,13 @@ public class Bookmark
         {
           Object element = xenum.nextElement();
           String tpt = "" + UNO.getProperty(element, "TextPortionType");
-          if (!tpt.equals("Bookmark")) continue;
+          if (!tpt.equals("Bookmark")) {
+            continue;
+          }
           XNamed bm = UNO.XNamed(UNO.getProperty(element, "Bookmark"));
-          if (bm == null || !name.equals(bm.getName())) continue;
+          if (bm == null || !name.equals(bm.getName())) {
+            continue;
+          }
           return AnyConverter.toBoolean(UNO.getProperty(element, "IsCollapsed"));
         }
         catch (java.lang.Exception e2)
@@ -555,10 +566,14 @@ public class Bookmark
   public void decollapseBookmark()
   {
     XTextRange range = getAnchor();
-    if (range == null) return;
+    if (range == null) {
+      return;
+    }
 
     // Beenden, wenn nicht-kollabiert.
-    if (!isCollapsed()) return;
+    if (!isCollapsed()) {
+      return;
+    }
 
     // Alte Range sichern
     XTextCursor cursor = range.getText().createTextCursorByRange(range);
@@ -626,6 +641,7 @@ public class Bookmark
    * 
    * @see java.lang.Object#equals(java.lang.Object)
    */
+  @Override
   public boolean equals(Object b)
   {
     try
@@ -644,6 +660,7 @@ public class Bookmark
    * 
    * @see java.lang.Object#hashCode()
    */
+  @Override
   public int hashCode()
   {
     return name.hashCode();

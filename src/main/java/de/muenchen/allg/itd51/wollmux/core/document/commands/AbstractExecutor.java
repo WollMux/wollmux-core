@@ -54,7 +54,7 @@ public abstract class AbstractExecutor implements DocumentCommand.Executor
     {
       DocumentCommand cmd = iter.next();
 
-      if (cmd.isDone() == false && cmd.hasError() == false)
+      if (!cmd.isDone() && !cmd.hasError())
       {
         // Kommando ausführen und Fehler zählen
         errors += cmd.execute(this);

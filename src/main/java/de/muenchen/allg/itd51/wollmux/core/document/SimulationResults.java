@@ -105,7 +105,9 @@ public class SimulationResults
    */
   public String getFormFieldContent(FormField field)
   {
-    if (field == null) return null;
+    if (field == null) {
+      return null;
+    }
     return mapFormFieldToContentValue.get(field);
   }
 

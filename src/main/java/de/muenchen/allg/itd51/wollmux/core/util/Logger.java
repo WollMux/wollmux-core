@@ -124,6 +124,9 @@ public class Logger
    * Wenn ignoreInit==true, wird der nächte init-Aufruf ignoriert.
    */
   private static boolean ignoreInit = false;
+
+  private Logger()
+  {}
   
   /**
    * Über die Methode init wird der Logger mit einem PrintStream und einem
@@ -136,7 +139,9 @@ public class Logger
    */
   public static void init(PrintStream outputPrintStream, int loggingMode)
   {
-    if (ignoreInit) return;
+    if (ignoreInit) {
+      return;
+    }
     
     outputStream = outputPrintStream;
     file = null; // evtl. vorher erfolgte Zuweisung aufheben, damit outputStream
@@ -160,7 +165,9 @@ public class Logger
    */
   public static void init(File outputFile, int loggingMode)
   {
-    if (ignoreInit) return;
+    if (ignoreInit) {
+      return;
+    }
 
     file = outputFile;
     mode = loggingMode;
@@ -179,7 +186,9 @@ public class Logger
    */
   public static void init(int loggingMode)
   {
-    if (ignoreInit) return;
+    if (ignoreInit) {
+      return;
+    }
 
     mode = loggingMode;
     Logger.debug2("========================== Logger::init(): LoggingMode = " + mode
@@ -198,13 +207,25 @@ public class Logger
    */
   public static void init(String loggingMode)
   {
-    if (ignoreInit) return;
+    if (ignoreInit) {
+      return;
+    }
 
-    if (loggingMode.compareToIgnoreCase("NONE") == 0) init(NONE);
-    if (loggingMode.compareToIgnoreCase("ERROR") == 0) init(ERROR);
-    if (loggingMode.compareToIgnoreCase("LOG") == 0) init(LOG);
-    if (loggingMode.compareToIgnoreCase("DEBUG") == 0) init(DEBUG);
-    if (loggingMode.compareToIgnoreCase("ALL") == 0) init(ALL);
+    if (loggingMode.compareToIgnoreCase("NONE") == 0) {
+      init(NONE);
+    }
+    if (loggingMode.compareToIgnoreCase("ERROR") == 0) {
+      init(ERROR);
+    }
+    if (loggingMode.compareToIgnoreCase("LOG") == 0) {
+      init(LOG);
+    }
+    if (loggingMode.compareToIgnoreCase("DEBUG") == 0) {
+      init(DEBUG);
+    }
+    if (loggingMode.compareToIgnoreCase("ALL") == 0) {
+      init(ALL);
+    }
   }
 
   /**
@@ -226,7 +247,9 @@ public class Logger
    */
   public static void error(String msg)
   {
-    if (mode >= ERROR) printInfo("ERROR(" + getCaller(2) + "): ", msg, null);
+    if (mode >= ERROR) {
+      printInfo("ERROR(" + getCaller(2) + "): ", msg, null);
+    }
   }
 
   /**
@@ -237,7 +260,9 @@ public class Logger
    */
   public static void error(Throwable e)
   {
-    if (mode >= ERROR) printInfo("ERROR(" + getCaller(2) + "): ", null, e);
+    if (mode >= ERROR) {
+      printInfo("ERROR(" + getCaller(2) + "): ", null, e);
+    }
   }
 
   /**
@@ -248,7 +273,9 @@ public class Logger
    */
   public static void error(String msg, Exception e)
   {
-    if (mode >= ERROR) printInfo("ERROR(" + getCaller(2) + "): ", msg, e);
+    if (mode >= ERROR) {
+      printInfo("ERROR(" + getCaller(2) + "): ", msg, e);
+    }
   }
 
   /**
@@ -261,7 +288,9 @@ public class Logger
    */
   public static void log(String msg)
   {
-    if (mode >= LOG) printInfo("LOG(" + getCaller(2) + "): ", msg, null);
+    if (mode >= LOG) {
+      printInfo("LOG(" + getCaller(2) + "): ", msg, null);
+    }
   }
 
   /**
@@ -272,7 +301,9 @@ public class Logger
    */
   public static void log(Throwable e)
   {
-    if (mode >= LOG) printInfo("LOG(" + getCaller(2) + "): ", null, e);
+    if (mode >= LOG) {
+      printInfo("LOG(" + getCaller(2) + "): ", null, e);
+    }
   }
 
   /**
@@ -284,7 +315,9 @@ public class Logger
    */
   public static void debug(String msg)
   {
-    if (mode >= DEBUG) printInfo("DEBUG(" + getCaller(2) + "): ", msg, null);
+    if (mode >= DEBUG) {
+      printInfo("DEBUG(" + getCaller(2) + "): ", msg, null);
+    }
   }
 
   /**
@@ -295,7 +328,9 @@ public class Logger
    */
   public static void debug(Throwable e)
   {
-    if (mode >= DEBUG) printInfo("DEBUG(" + getCaller(2) + "): ", null, e);
+    if (mode >= DEBUG) {
+      printInfo("DEBUG(" + getCaller(2) + "): ", null, e);
+    }
   }
 
   /**
@@ -311,7 +346,9 @@ public class Logger
    */
   public static void debug2(String msg)
   {
-    if (mode >= ALL) printInfo("DEBUG2(" + getCaller(2) + "): ", msg, null);
+    if (mode >= ALL) {
+      printInfo("DEBUG2(" + getCaller(2) + "): ", msg, null);
+    }
   }
 
   /**
@@ -322,7 +359,9 @@ public class Logger
    */
   public static void debug2(Throwable e)
   {
-    if (mode >= ALL) printInfo("DEBUG2(" + getCaller(2) + "): ", null, e);
+    if (mode >= ALL) {
+      printInfo("DEBUG2(" + getCaller(2) + "): ", null, e);
+    }
   }
 
   /**
@@ -362,11 +401,21 @@ public class Logger
       String hourStr = "" + hour;
       String minuteStr = "" + minute;
       String secondStr = "" + second;
-      if (day < 10) dayStr = "0" + dayStr;
-      if (month < 10) monthStr = "0" + monthStr;
-      if (hour < 10) hourStr = "0" + hourStr;
-      if (minute < 10) minuteStr = "0" + minuteStr;
-      if (second < 10) secondStr = "0" + secondStr;
+      if (day < 10) {
+        dayStr = "0" + dayStr;
+      }
+      if (month < 10) {
+        monthStr = "0" + monthStr;
+      }
+      if (hour < 10) {
+        hourStr = "0" + hourStr;
+      }
+      if (minute < 10) {
+        minuteStr = "0" + minuteStr;
+      }
+      if (second < 10) {
+        secondStr = "0" + secondStr;
+      }
       prefix =
         "" + now.get(Calendar.YEAR) + "-" + monthStr + "-" + dayStr + " " + hourStr
           + ":" + minuteStr + ":" + secondStr + " " + prefix;

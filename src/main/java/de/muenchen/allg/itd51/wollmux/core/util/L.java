@@ -53,6 +53,9 @@ public class L
   private static final Map<String, String> mapMessageToTranslation =
     new HashMap<String, String>();
 
+  private L()
+  {}
+
   /**
    * Falls für original eine Übersetzung verfügbar ist, wird diese zurückgeliefert,
    * ansonsten der Originalstring.
@@ -122,7 +125,9 @@ public class L
   private static String replace(String where, String what, String withWhat)
   {
     int i = where.indexOf(what);
-    if (i < 0 || what.length() == 0) return where;
+    if (i < 0 || what.length() == 0) {
+      return where;
+    }
 
     StringBuilder buffy = new StringBuilder(where);
     while (i >= 0)
@@ -173,31 +178,38 @@ public class L
       if (lcMessages != null && lcMessages.length() >= 2)
       {
         int i = lcMessages.indexOf('.');
-        if (i >= 0) lcMessages = lcMessages.substring(0, i);
+        if (i >= 0) {
+          lcMessages = lcMessages.substring(0, i);
+        }
         i = lcMessages.indexOf('@');
-        if (i >= 0) lcMessages = lcMessages.substring(0, i);
+        if (i >= 0) {
+          lcMessages = lcMessages.substring(0, i);
+        }
         debugMessages.append("LC_MESSAGES override: " + lcMessages + '\n');
         messageLanguage = lcMessages;
       }
 
       ConfigThingy aliases = l10n.get("LanguageAliases", 2);
       Iterator<?> iter = aliases.iterator();
-      findAlias: while (iter.hasNext())
+      while (iter.hasNext())
       {
         ConfigThingy aliasConf = (ConfigThingy) iter.next();
         if (aliasConf.count() > 1)
         {
           Iterator<?> subIter = aliasConf.iterator();
           String languageCode = subIter.next().toString();
-          if (messageLanguage.equals(languageCode)) break;
-          while (subIter.hasNext())
+          if (messageLanguage.equals(languageCode)) {
+            break;
+          }
+          boolean findAlias = true;
+          while (subIter.hasNext() && findAlias)
           {
             String alias = subIter.next().toString();
             if (messageLanguage.equals(alias))
             {
               debugMessages.append("Alias mapping => " + languageCode + '\n');
               messageLanguage = languageCode;
-              break findAlias;
+              findAlias = false;
             }
           }
         }
@@ -217,7 +229,7 @@ public class L
         while (iter.hasNext())
         {
           ConfigThingy conf = (ConfigThingy) iter.next();
-          if (conf.getName().equalsIgnoreCase("original"))
+          if ("original".equalsIgnoreCase(conf.getName()))
             original = conf.toString();
 
           if (conf.getName().equalsIgnoreCase(messageLanguage))

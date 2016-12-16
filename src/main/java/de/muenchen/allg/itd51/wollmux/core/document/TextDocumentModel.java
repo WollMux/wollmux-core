@@ -257,6 +257,10 @@ public class TextDocumentModel
   public static final Pattern INPUT_USER_FUNCTION =
     Pattern.compile("\\A\\s*(WM\\s*\\(.*FUNCTION\\s*'[^']*'.*\\))\\s*\\d*\\z");
 
+  private String wollmuxVersion;
+
+  private String oooVersion;
+
   /**
    * Erzeugt ein neues TextDocumentModel zum XTextDocument doc und sollte nie 
    * direkt aufgerufen werden, da neue TextDocumentModels über 
@@ -265,9 +269,11 @@ public class TextDocumentModel
    * 
    * @param doc
    */
-  public TextDocumentModel(XTextDocument doc, PersistentDataContainer persistentDataContainer)
+  public TextDocumentModel(XTextDocument doc, PersistentDataContainer persistentDataContainer, String wollmuxVersion, String oooVersion)
   {
     this.doc = doc;
+    this.wollmuxVersion = wollmuxVersion;
+    this.oooVersion = oooVersion;
     this.idToFormFields = new HashMap<String, List<FormField>>();
     idToTextFieldFormFields = new HashMap<String, List<FormField>>();
     staticTextFieldFormFields = new Vector<FormField>();
@@ -401,7 +407,7 @@ public class TextDocumentModel
    * 
    * @author Matthias Benkmann (D-III-ITD-D101)
    */
-  public synchronized void updateLastTouchedByVersionInfo(String wollmuxVersion, String oooVersion)
+  public synchronized void updateLastTouchedByVersionInfo()
   {
     if (!haveUpdatedLastTouchedByVersionInfo)
     {

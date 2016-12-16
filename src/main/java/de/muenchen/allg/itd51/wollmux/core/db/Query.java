@@ -76,6 +76,7 @@ public class Query implements Iterable<QueryPart>
    * Iteriert über die QueryParts, die diese Suchanfrage ausmachen.
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
+  @Override
   public Iterator<QueryPart> iterator() {return listOfQueryParts.iterator();}
   
   /**

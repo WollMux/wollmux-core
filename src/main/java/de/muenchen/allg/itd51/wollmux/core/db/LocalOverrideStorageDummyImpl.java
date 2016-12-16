@@ -20,6 +20,7 @@ import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 public class LocalOverrideStorageDummyImpl implements LocalOverrideStorage
 {
   DJDataset dummyDataset;
+  Set<String> schema = new HashSet<String>();
 
   public LocalOverrideStorageDummyImpl()
   {
@@ -40,20 +41,19 @@ public class LocalOverrideStorageDummyImpl implements LocalOverrideStorage
 
       @Override
       public void set(String columnName, String newValue)
-          throws ColumnNotFoundException, UnsupportedOperationException,
-          IllegalArgumentException
+          throws ColumnNotFoundException
       {
         throw new UnsupportedOperationException();
       }
 
       @Override
-      public void select() throws UnsupportedOperationException
+      public void select()
       {
         throw new UnsupportedOperationException();
       }
 
       @Override
-      public void remove() throws UnsupportedOperationException
+      public void remove()
       {
         throw new UnsupportedOperationException();
       }
@@ -95,8 +95,6 @@ public class LocalOverrideStorageDummyImpl implements LocalOverrideStorage
       }
     };
   }
-
-  Set<String> schema = new HashSet<String>();
 
   @Override
   public void selectDataset(String selectKey, int sameKeyIndex)

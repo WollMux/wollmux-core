@@ -41,6 +41,7 @@ public class ColumnContainsChecker extends DatasetChecker
     this.compare = compareValue.toLowerCase();
   }
 
+  @Override
   public boolean matches(Dataset ds)
   {
     try

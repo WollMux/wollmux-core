@@ -121,6 +121,7 @@ public abstract class DJDatasetBase implements DJDataset
    * Speicher einen Wert für diese Spalte haben, so wird null geliefert (nicht
    * verwechseln mit Zugriff auf eine nicht existierende Spalte!).
    */
+  @Override
   public String get(String spaltenName) throws ColumnNotFoundException
   {
     if (schema != null && !schema.contains(spaltenName))
@@ -128,7 +129,9 @@ public abstract class DJDatasetBase implements DJDataset
         spaltenName));
     String res;
     res = myLOS.get(spaltenName);
-    if (res != null) return res;
+    if (res != null){
+      return res;
+    }
     if (myBS != null)
     {
       res = myBS.get(spaltenName);
@@ -137,6 +140,7 @@ public abstract class DJDatasetBase implements DJDataset
     return null;
   }
 
+  @Override
   public boolean hasLocalOverride(String columnName) throws ColumnNotFoundException
   {
     if (hasBackingStore())
@@ -145,8 +149,9 @@ public abstract class DJDatasetBase implements DJDataset
       return true;
   }
 
+  @Override
   public void set(String columnName, String newValue)
-      throws ColumnNotFoundException, UnsupportedOperationException
+      throws ColumnNotFoundException
   {
     if (!isFromLOS())
       throw new UnsupportedOperationException(
@@ -156,31 +161,28 @@ public abstract class DJDatasetBase implements DJDataset
     myLOS.put(columnName, newValue);
   }
 
+  @Override
   public void discardLocalOverride(String columnName)
       throws ColumnNotFoundException, NoBackingStoreException
   {
-    if (!isFromLOS()) return;
+    if (!isFromLOS()){
+      return;
+    }
     if (!hasBackingStore())
       throw new NoBackingStoreException(
         L.m("Datensatz nicht mit Hintergrundspeicher verknüpft"));
     myLOS.remove(columnName);
   }
 
+  @Override
   public boolean isFromLOS()
   {
     return myLOS != null;
   }
 
+  @Override
   public boolean hasBackingStore()
   {
     return myBS != null;
   }
-
-  public abstract DJDataset copy();
-
-  public abstract void remove() throws UnsupportedOperationException;
-
-  public abstract boolean isSelectedDataset();
-
-  public abstract void select() throws UnsupportedOperationException;
 }

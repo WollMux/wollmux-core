@@ -91,6 +91,7 @@ public class DJDatasetListElement extends DatasetListElement
    * 
    * @author Christoph Lutz (D-III-ITD 5.1)
    */
+  @Override
   public DJDataset getDataset()
   {
     return ds;

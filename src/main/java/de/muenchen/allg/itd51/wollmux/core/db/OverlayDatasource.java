@@ -152,9 +152,9 @@ public class OverlayDatasource implements Datasource
     }
 
     String lcMode = mode.toLowerCase();
-    if (lcMode.equals("so"))
+    if ("so".equals(lcMode))
       modeSO = true;
-    else if (lcMode.equals("os"))
+    else if ("os".equals(lcMode))
       modeSO = false;
     else
       throw new ConfigurationErrorException(
@@ -244,7 +244,9 @@ public class OverlayDatasource implements Datasource
 
       match1[i] = spalte1;
       match2[i] = spalte2;
-      if (spalte1.equals(spalte2)) commonMatchColumns.add(spalte1);
+      if (spalte1.equals(spalte2)) {
+        commonMatchColumns.add(spalte1);
+      }
     }
   }
 
@@ -253,6 +255,7 @@ public class OverlayDatasource implements Datasource
    * 
    * @see de.muenchen.allg.itd51.wollmux.db.Datasource#getSchema()
    */
+  @Override
   public Set<String> getSchema()
   {
     return schema;
@@ -264,6 +267,7 @@ public class OverlayDatasource implements Datasource
    * @see de.muenchen.allg.itd51.wollmux.db.Datasource#getDatasetsByKey(java.util.Collection,
    *      long)
    */
+  @Override
   public QueryResults getDatasetsByKey(Collection<String> keys, long timeout)
       throws TimeoutException
   {
@@ -279,6 +283,7 @@ public class OverlayDatasource implements Datasource
     return overlayColumns(results, timeout, new MatchAllDatasetChecker());
   }
 
+  @Override
   public QueryResults getContents(long timeout) throws TimeoutException
   {
     return new QueryResultsList(new Vector<Dataset>(0));
@@ -289,12 +294,17 @@ public class OverlayDatasource implements Datasource
    * 
    * @see de.muenchen.allg.itd51.wollmux.db.Datasource#find(java.util.List, long)
    */
+  @Override
   public QueryResults find(List<QueryPart> query, long timeout)
       throws TimeoutException
   {
-    if (query.isEmpty()) return new QueryResultsList(new ArrayList<Dataset>(0));
+    if (query.isEmpty()) {
+      return new QueryResultsList(new ArrayList<Dataset>(0));
+    }
 
-    if (timeout <= 0) throw new TimeoutException();
+    if (timeout <= 0) {
+      throw new TimeoutException();
+    }
     long endtime = System.currentTimeMillis() + timeout;
     List<QueryPart> queryOnly1 = new Vector<QueryPart>();
     List<QueryPart> queryOnly2 = new Vector<QueryPart>();
@@ -326,7 +336,7 @@ public class OverlayDatasource implements Datasource
      * werten wir falls wir mindestens eine Bedingung haben, die exklusiv die
      * Hauptdatenquelle betrifft, die Anfrage auf dieser Basis aus.
      */
-    if (queryOnly1.size() > 0)
+    if (!queryOnly1.isEmpty())
     {
       QueryResults results = source1.find(queryOnly1, timeout);
 
@@ -337,10 +347,12 @@ public class OverlayDatasource implements Datasource
       DatasetChecker filter = DatasetChecker.makeChecker(restQuery);
 
       timeout = endtime - System.currentTimeMillis();
-      if (timeout < 0) throw new TimeoutException();
+      if (timeout < 0) {
+        throw new TimeoutException();
+      }
       return overlayColumns(results, timeout, filter);
     }
-    else if (queryOnly2.size() > 0)
+    else if (!queryOnly2.isEmpty())
     { /*
        * in diesem Fall haben wir nur Bedingungen für Spalten, die entweder bei
        * beiden Datenquellen vorkommen oder nur in der OVERLAY-Datenquelle. Auf jeden
@@ -355,7 +367,9 @@ public class OverlayDatasource implements Datasource
       DatasetChecker filter = DatasetChecker.makeChecker(queryBoth);
 
       timeout = endtime - System.currentTimeMillis();
-      if (timeout < 0) throw new TimeoutException();
+      if (timeout < 0) {
+        throw new TimeoutException();
+      }
       return overlayColumnsReversed(results, timeout, filter);
     }
     else
@@ -388,13 +402,17 @@ public class OverlayDatasource implements Datasource
       QueryResults results1 = source1.find(restrictingQuery, timeout);
 
       timeout = endtime - System.currentTimeMillis();
-      if (timeout < 0) throw new TimeoutException();
+      if (timeout < 0) {
+        throw new TimeoutException();
+      }
       results1 = overlayColumns(results1, timeout, filter);
 
       QueryResults results2 = source2.find(restrictingQuery, timeout);
 
       timeout = endtime - System.currentTimeMillis();
-      if (timeout < 0) throw new TimeoutException();
+      if (timeout < 0) {
+        throw new TimeoutException();
+      }
       results2 = overlayColumnsReversed(results2, timeout, filter);
 
       /*
@@ -434,14 +452,20 @@ public class OverlayDatasource implements Datasource
       }
 
       timeout = endtime - System.currentTimeMillis();
-      if (timeout < 0) throw new TimeoutException();
+      if (timeout < 0) {
+        throw new TimeoutException();
+      }
       QueryResults results3 = getDatasetsByKey(dupKeys, timeout);
 
       for (Dataset ds : results3)
-        if (filter.matches(ds)) finalResults.add(ds);
+        if (filter.matches(ds)) {
+          finalResults.add(ds);
+        }
 
       for (Dataset ds : results1)
-        if (!dupKeys.contains(ds.getKey())) finalResults.add(ds);
+        if (!dupKeys.contains(ds.getKey())) {
+          finalResults.add(ds);
+        }
 
       return new QueryResultsList(finalResults);
     }
@@ -496,6 +520,7 @@ public class OverlayDatasource implements Datasource
    * 
    * @see de.muenchen.allg.itd51.wollmux.db.Datasource#getName()
    */
+  @Override
   public String getName()
   {
     return name;
@@ -527,7 +552,9 @@ public class OverlayDatasource implements Datasource
       }
 
       timeout = endTime - (new Date().getTime());
-      if (timeout <= 0) throw new TimeoutException();
+      if (timeout <= 0) {
+        throw new TimeoutException();
+      }
       QueryResults appendix = source2.find(query, timeout);
 
       Dataset newDataset;
@@ -535,7 +562,9 @@ public class OverlayDatasource implements Datasource
       if (appendix.size() == 0)
       {
         newDataset = new ConcatDataset(ds, null);
-        if (filter.matches(newDataset)) resultsWithOverlayments.add(newDataset);
+        if (filter.matches(newDataset)) {
+          resultsWithOverlayments.add(newDataset);
+        }
       }
       else
       {
@@ -581,7 +610,9 @@ public class OverlayDatasource implements Datasource
       }
 
       timeout = endTime - (new Date().getTime());
-      if (timeout <= 0) throw new TimeoutException();
+      if (timeout <= 0) {
+        throw new TimeoutException();
+      }
       QueryResults prependix = source1.find(query, timeout);
 
       if (prependix.size() > 0)
@@ -590,7 +621,9 @@ public class OverlayDatasource implements Datasource
         while (iter2.hasNext())
         {
           ConcatDataset newDataset = new ConcatDataset(iter2.next(), ds);
-          if (filter.matches(newDataset)) resultsWithOverlayments.add(newDataset);
+          if (filter.matches(newDataset)) {
+            resultsWithOverlayments.add(newDataset);
+          }
         }
       }
     }
@@ -615,6 +648,7 @@ public class OverlayDatasource implements Datasource
       this.ds2 = ds2;
     }
 
+    @Override
     public String get(String columnName) throws ColumnNotFoundException
     {
       if (!schema.contains(columnName))
@@ -642,13 +676,17 @@ public class OverlayDatasource implements Datasource
         String value = ds2.get(columnName);
         if (treatEmptyStringsAsNull && value != null && value.length() == 0)
           value = null;
-        if (value != null) return value;
+        if (value != null) {
+          return value;
+        }
       }
 
       try
       {
         // ds1 kann null sein in dem Fall wo ds1 == this.ds2 (bei modeSO == false)
-        if (ds1 == null) return null;
+        if (ds1 == null) {
+          return null;
+        }
         return ds1.get(columnName);
       }
       catch (ColumnNotFoundException x)
@@ -660,6 +698,7 @@ public class OverlayDatasource implements Datasource
       }
     }
 
+    @Override
     public String getKey()
     {
       return ds1.getKey();

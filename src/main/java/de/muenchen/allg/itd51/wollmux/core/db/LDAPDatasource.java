@@ -108,7 +108,7 @@ public class LDAPDatasource implements Datasource
   private Properties properties = new Properties();
 
   /** Separator zur Schluesselerzeugung aus mehreren Schluesselwerten */
-  private final static String SEPARATOR = "&:=&:%";
+  private static final String SEPARATOR = "&:=&:%";
 
   /**
    * Trennt den ersten Teil des Schlüssels, der den Pfaden mit Level 0 entspricht vom
@@ -420,8 +420,8 @@ public class LDAPDatasource implements Datasource
   /** Setzt die timeout-Properties. */
   private void setTimeout(Properties props, long timeout)
   {
-    properties.setProperty("com.sun.jndi.ldap.connect.timeout", "" + timeout);
-    properties.setProperty("com.sun.jndi.dns.timeout.initial", "" + timeout);
+    properties.setProperty("com.sun.jndi.ldap.connect.timeout", Long.toString(timeout));
+    properties.setProperty("com.sun.jndi.dns.timeout.initial", Long.toString(timeout));
     properties.setProperty("com.sun.jndi.dns.timeout.retries", "1");
   }
 
@@ -468,6 +468,7 @@ public class LDAPDatasource implements Datasource
    * 
    * @see de.muenchen.allg.itd51.wollmux.db.Datasource#getSchema()
    */
+  @Override
   public Set<String> getSchema()
   {
     return schema;
@@ -495,6 +496,7 @@ public class LDAPDatasource implements Datasource
     return query;
   }
 
+  @Override
   public QueryResults getContents(long timeout) throws TimeoutException
   {
     return new QueryResultsList(new Vector<Dataset>(0));
@@ -507,10 +509,13 @@ public class LDAPDatasource implements Datasource
    * de.muenchen.allg.itd51.wollmux.db.Datasource#getDatasetsByKey(java.util.Collection
    * , long)
    */
+  @Override
   public QueryResults getDatasetsByKey(Collection<String> keys, long timeout)
       throws TimeoutException
   {
-    if (keys.isEmpty()) return new QueryResultsList(new Vector<Dataset>(0));
+    if (keys.isEmpty()) {
+      return new QueryResultsList(new Vector<Dataset>(0));
+    }
 
     Vector<Dataset> results = new Vector<Dataset>(keys.size());
 
@@ -531,7 +536,9 @@ public class LDAPDatasource implements Datasource
         while (iter.hasNext())
         {
           String currentKey = iter.next();
-          if (!KEY_RE.matcher(currentKey).matches()) continue;
+          if (!KEY_RE.matcher(currentKey).matches()) {
+            continue;
+          }
           String[] ks = currentKey.split(KEY_SEPARATOR_0_NON_0_RE, 2);
           searchFilter.append(ks[0]);
         }
@@ -547,16 +554,14 @@ public class LDAPDatasource implements Datasource
 
         while (currentResults.hasMoreElements())
         {
-          if (System.currentTimeMillis() > endTime) throw new TimeoutException();
+          if (System.currentTimeMillis() > endTime) {
+            throw new TimeoutException();
+          }
           try
           {
             SearchResult currentResult = currentResults.next();
             Dataset dataset = getDataset(currentResult, endTime);
-            if (keyStatus == ABSOLUTE_ONLY)
-            {
-              results.add(dataset);
-            }
-            else if (keys.contains(dataset.getKey()))
+            if (keyStatus == ABSOLUTE_ONLY || keys.contains(dataset.getKey()))
             {
               results.add(dataset);
             }
@@ -575,7 +580,9 @@ public class LDAPDatasource implements Datasource
         {
           List<QueryPart> query = keyToFindQuery(iter.next());
           timeout = endTime - System.currentTimeMillis();
-          if (timeout <= 0) throw new TimeoutException();
+          if (timeout <= 0) {
+            throw new TimeoutException();
+          }
           QueryResults res = find(query, timeout);
           Iterator<Dataset> iter2 = res.iterator();
           while (iter2.hasNext())
@@ -651,8 +658,12 @@ public class LDAPDatasource implements Datasource
     Vector<Name> paths;
 
     long timeout = endTime - System.currentTimeMillis();
-    if (timeout <= 0) throw new TimeoutException();
-    if (timeout > Integer.MAX_VALUE) timeout = Integer.MAX_VALUE;
+    if (timeout <= 0) {
+      throw new TimeoutException();
+    }
+    if (timeout > Integer.MAX_VALUE) {
+      timeout = Integer.MAX_VALUE;
+    }
 
     try
     {
@@ -677,7 +688,9 @@ public class LDAPDatasource implements Datasource
 
       while (enumer.hasMoreElements())
       {
-        if (System.currentTimeMillis() > endTime) throw new TimeoutException();
+        if (System.currentTimeMillis() > endTime) {
+          throw new TimeoutException();
+        }
         SearchResult result = enumer.nextElement();
         String path = preparePath(result.getNameInNamespace());
         Name pathName = np.parse(path);
@@ -706,6 +719,7 @@ public class LDAPDatasource implements Datasource
    * 
    * @see de.muenchen.allg.itd51.wollmux.db.Datasource#find(java.util.List, long)
    */
+  @Override
   public QueryResults find(List<QueryPart> query, long timeout)
       throws TimeoutException
   {
@@ -727,13 +741,17 @@ public class LDAPDatasource implements Datasource
     while (iter.hasNext())
     {
 
-      if (System.currentTimeMillis() > endTime) throw new TimeoutException();
+      if (System.currentTimeMillis() > endTime) {
+        throw new TimeoutException();
+      }
 
       QueryPart currentQuery = iter.next();
 
       ColumnDefinition colDef = columnDefinitions.get(currentQuery.getColumnName());
 
-      if (colDef == null) return new QueryResultsList(new Vector<Dataset>(0));
+      if (colDef == null) {
+        return new QueryResultsList(new Vector<Dataset>(0));
+      }
 
       String attributeName = colDef.attributeName;
       int relativePath = colDef.relativePath;
@@ -839,7 +857,7 @@ public class LDAPDatasource implements Datasource
     // Level an. okay, size bezieht sicht auf die laenge
     // der (Ldap)Names
 
-    if (positiveSubtreePathLists.size() > 0)
+    if (!positiveSubtreePathLists.isEmpty())
     /*
      * TOD0 if nach aussen ziehen (evtl. gleich auf Iterator übergehen, siehe todo
      * weiter unten), damit mergedPositiveSubtreePathLists nicht mit null
@@ -855,14 +873,14 @@ public class LDAPDatasource implements Datasource
       mergedPositiveSubtreePathLists = currentSubtreePaths.paths;
       mergedCurrentSize = currentSubtreePaths.relative;
     }
-
     for (int n = 1; n < positiveSubtreePathLists.size(); n++) // TOD0 Iterator
     // verwenden
     {
 
       RelativePaths currentSubtreePaths = positiveSubtreePathLists.get(n);
 
-      List<Name> shorterLdapNames, longerLdapNames; // of (Ldap)Names
+      List<Name> shorterLdapNames;
+      List<Name> longerLdapNames;
 
       if (currentSubtreePaths.relative < mergedCurrentSize)
       {
@@ -902,7 +920,7 @@ public class LDAPDatasource implements Datasource
      * Vergleiche jeweils zwei Listen, die je ein Suchattribut repräsentieren.
      */
     List<RelativePath> mergedNegativeList = null;
-    if (negativeSubtreePathLists.size() > 0) // TOD0 if nach oben ziehen, um
+    if (!negativeSubtreePathLists.isEmpty()) // TOD0 if nach oben ziehen, um
     // mergedNegativeList nicht mit null
     // initialisieren zu müssen
     {
@@ -945,7 +963,8 @@ public class LDAPDatasource implements Datasource
         {
           RelativePath otherPath = currentList.get(p);
 
-          RelativePath shorter, longer;
+          RelativePath shorter;
+          RelativePath longer;
 
           if (currentPath.name.size() < otherPath.name.size())
           {
@@ -1039,7 +1058,7 @@ public class LDAPDatasource implements Datasource
       mergedNegativeSubtreePaths = mergedNegativeList;
     }
 
-    if (searchFilter.equals("") // TOD0: die Listen sollten nie null sein (siehe
+    if (searchFilter.isEmpty() // TOD0: die Listen sollten nie null sein (siehe
       // vorherige TODOs) entsprechend muss hier auf
       // isEmpty() getestet werden
       && mergedPositiveSubtreePathLists == null
@@ -1057,13 +1076,13 @@ public class LDAPDatasource implements Datasource
      * aber nicht stimmt, da wenn die mergedListe leer ist, eine leere Ergebnisliste
      * geliefert werden muss, wenn es positive einschränkungen gibt.
      */
-    if (negativeSubtreePathLists.size() == 0)
+    if (negativeSubtreePathLists.isEmpty())
     {
 
       List<String> positiveSubtreeStrings = new Vector<String>();
 
       // create Strings from Names
-      if (positiveSubtreePathLists.size() == 0)
+      if (positiveSubtreePathLists.isEmpty())
       {
         positiveSubtreeStrings.add("");
       }
@@ -1085,11 +1104,15 @@ public class LDAPDatasource implements Datasource
       while (subtreeIterator.hasNext())
       {
 
-        if (System.currentTimeMillis() > endTime) throw new TimeoutException();
+        if (System.currentTimeMillis() > endTime) {
+          throw new TimeoutException();
+        }
 
         String subTree = subtreeIterator.next();
         String comma = ",";
-        if (subTree.equals("")) comma = "";
+        if (subTree.isEmpty()) {
+          comma = "";
+        }
         NamingEnumeration<SearchResult> currentResults =
           searchLDAP(subTree + comma, searchFilter, SearchControls.SUBTREE_SCOPE,
             true, endTime);
@@ -1110,7 +1133,9 @@ public class LDAPDatasource implements Datasource
       // verwenden
       {
 
-        if (System.currentTimeMillis() > endTime) throw new TimeoutException();
+        if (System.currentTimeMillis() > endTime) {
+          throw new TimeoutException();
+        }
 
         RelativePath currentRelativePath = mergedNegativeSubtreePaths.get(n);
         int depth = -currentRelativePath.relative;
@@ -1142,7 +1167,9 @@ public class LDAPDatasource implements Datasource
       while (currentResultsIterator.hasNext())
       {
 
-        if (System.currentTimeMillis() > endTime) throw new TimeoutException();
+        if (System.currentTimeMillis() > endTime) {
+          throw new TimeoutException();
+        }
 
         SearchResult currentResult = currentResultsIterator.next();
         Dataset ds = getDataset(currentResult, endTime);
@@ -1174,6 +1201,7 @@ public class LDAPDatasource implements Datasource
    * 
    * @see de.muenchen.allg.itd51.wollmux.db.Datasource#getName()
    */
+  @Override
   public String getName()
   {
     return datasourceName;
@@ -1202,6 +1230,7 @@ public class LDAPDatasource implements Datasource
     // der Map ist.
     Collections.sort(keyColumns, new Comparator<Object>()
     {
+      @Override
       public int compare(Object o1, Object o2)
       {
         ColumnDefinition colDef1 = (ColumnDefinition) o1;
@@ -1209,7 +1238,9 @@ public class LDAPDatasource implements Datasource
         int comp1 = colDef1.attributeName.compareTo(colDef2.attributeName);
         int comp2 = colDef1.relativePath - colDef2.relativePath;
         int comp = comp1;
-        if (comp == 0) comp = comp2;
+        if (comp == 0) {
+          comp = comp2;
+        }
         return comp;
       }
     });
@@ -1225,7 +1256,9 @@ public class LDAPDatasource implements Datasource
         key.append(ldapEscape(colDef.attributeName));
         key.append('=');
         String value = data.get(colDef.columnName);
-        if (value == null) value = "*";
+        if (value == null) {
+          value = "*";
+        }
         key.append(ldapEscape(value));
         key.append(')');
       }
@@ -1249,7 +1282,9 @@ public class LDAPDatasource implements Datasource
         key.append(colDef.columnName);
         key.append('=');
         String value = data.get(colDef.columnName);
-        if (value == null) value = "";
+        if (value == null) {
+          value = "";
+        }
         key.append(value.replaceAll("\\*", "").replaceAll(SEPARATOR, ""));
         key.append(SEPARATOR);
       }
@@ -1277,11 +1312,13 @@ public class LDAPDatasource implements Datasource
       hash = buf.toString();
     }
 
+    @Override
     public int hashCode()
     {
       return hash.hashCode();
     }
 
+    @Override
     public boolean equals(Object other)
     {
       try
@@ -1329,8 +1366,12 @@ public class LDAPDatasource implements Datasource
         tempPath = preparePath(tempPath);
 
         long timeout = endTime - System.currentTimeMillis();
-        if (timeout <= 0) throw new TimeoutException();
-        if (timeout > Integer.MAX_VALUE) timeout = Integer.MAX_VALUE;
+        if (timeout <= 0) {
+          throw new TimeoutException();
+        }
+        if (timeout > Integer.MAX_VALUE) {
+          timeout = Integer.MAX_VALUE;
+        }
         Logger.debug2("getDataset(): verbleibende Zeit: " + timeout);
         setTimeout(properties, timeout);
         ctx = new InitialLdapContext(properties, null);
@@ -1356,7 +1397,9 @@ public class LDAPDatasource implements Datasource
       while (columnDefIter.hasNext())
       {
 
-        if (System.currentTimeMillis() > endTime) throw new TimeoutException();
+        if (System.currentTimeMillis() > endTime) {
+          throw new TimeoutException();
+        }
 
         Map.Entry<String, ColumnDefinition> columnDefEntry = columnDefIter.next();
         ColumnDefinition currentAttribute = columnDefEntry.getValue();
@@ -1522,8 +1565,12 @@ public class LDAPDatasource implements Datasource
     searchControls.setSearchScope(searchScope);
 
     long timeout = endTime - System.currentTimeMillis();
-    if (timeout <= 0) throw new TimeoutException();
-    if (timeout > Integer.MAX_VALUE) timeout = Integer.MAX_VALUE;
+    if (timeout <= 0) {
+      throw new TimeoutException();
+    }
+    if (timeout > Integer.MAX_VALUE) {
+      timeout = Integer.MAX_VALUE;
+    }
     searchControls.setTimeLimit((int) timeout);
 
     if (onlyObjectClass)
@@ -1599,23 +1646,29 @@ public class LDAPDatasource implements Datasource
     List<String> seeds = new Vector<String>();
     seeds.add(path);
 
-    String comma = ",";
+    String comma;
 
     for (int n = 0; n < (level - 1); n++)
     {
-      if (System.currentTimeMillis() > endTime) throw new TimeoutException();
+      if (System.currentTimeMillis() > endTime) {
+        throw new TimeoutException();
+      }
 
       List<String> nextSeeds = new Vector<String>();
 
       for (int m = 0; m < seeds.size(); m++) // TOD0 Iterator verwenden
       {
 
-        if (System.currentTimeMillis() > endTime) throw new TimeoutException();
+        if (System.currentTimeMillis() > endTime) {
+          throw new TimeoutException();
+        }
 
         String searchPath = seeds.get(m);
 
         comma = ",";
-        if (searchPath.equals("")) comma = "";
+        if (searchPath.isEmpty()) {
+          comma = "";
+        }
 
         NamingEnumeration<SearchResult> enumer =
           searchLDAP(searchPath + comma, "", SearchControls.ONELEVEL_SCOPE, false,
@@ -1624,12 +1677,16 @@ public class LDAPDatasource implements Datasource
         while (enumer.hasMoreElements())
         {
 
-          if (System.currentTimeMillis() > endTime) throw new TimeoutException();
+          if (System.currentTimeMillis() > endTime) {
+            throw new TimeoutException();
+          }
 
           SearchResult currentResult = enumer.nextElement();
           String subPath = preparePath(currentResult.getNameInNamespace());
           comma = ",";
-          if (subPath.equals("")) comma = "";
+          if (subPath.isEmpty()) {
+            comma = "";
+          }
           String currentPath = subPath + comma + searchPath;
           nextSeeds.add(currentPath);
         }
@@ -1644,12 +1701,16 @@ public class LDAPDatasource implements Datasource
     for (int n = 0; n < seeds.size(); n++) // TOD0 Iterator verwenden
     {
 
-      if (System.currentTimeMillis() > endTime) throw new TimeoutException();
+      if (System.currentTimeMillis() > endTime) {
+        throw new TimeoutException();
+      }
 
       String currentPath = seeds.get(n);
 
       comma = ",";
-      if (currentPath.equals("")) comma = "";
+      if (currentPath.isEmpty()) {
+        comma = "";
+      }
 
       NamingEnumeration<SearchResult> enumer =
         searchLDAP(currentPath + comma, filter,
@@ -1658,7 +1719,9 @@ public class LDAPDatasource implements Datasource
 
       while (enumer.hasMoreElements())
       {
-        if (System.currentTimeMillis() > endTime) throw new TimeoutException();
+        if (System.currentTimeMillis() > endTime) {
+          throw new TimeoutException();
+        }
         SearchResult sr = enumer.nextElement();
         String name = preparePath(sr.getNameInNamespace());
         String actualPath = name + (name.length() > 0 ? comma : "") + currentPath;
@@ -1696,17 +1759,16 @@ public class LDAPDatasource implements Datasource
   {
 
     int tempEnd = path.length() - 1;
-    if (tempEnd > 0)
+    if (tempEnd > 0 && path.charAt(0) == '"' && path.charAt(tempEnd) == '"')
     {
-      if (path.charAt(0) == '"' && path.charAt(tempEnd) == '"')
-      {
-        path = path.substring(1, tempEnd);
-      }
+      path = path.substring(1, tempEnd);
     }
     if (path.endsWith(baseDN))
     {
       int end = path.length() - baseDN.length();
-      if (end > 0) --end; // for the comma present if path != baseDN
+      if (end > 0) { // for the comma present if path != baseDN
+        --end;
+      }
       path = path.substring(0, end);
     }
 
@@ -1733,13 +1795,17 @@ public class LDAPDatasource implements Datasource
       this.relation = relation;
     }
 
+    @Override
     public String get(java.lang.String columnName) throws ColumnNotFoundException
     {
-      if (!schema.contains(columnName)) throw new ColumnNotFoundException();
+      if (!schema.contains(columnName)) {
+        throw new ColumnNotFoundException();
+      }
 
       return relation.get(columnName);
     }
 
+    @Override
     public String getKey()
     {
       return key;
@@ -1786,7 +1852,6 @@ public class LDAPDatasource implements Datasource
         }
         catch (ColumnNotFoundException x)
         {}
-        ;
         System.out.print(spalte + "=" + wert + (spiter.hasNext() ? ", " : ""));
       }
       System.out.println();
@@ -1807,8 +1872,7 @@ public class LDAPDatasource implements Datasource
   {
     List<QueryPart> query = new Vector<QueryPart>();
     query.add(new QueryPart(spaltenName, suchString));
-    QueryResults find = find(query, 3000000);
-    return find;
+    return find(query, 3000000);
   }
 
   /**
@@ -1827,8 +1891,7 @@ public class LDAPDatasource implements Datasource
     List<QueryPart> query = new Vector<QueryPart>();
     query.add(new QueryPart(spaltenName1, suchString1));
     query.add(new QueryPart(spaltenName2, suchString2));
-    QueryResults find = find(query, 3000000);
-    return find;
+    return find(query, 3000000);
   }
 
   /**

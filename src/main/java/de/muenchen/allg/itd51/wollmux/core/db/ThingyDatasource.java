@@ -226,10 +226,12 @@ public class ThingyDatasource extends RAMDatasource
   private Dataset createDataset(ConfigThingy dsDesc, Set<String> schema,
       String[] schemaOrdered, String[] keyCols) throws ConfigurationErrorException
   { // TESTED
-    if (!dsDesc.getName().equals(""))
+    if (!dsDesc.getName().isEmpty())
       throw new ConfigurationErrorException(L.m(
         "Öffnende Klammer erwartet vor \"%1\"", dsDesc.getName()));
-    if (dsDesc.count() == 0) return new MyDataset(schema, keyCols);
+    if (dsDesc.count() == 0) {
+      return new MyDataset(schema, keyCols);
+    }
     try
     {
       if (dsDesc.getFirstChild().count() == 0)
@@ -336,12 +338,17 @@ public class ThingyDatasource extends RAMDatasource
       for (int i = 0; i < keyCols.length; ++i)
       {
         String str = data.get(keyCols[i]);
-        if (str != null) buffy.append(str);
-        if (i + 1 < keyCols.length) buffy.append(KEY_SEPARATOR);
+        if (str != null) {
+          buffy.append(str);
+        }
+        if (i + 1 < keyCols.length) {
+          buffy.append(KEY_SEPARATOR);
+        }
       }
       key = buffy.toString();
     }
 
+    @Override
     public String get(String columnName) throws ColumnNotFoundException
     {
       if (!schema.contains(columnName))
@@ -350,6 +357,7 @@ public class ThingyDatasource extends RAMDatasource
       return data.get(columnName);
     }
 
+    @Override
     public String getKey()
     { // TESTED
       return key;

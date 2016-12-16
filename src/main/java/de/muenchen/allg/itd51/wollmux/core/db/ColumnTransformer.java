@@ -158,7 +158,9 @@ public class ColumnTransformer
   public String get(String columnName, Dataset ds) throws ColumnNotFoundException
   {
     Function func = columnTranslations.get(columnName);
-    if (func == null) return ds.get(columnName);
+    if (func == null) {
+      return ds.get(columnName);
+    }
     return func.getString(new DatasetValues(ds));
   }
 
@@ -206,6 +208,7 @@ public class ColumnTransformer
       this.ds = ds;
     }
 
+    @Override
     public boolean hasValue(String id)
     {
       try
@@ -219,6 +222,7 @@ public class ColumnTransformer
       return true;
     }
 
+    @Override
     public String getString(String id)
     {
       String str = null;
@@ -232,9 +236,10 @@ public class ColumnTransformer
       return str == null ? "" : str;
     }
 
+    @Override
     public boolean getBoolean(String id)
     {
-      return getString(id).equalsIgnoreCase("true");
+      return "true".equalsIgnoreCase(getString(id));
     }
   }
 
@@ -259,16 +264,19 @@ public class ColumnTransformer
       qres = res;
     }
 
+    @Override
     public int size()
     {
       return qres.size();
     }
 
+    @Override
     public Iterator<Dataset> iterator()
     {
       return new Iter();
     }
 
+    @Override
     public boolean isEmpty()
     {
       return qres.isEmpty();
@@ -283,17 +291,20 @@ public class ColumnTransformer
         iter = qres.iterator();
       }
 
+      @Override
       public boolean hasNext()
       {
         return iter.hasNext();
       }
 
+      @Override
       public Dataset next()
       {
         Dataset ds = iter.next();
         return new TransformedDataset(ds);
       }
 
+      @Override
       public void remove()
       {
         iter.remove();
@@ -311,11 +322,13 @@ public class ColumnTransformer
       this.ds = ds;
     }
 
+    @Override
     public String get(String columnName) throws ColumnNotFoundException
     {
       return ColumnTransformer.this.get(columnName, ds);
     }
 
+    @Override
     public String getKey()
     {
       return ds.getKey();

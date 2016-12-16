@@ -72,16 +72,19 @@ public class QueryResultsWithSchema implements QueryResults
     this.results = res;
   }
 
+  @Override
   public int size()
   {
     return results.size();
   }
 
+  @Override
   public Iterator<Dataset> iterator()
   {
     return results.iterator();
   }
 
+  @Override
   public boolean isEmpty()
   {
     return results.isEmpty();

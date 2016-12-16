@@ -15,6 +15,9 @@ public class Utils
    */
   private static String oooVersion = null;
 
+  private Utils()
+  {}
+
   /**
    * Diese Methode liefert die Versionsnummer von OpenOffice.org aus dem
    * Konfigurationsknoten /org.openoffice.Setup/Product/oooSetupVersionAboutBox

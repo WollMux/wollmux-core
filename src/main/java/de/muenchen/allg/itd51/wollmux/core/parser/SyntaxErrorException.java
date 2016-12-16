@@ -44,7 +44,7 @@ public class SyntaxErrorException extends Exception
    * keine Ahnung was das soll, aber es macht Eclipse glücklich.
    */
   private static final long serialVersionUID = 7215084024054862356L;
-  public SyntaxErrorException() {};
+  public SyntaxErrorException() {super();}
   public SyntaxErrorException(String message) {super(message);}
   public SyntaxErrorException(String message, Throwable cause) {super(message,cause);}
   public SyntaxErrorException(Throwable cause) {super(cause);}

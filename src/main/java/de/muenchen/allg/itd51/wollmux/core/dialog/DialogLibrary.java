@@ -49,7 +49,8 @@ public class DialogLibrary
    * Erzeugt eine leere Dialogsbibliothek. 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public DialogLibrary(){}
+  public DialogLibrary()
+  {}
   
   /**
    * Erzeugt eine Dialogsbibliothek, die baselib referenziert (nicht kopiert!).
@@ -68,7 +69,9 @@ public class DialogLibrary
    */
   public void add(String dlgName, Dialog dialog)
   {
-    if (dialog == null || dlgName == null) throw new NullPointerException(L.m("Weder Dialogname noch Dialog darf null sein"));
+    if (dialog == null || dlgName == null) {
+      throw new NullPointerException(L.m("Weder Dialogname noch Dialog darf null sein"));
+    }
     mapIdToDialog.put(dlgName, dialog);
   }
 
@@ -83,7 +86,9 @@ public class DialogLibrary
   public Dialog get(String dlgName)
   {
     Dialog dialog = mapIdToDialog.get(dlgName);
-    if (dialog == null && baselib != null) dialog = baselib.get(dlgName);
+    if (dialog == null && baselib != null) {
+      dialog = baselib.get(dlgName);
+    }
     return dialog;
   }
   

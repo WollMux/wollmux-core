@@ -115,7 +115,7 @@ public class UIElementFactory
    * Standardbreite für Textfelder und Textareas. Wird verwendet, wenn nicht mit
    * setTextfieldWidth() ein anderer Wert gesetzt wurde.
    */
-  private final static int TEXTFIELD_DEFAULT_WIDTH = 22;
+  private static final int TEXTFIELD_DEFAULT_WIDTH = 22;
 
   /**
    * Wird in einer der übergebenen Maps ein TYPE nicht gefunden, so wird stattdessen
@@ -258,21 +258,22 @@ public class UIElementFactory
       String name = node.getName();
       String str = node.toString();
 
-      if (name.equals("LABEL"))
+      if ("LABEL".equals(name))
         label = L.m(str);
-      else if (name.equals("TIP"))
+      else if ("TIP".equals(name))
         tip = L.m(str);
-      else if (name.equals("ID"))
+      else if ("ID".equals(name))
         id = str;
-      else if (name.equals("TYPE"))
+      else if ("TYPE".equals(name))
         type = str;
-      else if (name.equals("HOTKEY"))
+      else if ("HOTKEY".equals(name))
         hotkey = str.length() > 0 ? str.charAt(0) : 0;
-      else if (name.equals("ACTION"))
+      else if ("ACTION".equals(name))
         action = str;
-      else if (name.equals("READONLY"))
-        readonly = str.equals("true");
-      else if (name.equals("EDIT")) editable = str.equals("true");
+      else if ("READONLY".equals(name))
+        readonly = "true".equals(str);
+      else if ("EDIT".equals(name))
+        editable = "true".equals(str);
     }
 
     if (type.length() == 0)
@@ -290,10 +291,10 @@ public class UIElementFactory
 
     UIElement uiElement;
 
-    if (type.equals("button") || type.equals("menuitem"))
+    if ("button".equals(type) || "menuitem".equals(type))
     {
       AbstractButton button;
-      if (type.equals("button"))
+      if ("button".equals(type))
       {
         button = new JButton(label);
         copySpaceBindingToEnter(button);
@@ -302,28 +303,34 @@ public class UIElementFactory
         button = new JMenuItem(label);
 
       button.setMnemonic(hotkey);
-      if (!tip.equals("")) button.setToolTipText(tip);
+      if (!tip.isEmpty()) {
+        button.setToolTipText(tip);
+      }
       uiElement = new Button(id, button, layoutConstraints);
 
       ActionListener actionL =
         getAction(uiElement, action, conf, context.uiElementEventHandler,
           context.supportedActions);
-      if (actionL != null) button.addActionListener(actionL);
+      if (actionL != null) {
+        button.addActionListener(actionL);
+      }
       button.addFocusListener(new UIElementFocusListener(
         context.uiElementEventHandler, uiElement));
       return uiElement;
     }
-    else if (type.equals("label"))
+    else if ("label".equals(type))
     {
       uiElement = new Label(id, label, layoutConstraints);
       return uiElement;
     }
-    else if (type.equals("textfield"))
+    else if ("textfield".equals(type))
     {
       JTextField tf = new JTextField(textfieldWidth);
       tf.setEditable(!readonly);
       tf.setFocusable(!readonly);
-      if (!tip.equals("")) tf.setToolTipText(tip);
+      if (!tip.isEmpty()) {
+        tf.setToolTipText(tip);
+      }
       uiElement =
         new Textfield(id, tf, layoutConstraints, labelType, label,
           labelLayoutConstraints);
@@ -337,11 +344,13 @@ public class UIElementFactory
         ActionListener actionL =
           getAction(uiElement, action, conf, context.uiElementEventHandler,
             context.supportedActions);
-        if (actionL != null) tf.addActionListener(actionL);
+        if (actionL != null) {
+          tf.addActionListener(actionL);
+        }
       }
       return uiElement;
     }
-    else if (type.equals("textarea"))
+    else if ("textarea".equals(type))
     {
       int lines = 3;
       boolean wrap = true;
@@ -353,7 +362,7 @@ public class UIElementFactory
       {}
       try
       {
-        wrap = conf.get("WRAP").toString().equalsIgnoreCase("true");
+        wrap = "true".equalsIgnoreCase(conf.get("WRAP").toString());
       }
       catch (Exception x)
       {}
@@ -366,7 +375,9 @@ public class UIElementFactory
         textarea.setWrapStyleWord(true);
       }
       textarea.setFont(new JTextField().getFont());
-      if (!tip.equals("")) textarea.setToolTipText(tip);
+      if (!tip.isEmpty()) {
+        textarea.setToolTipText(tip);
+      }
 
       /*
        * Tab auch zum Weiterschalten und Shift-Tab zum Zurückschalten erlauben
@@ -402,13 +413,15 @@ public class UIElementFactory
         context.uiElementEventHandler, uiElement));
       return uiElement;
     }
-    else if (type.equals("combobox"))
+    else if ("combobox".equals(type))
     {
       JComboBox<Object> combo = new JComboBox<Object>();
       combo.setEnabled(!readonly);
       combo.setFocusable(!readonly);
       combo.setEditable(editable);
-      if (!tip.equals("")) combo.setToolTipText(tip);
+      if (!tip.isEmpty()) {
+        combo.setToolTipText(tip);
+      }
       try
       {
         Iterator<ConfigThingy> values = conf.get("VALUES").iterator();
@@ -429,7 +442,7 @@ public class UIElementFactory
       if (editable)
       {
         JTextComponent tc =
-          ((JTextComponent) combo.getEditor().getEditorComponent());
+          (JTextComponent) combo.getEditor().getEditorComponent();
         tc.addFocusListener(new UIElementFocusListener(
           context.uiElementEventHandler, uiElement));
         tc.getDocument().addDocumentListener(
@@ -445,7 +458,7 @@ public class UIElementFactory
       }
       return uiElement;
     }
-    else if (type.equals("checkbox"))
+    else if ("checkbox".equals(type))
     {
       /*
        * ACHTUNG! Diese checkbox hat ihr Label fest integriert auf der rechten Seite
@@ -455,7 +468,9 @@ public class UIElementFactory
       copySpaceBindingToEnter(boxBruceleitner);
       boxBruceleitner.setEnabled(!readonly);
       boxBruceleitner.setFocusable(!readonly);
-      if (!tip.equals("")) boxBruceleitner.setToolTipText(tip);
+      if (!tip.isEmpty()) {
+        boxBruceleitner.setToolTipText(tip);
+      }
       uiElement = new Checkbox(id, boxBruceleitner, layoutConstraints);
       boxBruceleitner.addActionListener(new UIElementActionListener(
         context.uiElementEventHandler, uiElement, true, "valueChanged",
@@ -464,7 +479,7 @@ public class UIElementFactory
         context.uiElementEventHandler, uiElement));
       return uiElement;
     }
-    else if (type.equals("listbox"))
+    else if ("listbox".equals(type))
     {
       int lines = 10;
       try
@@ -500,17 +515,17 @@ public class UIElementFactory
         list.addMouseListener(new MyActionMouseListener(list, actionL));
       return uiElement;
     }
-    else if (type.equals("h-separator"))
+    else if ("h-separator".equals(type))
     {
       JSeparator wurzelSepp = new JSeparator(SwingConstants.HORIZONTAL);
       return new Separator(id, wurzelSepp, layoutConstraints);
     }
-    else if (type.equals("v-separator"))
+    else if ("v-separator".equals(type))
     {
       JSeparator wurzelSepp = new JSeparator(SwingConstants.VERTICAL);
       return new Separator(id, wurzelSepp, layoutConstraints);
     }
-    else if (type.equals("h-glue"))
+    else if ("h-glue".equals(type))
     {
       int minsize = 0;
       int prefsize = 0;
@@ -538,7 +553,7 @@ public class UIElementFactory
         new Dimension(prefsize, 0), new Dimension(maxsize, Integer.MAX_VALUE)),
         layoutConstraints);
     }
-    else if (type.equals("v-glue"))
+    else if ("v-glue".equals(type))
     {
       int minsize = 0;
       int prefsize = 0;
@@ -650,7 +665,9 @@ public class UIElementFactory
     @Override
     public void actionPerformed(ActionEvent e)
     {
-      if (takeFocus && !uiElement.hasFocus()) uiElement.takeFocus();
+      if (takeFocus && !uiElement.hasFocus()) {
+        uiElement.takeFocus();
+      }
       handler.processUiElementEvent(uiElement, eventType, args);
     }
   }
@@ -790,9 +807,13 @@ public class UIElementFactory
       {
         Point location = e.getPoint();
         int index = list.locationToIndex(location);
-        if (index < 0) return;
+        if (index < 0) {
+          return;
+        }
         Rectangle bounds = list.getCellBounds(index, index);
-        if (!bounds.contains(location)) return;
+        if (!bounds.contains(location)) {
+          return;
+        }
         action.actionPerformed(null);
       }
     }
@@ -835,7 +856,7 @@ public class UIElementFactory
       return null;
     }
 
-    if (action.equals("switchWindow"))
+    if ("switchWindow".equals(action))
     {
       try
       {
@@ -846,10 +867,10 @@ public class UIElementFactory
       }
       catch (NodeNotFoundException x)
       {
-        Logger.error(L.m("ACTION \"switchWindow\" erfordert WINDOW-Attribut"));
+        Logger.error(L.m("ACTION \"switchWindow\" erfordert WINDOW-Attribut"), x);
       }
     }
-    else if (action.equals("openTemplate") || action.equals("openDocument"))
+    else if ("openTemplate".equals(action) || "openDocument".equals(action))
     {
       ConfigThingy fids = conf.query("FRAG_ID");
       if (fids.count() > 0)
@@ -872,7 +893,7 @@ public class UIElementFactory
           action));
       }
     }
-    else if (action.equals("openExt"))
+    else if ("openExt".equals(action))
     {
       ConfigThingy ext = conf.query("EXT");
       if (ext.count() != 1)
@@ -894,7 +915,7 @@ public class UIElementFactory
         }
       }
     }
-    else if (action.equals("closeAndOpenExt"))
+    else if ("closeAndOpenExt".equals(action))
     {
       ConfigThingy ext = conf.query("EXT");
       if (ext.count() != 1)
@@ -908,7 +929,7 @@ public class UIElementFactory
             action, ext.toString() });
       }
     }
-    else if (action.equals("saveTempAndOpenExt"))
+    else if ("saveTempAndOpenExt".equals(action))
     {
       ConfigThingy ext = conf.query("EXT");
       if (ext.count() != 1)
@@ -922,7 +943,7 @@ public class UIElementFactory
             action, ext.toString() });
       }
     }
-    else if (action.equals("open"))
+    else if ("open".equals(action))
     {
       try
       {
@@ -933,10 +954,10 @@ public class UIElementFactory
       }
       catch (NodeNotFoundException e)
       {
-        Logger.error(L.m("ACTION \"open\" erfordert die Angabe OPEN \"...\""));
+        Logger.error(L.m("ACTION \"open\" erfordert die Angabe OPEN \"...\""), e);
       }
     }
-    else if (action.equals("funcDialog"))
+    else if ("funcDialog".equals(action))
     {
       try
       {
@@ -947,7 +968,7 @@ public class UIElementFactory
       }
       catch (NodeNotFoundException x)
       {
-        Logger.error(L.m("ACTION \"funcDialog\" erfordert DIALOG-Attribut"));
+        Logger.error(L.m("ACTION \"funcDialog\" erfordert DIALOG-Attribut"), x);
       }
     }
     else

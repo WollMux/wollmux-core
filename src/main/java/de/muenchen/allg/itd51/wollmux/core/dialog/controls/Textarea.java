@@ -25,6 +25,7 @@ public class Textarea extends UIElementBase
     this.id = id;
   }
 
+  @Override
   public Component getComponent()
   {
     return textAreaComponent;
@@ -42,26 +43,31 @@ public class Textarea extends UIElementBase
     return textarea;
   }
 
+  @Override
   public String getString()
   {
     return textarea.getText();
   }
 
+  @Override
   public boolean getBoolean()
   {
-    return !getString().equals("");
+    return !getString().isEmpty();
   }
 
+  @Override
   public void setString(String str)
   {
     textarea.setText(str);
   }
 
+  @Override
   public void setBackground(Color bg)
   {
     textarea.setBackground(bg);
   }
 
+  @Override
   public boolean isStatic()
   {
     return false;

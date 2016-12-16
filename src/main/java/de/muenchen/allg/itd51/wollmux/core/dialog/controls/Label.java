@@ -15,21 +15,25 @@ public class Label extends UIElementBase
     this.id = id;
   }
 
+  @Override
   public Component getComponent()
   {
     return component;
   }
 
+  @Override
   public String getString()
   {
     return "false";
   }
 
+  @Override
   public boolean getBoolean()
   {
     return false;
   }
 
+  @Override
   public boolean isStatic()
   {
     return true;

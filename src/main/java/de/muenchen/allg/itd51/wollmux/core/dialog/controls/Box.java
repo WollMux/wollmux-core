@@ -13,21 +13,25 @@ public class Box extends UIElementBase
     this.id = id;
   }
 
+  @Override
   public Component getComponent()
   {
     return jackInTheBox;
   }
 
+  @Override
   public String getString()
   {
     return "false";
   }
 
+  @Override
   public boolean getBoolean()
   {
     return false;
   }
 
+  @Override
   public boolean isStatic()
   {
     return true;

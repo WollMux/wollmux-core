@@ -20,26 +20,31 @@ public class Textfield extends UIElementBase
     this.id = id;
   }
 
+  @Override
   public Component getComponent()
   {
     return textfield;
   }
 
+  @Override
   public String getString()
   {
     return textfield.getText();
   }
 
+  @Override
   public boolean getBoolean()
   {
-    return !getString().equals("");
+    return !getString().isEmpty();
   }
 
+  @Override
   public void setString(String str)
   {
     textfield.setText(str);
   }
 
+  @Override
   public boolean isStatic()
   {
     return false;

@@ -73,27 +73,27 @@ public class TextComponentTags
    * Syntax für {@link #getContent(int)}: CAT(... VALUE "&lt;tagname>" ... VALUE
    * "&lt;tagname"> ...)
    */
-  final public static int CAT_VALUE_SYNTAX = 0;
+  public static final int CAT_VALUE_SYNTAX = 0;
 
 /**
    * Präfix, mit dem Tags in der Anzeige der Zuordnung angezeigt werden. Die
    * Zuordnung beginnt mit einem zero width space (nicht sichtbar, aber zur
    * Unterscheidung des Präfix von den Benutzereingaben) und dem "<"-Zeichen.
    */
-  private final static String TAG_PREFIX = "" + Character.toChars(0x200B)[0] + "<";
+  private static final String TAG_PREFIX = "" + Character.toChars(0x200B)[0] + "<";
 
   /**
    * Suffix, mit dem Tags in der Anzeige der Zuordnung angezeigt werden. Die
    * Zuordnung beginnt mit einem zero width space (nicht sichtbar, aber zur
    * Unterscheidung des Präfix von den Benutzereingaben) und dem ">"-Zeichen.
    */
-  private final static String TAG_SUFFIX = "" + Character.toChars(0x200B)[0] + ">";
+  private static final String TAG_SUFFIX = "" + Character.toChars(0x200B)[0] + ">";
 
   /**
    * Beschreibt einen regulären Ausdruck, mit dem nach Tags im Text gesucht werden
    * kann. Ein Match liefert in Gruppe 1 den Text des Tags.
    */
-  private final static Pattern TAG_PATTERN =
+  private static final Pattern TAG_PATTERN =
     Pattern.compile("(" + TAG_PREFIX + "(.*?)" + TAG_SUFFIX + ")");
 
   /**
@@ -106,6 +106,12 @@ public class TextComponentTags
    * Die JTextComponent, die durch diese Wrapperklasse erweitert wird.
    */
   private JTextComponent compo;
+
+  /**
+   * Enthält das tag das beim Erzeugen des Extra-Highlights zurückgeliefert wurde und
+   * das Highlight-Objekt auszeichnet.
+   */
+  private Object extraHighlightTag = null;
 
   /**
    * Erzeugt den Wrapper und nimmt die notwendigen Änderungen am Standardverhalten
@@ -173,11 +179,15 @@ public class TextComponentTags
       startPos = m.start();
       String tag = m.group(2);
       list.add(new ContentElement(t.substring(lastEndPos, startPos), false));
-      if (tag.length() > 0) list.add(new ContentElement(tag, true));
+      if (tag.length() > 0) {
+        list.add(new ContentElement(tag, true));
+      }
       lastEndPos = m.end();
     }
     String text = t.substring(lastEndPos);
-    if (text.length() > 0) list.add(new ContentElement(text, false));
+    if (text.length() > 0) {
+      list.add(new ContentElement(text, false));
+    }
     return list;
   }
 
@@ -267,7 +277,7 @@ public class TextComponentTags
       throw new IllegalArgumentException(L.m("Unbekannter syntaxType: %1", ""
         + syntaxType));
 
-    if (!conf.getName().equals("CAT"))
+    if (!"CAT".equals(conf.getName()))
       throw new IllegalArgumentException(L.m("Oberster Knoten muss \"CAT\" sein"));
 
     StringBuilder buffy = new StringBuilder();
@@ -275,7 +285,7 @@ public class TextComponentTags
     while (iter.hasNext())
     {
       ConfigThingy subConf = iter.next();
-      if (subConf.getName().equals("VALUE") && subConf.count() == 1)
+      if ("VALUE".equals(subConf.getName()) && subConf.count() == 1)
       {
         // ACHTUNG! Änderungen hier müssen auch in insertTag() gemacht werden
         buffy.append(TAG_PREFIX);
@@ -310,6 +320,7 @@ public class TextComponentTags
       {
         private static final long serialVersionUID = -9123184290299840565L;
 
+        @Override
         public void actionPerformed(ActionEvent e)
         {
           text.insertTag(name);
@@ -355,6 +366,7 @@ public class TextComponentTags
       this.isTag = isTag;
     }
 
+    @Override
     public String toString()
     {
       return value;
@@ -383,6 +395,7 @@ public class TextComponentTags
   {
     compo.addCaretListener(new CaretListener()
     {
+      @Override
       public void caretUpdate(CaretEvent e)
       {
         extraHighlightOff();
@@ -423,11 +436,13 @@ public class TextComponentTags
   {
     compo.addFocusListener(new FocusListener()
     {
+      @Override
       public void focusLost(FocusEvent e)
       {
         extraHighlightOff();
       }
 
+      @Override
       public void focusGained(FocusEvent e)
       {}
     });
@@ -453,6 +468,7 @@ public class TextComponentTags
     {
       private static final long serialVersionUID = 2098288193497911628L;
 
+      @Override
       public void actionPerformed(ActionEvent evt)
       {
         extraHighlightOff();
@@ -478,6 +494,7 @@ public class TextComponentTags
     {
       private static final long serialVersionUID = 2098288193497911628L;
 
+      @Override
       public void actionPerformed(ActionEvent evt)
       {
         extraHighlightOff();
@@ -503,6 +520,7 @@ public class TextComponentTags
     {
       private static final long serialVersionUID = 2098288193497911628L;
 
+      @Override
       public void actionPerformed(ActionEvent evt)
       {
         extraHighlightOff();
@@ -527,6 +545,7 @@ public class TextComponentTags
     {
       private static final long serialVersionUID = 2098288193497911628L;
 
+      @Override
       public void actionPerformed(ActionEvent evt)
       {
         extraHighlightOff();
@@ -551,6 +570,7 @@ public class TextComponentTags
     {
       private static final long serialVersionUID = 2098288193497911628L;
 
+      @Override
       public void actionPerformed(ActionEvent evt)
       {
         extraHighlightOff();
@@ -569,7 +589,9 @@ public class TextComponentTags
         for (Iterator<TagPos> iter = getTagPosIterator(); iter.hasNext();)
         {
           TextComponentTags.TagPos fp = iter.next();
-          if (dot == fp.start) pos2 = fp.end;
+          if (dot == fp.start) {
+            pos2 = fp.end;
+          }
         }
 
         deleteAPartOfTheText(dot, pos2);
@@ -581,6 +603,7 @@ public class TextComponentTags
     {
       private static final long serialVersionUID = 2098288193497911628L;
 
+      @Override
       public void actionPerformed(ActionEvent evt)
       {
         extraHighlightOff();
@@ -599,7 +622,9 @@ public class TextComponentTags
         for (Iterator<TagPos> iter = getTagPosIterator(); iter.hasNext();)
         {
           TextComponentTags.TagPos fp = iter.next();
-          if (dot == fp.end) pos2 = fp.start;
+          if (dot == fp.end) {
+            pos2 = fp.start;
+          }
         }
 
         deleteAPartOfTheText(dot, pos2);
@@ -621,16 +646,19 @@ public class TextComponentTags
     {
       private Color oldColor = null;
 
+      @Override
       public void changedUpdate(DocumentEvent e)
       {
         update();
       }
 
+      @Override
       public void removeUpdate(DocumentEvent e)
       {
         update();
       }
 
+      @Override
       public void insertUpdate(DocumentEvent e)
       {
         update();
@@ -640,11 +668,15 @@ public class TextComponentTags
       {
         if (isContentValid())
         {
-          if (oldColor != null) compo.setBackground(oldColor);
+          if (oldColor != null) {
+            compo.setBackground(oldColor);
+          }
         }
         else
         {
-          if (oldColor == null) oldColor = compo.getBackground();
+          if (oldColor == null) {
+            oldColor = compo.getBackground();
+          }
           compo.setBackground(invalidEntryBGColor);
         }
       }
@@ -681,7 +713,9 @@ public class TextComponentTags
    */
   private void caretSetDot(int pos)
   {
-    if (pos >= 0 && pos <= compo.getText().length()) compo.getCaret().setDot(pos);
+    if (pos >= 0 && pos <= compo.getText().length()) {
+      compo.getCaret().setDot(pos);
+    }
   }
 
   /**
@@ -692,7 +726,9 @@ public class TextComponentTags
    */
   private void caretMoveDot(int pos)
   {
-    if (pos >= 0 && pos <= compo.getText().length()) compo.getCaret().moveDot(pos);
+    if (pos >= 0 && pos <= compo.getText().length()) {
+      compo.getCaret().moveDot(pos);
+    }
   }
 
   /**
@@ -733,12 +769,6 @@ public class TextComponentTags
     }
     return results.iterator();
   }
-
-  /**
-   * Enthält das tag das beim Erzeugen des Extra-Highlights zurückgeliefert wurde und
-   * das Highlight-Objekt auszeichnet.
-   */
-  private Object extraHighlightTag = null;
 
   /**
    * Deaktiviert die Anzeige des Extra-Highlights

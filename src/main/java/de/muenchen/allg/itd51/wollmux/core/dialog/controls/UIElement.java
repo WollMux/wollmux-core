@@ -128,6 +128,7 @@ public interface UIElement extends Value
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
+  @Override
   public String getString();
 
   /**
@@ -139,6 +140,7 @@ public interface UIElement extends Value
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
+  @Override
   public boolean getBoolean();
 
   /**

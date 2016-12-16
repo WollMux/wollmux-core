@@ -81,6 +81,7 @@ public class JPotentiallyOverlongPopupMenuButton extends JButton
 
     this.addActionListener(new ActionListener()
     {
+      @Override
       public void actionPerformed(ActionEvent e)
       {
         JPopupMenu menu = new JPopupMenu();
@@ -104,7 +105,9 @@ public class JPotentiallyOverlongPopupMenuButton extends JButton
           new Point(0, JPotentiallyOverlongPopupMenuButton.this.getSize().height);
         SwingUtilities.convertPointToScreen(p, compo);
         int maxheight = screenSize.height - p.y;
-        if (maxheight < 1) maxheight = 1;
+        if (maxheight < 1) {
+          maxheight = 1;
+        }
         menu.setMaximumSize(new Dimension(screenSize.width, maxheight));
         menu.invalidate();
         Dimension d = menu.getMinimumSize();
@@ -133,14 +136,15 @@ public class JPotentiallyOverlongPopupMenuButton extends JButton
     Vector<Action> actions = new Vector<Action>();
     for (int i = 1; i <= 100; ++i)
     {
-      final Integer I = Integer.valueOf(i);
+      final Integer integer = Integer.valueOf(i);
       actions.add(new AbstractAction("" + i)
       {
         private static final long serialVersionUID = 8275823697153645607L;
 
+        @Override
         public void actionPerformed(ActionEvent e)
         {
-          JOptionPane.showMessageDialog(myPanel, "" + I);
+          JOptionPane.showMessageDialog(myPanel, "" + integer);
         }
       });
     }

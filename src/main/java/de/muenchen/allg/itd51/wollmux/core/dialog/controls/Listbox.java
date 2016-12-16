@@ -33,27 +33,33 @@ public class Listbox extends UIElementBase
     this.id = id;
   }
 
+  @Override
   public Component getComponent()
   {
     return scrollPane;
   }
 
+  @Override
   public String getString()
   {
     StringBuffer buffy = new StringBuffer();
     for (Object o : list.getSelectedValuesList())
     {
-      if (buffy.length() > 0) buffy.append('\n');
+      if (buffy.length() > 0) {
+        buffy.append('\n');
+      }
       buffy.append(o.toString());
     }
     return buffy.toString();
   }
 
+  @Override
   public boolean getBoolean()
   {
-    return !getString().equals("");
+    return !getString().isEmpty();
   }
 
+  @Override
   public void setString(String str)
   {
     Set<String> vals = new HashSet<String>();
@@ -67,7 +73,9 @@ public class Listbox extends UIElementBase
     int index = 0;
     while (enu.hasMoreElements())
     {
-      if (vals.contains(enu.nextElement())) indices.add(Integer.valueOf(index));
+      if (vals.contains(enu.nextElement())) {
+        indices.add(Integer.valueOf(index));
+      }
       ++index;
     }
 
@@ -122,7 +130,7 @@ public class Listbox extends UIElementBase
     int i = 0;
     while (iter.hasNext())
     {
-      int index = ((Number) iter.next()).intValue();
+      int index = iter.next().intValue();
       selected[i++] = index;
     }
 
@@ -136,6 +144,7 @@ public class Listbox extends UIElementBase
     list.setSelectedIndices(selected);
   }
 
+  @Override
   public boolean isStatic()
   {
     return false;

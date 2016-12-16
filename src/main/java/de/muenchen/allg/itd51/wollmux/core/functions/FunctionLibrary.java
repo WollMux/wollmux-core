@@ -121,7 +121,9 @@ public class FunctionLibrary implements Iterable<Function>
   public Function get(String funcName)
   {
     Function func = mapIdToFunction.get(funcName);
-    if (func == null && baselib != null) func = baselib.get(funcName);
+    if (func == null && baselib != null) {
+      func = baselib.get(funcName);
+    }
     return func;
   }
 
@@ -140,7 +142,9 @@ public class FunctionLibrary implements Iterable<Function>
   public boolean remove(String funcName)
   {
     mapIdToFunction.remove(funcName);
-    if (baselib != null) return baselib.remove(funcName);
+    if (baselib != null) {
+      return baselib.remove(funcName);
+    }
     return true;
   }
 
@@ -151,8 +155,12 @@ public class FunctionLibrary implements Iterable<Function>
    */
   public boolean hasFunction(String funcName)
   {
-    if (mapIdToFunction.containsKey(funcName)) return true;
-    if (baselib != null) return baselib.hasFunction(funcName);
+    if (mapIdToFunction.containsKey(funcName)) {
+      return true;
+    }
+    if (baselib != null) {
+      return baselib.hasFunction(funcName);
+    }
     return false;
   }
 
@@ -165,10 +173,13 @@ public class FunctionLibrary implements Iterable<Function>
   public Set<String> getFunctionNames()
   {
     Set<String> names = new HashSet<String>(mapIdToFunction.keySet());
-    if (baselib != null) names.addAll(baselib.getFunctionNames());
+    if (baselib != null) {
+      names.addAll(baselib.getFunctionNames());
+    }
     return names;
   }
 
+  @Override
   public Iterator<Function> iterator()
   {
     return new IteratorWrapper(mapIdToFunction.values().iterator());
@@ -183,16 +194,19 @@ public class FunctionLibrary implements Iterable<Function>
       this.iter = iter;
     }
 
+    @Override
     public boolean hasNext()
     {
       return iter.hasNext();
     }
 
+    @Override
     public Function next()
     {
       return iter.next();
     }
 
+    @Override
     public void remove()
     {
       throw new UnsupportedOperationException();

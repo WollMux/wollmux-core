@@ -35,9 +35,9 @@ package de.muenchen.allg.itd51.wollmux.core.functions;
 
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 import com.sun.star.script.provider.XScript;
 import com.sun.star.uno.AnyConverter;
@@ -82,7 +82,7 @@ public class ExternalFunction
    * @throws ConfigurationErrorException
    *           falls die Spezifikation in conf fehlerhaft ist. TESTED
    */
-  public ExternalFunction(ConfigThingy conf) throws ConfigurationErrorException
+  public ExternalFunction(ConfigThingy conf)
   {
     this(conf, null);
   }
@@ -95,9 +95,14 @@ public class ExternalFunction
    *           falls die Spezifikation in conf fehlerhaft ist. TESTED
    */
   public ExternalFunction(ConfigThingy conf, ClassLoader classLoader)
-      throws ConfigurationErrorException
   {
-    if (classLoader == null) classLoader = this.getClass().getClassLoader();
+    ClassLoader cLoader;
+    if (classLoader == null) {
+      cLoader = this.getClass().getClassLoader();
+    }
+    else {
+      cLoader = classLoader;
+    }
     String url;
     try
     {
@@ -111,7 +116,7 @@ public class ExternalFunction
     }
     catch (NodeNotFoundException x)
     {
-      throw new ConfigurationErrorException(L.m("URL fehlt in EXTERN"));
+      throw new ConfigurationErrorException(L.m("URL fehlt in EXTERN"), x);
     }
 
     try
@@ -120,7 +125,7 @@ public class ExternalFunction
       {
         String classStr = url.substring(5, url.lastIndexOf('.'));
         String methodStr = url.substring(url.lastIndexOf('.') + 1);
-        Class<?> c = classLoader.loadClass(classStr);
+        Class<?> c = cLoader.loadClass(classStr);
         Method[] methods = c.getDeclaredMethods();
         for (int i = 0; i < methods.length; ++i)
           if (methods[i].getName().equals(methodStr)
@@ -153,7 +158,7 @@ public class ExternalFunction
 
     ConfigThingy paramsConf = conf.query("PARAMS");
 
-    List<String> paramList = new Vector<String>();
+    List<String> paramList = new ArrayList<String>();
     Iterator<ConfigThingy> iter = paramsConf.iterator();
     while (iter.hasNext())
     {
@@ -220,13 +225,14 @@ public class ExternalFunction
     if (script != null)
     {
       Object result = script.invoke(args, aOutParamIndex, aOutParam);
-      if (AnyConverter.isVoid(result)) result = null;
+      if (AnyConverter.isVoid(result)) {
+        result = null;
+      }
       return result;
     }
     else if (method != null)
     {
-      Object result = method.invoke(null, args);
-      return result;
+      return method.invoke(null, args);
     }
     return null;
   }

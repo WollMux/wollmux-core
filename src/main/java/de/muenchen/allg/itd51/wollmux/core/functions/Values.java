@@ -75,16 +75,19 @@ public interface Values
    */
   public static class None implements Values
   {
+    @Override
     public boolean hasValue(String id)
     {
       return false;
     }
 
+    @Override
     public String getString(String id)
     {
       return "";
     }
 
+    @Override
     public boolean getBoolean(String id)
     {
       return false;
@@ -125,21 +128,26 @@ public interface Values
       values.remove(id);
     }
 
+    @Override
     public boolean hasValue(String id)
     {
       return values.containsKey(id);
     }
 
+    @Override
     public String getString(String id)
     {
       String str = values.get(id);
-      if (str == null) return "";
+      if (str == null) {
+        return "";
+      }
       return str;
     }
 
+    @Override
     public boolean getBoolean(String id)
     {
-      return getString(id).equalsIgnoreCase("true");
+      return "true".equalsIgnoreCase(getString(id));
     }
   }
 }

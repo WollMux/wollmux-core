@@ -8,6 +8,7 @@ import de.muenchen.allg.itd51.wollmux.core.db.DJDataset;
 import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
 import de.muenchen.allg.itd51.wollmux.core.db.DatasetNotFoundException;
 import de.muenchen.allg.itd51.wollmux.core.db.Datasource;
+import de.muenchen.allg.itd51.wollmux.core.db.DatasourceJoiner.Status;
 import de.muenchen.allg.itd51.wollmux.core.db.TimeoutException;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 
@@ -75,7 +76,7 @@ public interface LocalOverrideStorage
    * @throws TimeoutException
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public abstract List<Dataset> refreshFromDatabase(Datasource database, long timeout) throws TimeoutException;
+  public abstract List<Dataset> refreshFromDatabase(Datasource database, long timeout, Status status) throws TimeoutException;
 
   /**
    * Liefert null, falls bislang kein Schema vorhanden (weil das Laden der

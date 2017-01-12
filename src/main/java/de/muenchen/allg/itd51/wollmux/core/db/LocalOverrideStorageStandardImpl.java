@@ -23,6 +23,7 @@ import de.muenchen.allg.itd51.wollmux.core.db.DJDatasetBase;
 import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
 import de.muenchen.allg.itd51.wollmux.core.db.DatasetNotFoundException;
 import de.muenchen.allg.itd51.wollmux.core.db.Datasource;
+import de.muenchen.allg.itd51.wollmux.core.db.DatasourceJoiner.Status;
 import de.muenchen.allg.itd51.wollmux.core.db.LocalOverrideStorage;
 import de.muenchen.allg.itd51.wollmux.core.db.QueryResults;
 import de.muenchen.allg.itd51.wollmux.core.db.TimeoutException;
@@ -313,7 +314,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
    * @see de.muenchen.allg.itd51.wollmux.db.LOSInterface#refreshFromDatabase(de.muenchen.allg.itd51.wollmux.db.Datasource, long, de.muenchen.allg.itd51.wollmux.db.DatasourceJoiner.Status)
    */
   @Override
-  public List<Dataset> refreshFromDatabase(Datasource database, long timeout)
+  public List<Dataset> refreshFromDatabase(Datasource database, long timeout, Status status)
       throws TimeoutException
   { // TESTED
     /*
@@ -453,6 +454,8 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
         data.add(ds);
       }
     }
+    
+    status.lostDatasets = lostDatasets;
 
     StringBuffer buf = new StringBuffer();
     Iterator<Dataset> iter2 = lostDatasets.iterator();

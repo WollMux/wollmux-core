@@ -139,6 +139,28 @@ public class DatasourceJoiner
   public List<Dataset> lostDatasets = new ArrayList<Dataset>(0);
 
   public static final long DATASOURCE_TIMEOUT = 10000;
+  
+  /**
+   * Repräsentiert den Status eines DatasourceJoiners.
+   * 
+   * @author Matthias Benkmann (D-III-ITD 5.1)
+   */
+  public static class Status
+  {
+    /**
+     * Eine Liste, die die {@link Dataset}s enthält, die mit einer
+     * Hintergrunddatenbank verknüpft sind, deren Schlüssel jedoch darin nicht mehr
+     * gefunden wurde und deshalb nicht aktualisiert werden konnte.
+     */
+    public List<Dataset> lostDatasets = new Vector<Dataset>(0);
+  }
+
+  private Status status;
+
+  public Status getStatus()
+  {
+    return status;
+  }
 
   /**
    * Erzeugt einen neuen DatasourceJoiner.
@@ -163,6 +185,7 @@ public class DatasourceJoiner
   protected void init(Map<String, Datasource> dataSources, String mainSourceName, LocalOverrideStorage los, long datasourceTimeout)
   {
     queryTimeout = datasourceTimeout;
+    status = new Status();
     
     for (Map.Entry<String, Datasource> ds : dataSources.entrySet())
     {
@@ -207,7 +230,7 @@ public class DatasourceJoiner
 
       try
       {
-        lostDatasets = myLOS.refreshFromDatabase(mainDatasource, queryTimeout());
+        lostDatasets = myLOS.refreshFromDatabase(mainDatasource, queryTimeout(), status);
       }
       catch (TimeoutException x)
       {

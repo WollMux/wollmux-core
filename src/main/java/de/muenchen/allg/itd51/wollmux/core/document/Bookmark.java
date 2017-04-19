@@ -588,6 +588,7 @@ public class Bookmark
     {
       UnoService bookmark = document.create("com.sun.star.text.Bookmark");
       bookmark.xNamed().setName(name);
+      cursor.getText().insertString(cursor, ".", true);
       cursor.getText().insertTextContent(cursor, bookmark.xTextContent(), true);
     }
     catch (com.sun.star.uno.Exception e)

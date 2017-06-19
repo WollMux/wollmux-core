@@ -7,6 +7,7 @@
 	<name>WollMux Core Classes</name>
 
 	<properties>
+		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
 		<libreoffice.version>4.1</libreoffice.version>
 	</properties>
 
@@ -37,7 +38,6 @@
 					<compilerVersion>1.7</compilerVersion>
 					<source>1.6</source>
 					<target>1.6</target>
-					<encoding>UTF-8</encoding>
 				</configuration>
 			</plugin>
 			<plugin>

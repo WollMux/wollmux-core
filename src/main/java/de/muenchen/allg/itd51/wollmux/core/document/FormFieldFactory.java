@@ -1,10 +1,10 @@
 /*
  * Dateiname: FormFieldFactory.java
  * Projekt  : WollMux
- * Funktion : Repräsentiert eine Fabrik, die an der Stelle von 
+ * Funktion : Repräsentiert eine Fabrik, die an der Stelle von
  *            WM('insertFormValue'...)-Bookmark entsprechende FormField-Elemente
  *            erzeugt.
- * 
+ *
  * Copyright (c) 2011-2015 Landeshauptstadt München
  *
  * This program is free software: you can redistribute it and/or modify
@@ -36,7 +36,7 @@
  * -------------------------------------------------------------------
  *
  * @author Christoph Lutz (D-III-ITD 5.1)
- * 
+ *
  */
 package de.muenchen.allg.itd51.wollmux.core.document;
 
@@ -72,7 +72,7 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 /**
  * Repräsentiert eine Fabrik, die an der Stelle von WM('insertFormValue'...)-Bookmark
  * entsprechende FormField-Elemente erzeugt.
- * 
+ *
  * @author lut
  */
 public final class FormFieldFactory
@@ -89,7 +89,7 @@ public final class FormFieldFactory
    * Formularelement vorhanden, so wird ein DynamicInputFormField an der Stelle des
    * Bookmarks erzeugt, das erst dann ein InputField-Textfeld im Dokument anlegt,
    * wenn auf das Textfeld schreibend zugegriffen wird.
-   * 
+   *
    * @param doc
    *          das Dokument, zu dem das Formularfeld gehört.
    * @param cmd
@@ -145,12 +145,11 @@ public final class FormFieldFactory
    * {@link Object#equals(java.lang.Object)} und {@link Object#hashCode()} beziehen
    * sich auf das zugrundeliegende UNO-Objekt, wobei verschiedene Proxies des selben
    * Objekts als gleich behandelt werden.
-   * 
+   *
    * @param doc
    *          das zugehörige Dokument doc
    * @param textfield
    *          ein Serienbrieffeld vom Typ css.text.textfield.Database.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public static FormField createDatabaseFormField(XTextDocument doc,
       XTextField textfield)
@@ -164,7 +163,7 @@ public final class FormFieldFactory
    * Dokument doc liegen. Die Methoden {@link Object#equals(java.lang.Object)} und
    * {@link Object#hashCode()} beziehen sich auf das zugrundeliegende UNO-Objekt,
    * wobei verschiedene Proxies des selben Objekts als gleich behandelt werden.
-   * 
+   *
    * @param doc
    *          das zugehörige Dokument doc
    * @param textfield
@@ -178,9 +177,7 @@ public final class FormFieldFactory
    *          anbietet. Das statt dessen geeignete TextFieldMaster-Objekt muss über
    *          doc.getTextFieldMasters() bezogen werden, wobei textfield und master
    *          dann zusammen gehören, wenn textfield.Content.equals(master.Name) gilt.
-   * @return
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
+   * @return Das neue FormField.
    */
   public static FormField createInputUserFormField(XTextDocument doc,
       XTextField textfield, XPropertySet master)
@@ -193,10 +190,9 @@ public final class FormFieldFactory
    * in Absätzen (nicht TextTables) enthaltenen insertFormValue-Bookmarks
    * entsprechende Einträge in mapBookmarkNameToFormField. Falls nötig wird das
    * entsprechende FormField erzeugt.
-   * 
+   *
    * @param doc
    *          das Dokument in dem sich die enumierten Objekte befinden.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private static void handleParagraphEnumeration(XEnumeration enu,
       XTextDocument doc, Map<String, FormField> mapBookmarkNameToFormField)
@@ -226,10 +222,9 @@ public final class FormFieldFactory
    * enthaltenen insertFormValue-Bookmarks entsprechende Einträge in
    * mapBookmarkNameToFormField. Falls nötig wird das entsprechende FormField
    * erzeugt.
-   * 
+   *
    * @param doc
    *          das Dokument in dem sich die enumierten Objekte befinden.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private static void handleParagraph(XEnumerationAccess paragraph,
       XTextDocument doc, Map<String, FormField> mapBookmarkNameToFormField)
@@ -396,9 +391,7 @@ public final class FormFieldFactory
   /**
    * Fügt ein neues Eingabefeld innerhalb des Bookmarks bookmark ein, erzeugt ein
    * dazugehöriges FormField und setzt ein passendes Mapping von bookmarkName auf
-   * dieses FormField in mapBookmarkNameToFormField
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1), Christoph Lutz (D-III-ITD 5.1)
+   * dieses FormField in mapBookmarkNameToFormField.
    */
   private static void handleNewInputField(String bookmarkName, XNamed bookmark,
       Map<String, FormField> mapBookmarkNameToFormField, XTextDocument doc)
@@ -442,7 +435,7 @@ public final class FormFieldFactory
   /**
    * Dieses Interface beschreibt die Eigenschaften eines Formularfeldes unter einem
    * WM(CMD'insertFormValue'...)-Kommando.
-   * 
+   *
    * @author Christoph Lutz (D-III-ITD 5.1)
    */
   public interface FormField extends Comparable<FormField>
@@ -451,8 +444,6 @@ public final class FormFieldFactory
      * FIXME Unschöne Fixup-Funktion, die in FormScanner.executeCommand() aufgerufen
      * wird, da der Scan von Tabellenzellen nur die Bookmarks, aber nicht die
      * zugehörigen Commands kennt.
-     * 
-     * @author Matthias Benkmann (D-III-ITD 5.1)
      */
     public abstract void setCommand(InsertFormValue cmd);
 
@@ -471,8 +462,6 @@ public final class FormFieldFactory
     /**
      * Liefert für alle aus insertFormValue-Bookmarks entstandenen FormField-Objekte
      * die im insertFormValue-Kommando angegebene ID, und andernfalls null.
-     * 
-     * @author Christoph Lutz (D-III-ITD-D101)
      */
     public abstract String getId();
 
@@ -490,15 +479,13 @@ public final class FormFieldFactory
      * geforderten Parameter den Wert von <id>; Eine Rückgabe von false beschreibt,
      * dass die Trafo auch mehrere Parameter verarbeiten kann (wie z.B.
      * InputUserFields der Fall).
-     * 
-     * @author Christoph Lutz (D-III-ITD-D101)
      */
     public abstract boolean singleParameterTrafo();
 
     /**
      * Diese Methode belegt den Wert des Formularfeldes im Dokument mit dem neuen
      * Inhalt value.
-     * 
+     *
      * @param value
      */
     public abstract void setValue(String value);
@@ -506,36 +493,30 @@ public final class FormFieldFactory
     /**
      * Diese Methode liefert den aktuellen Wert des Formularfeldes als String zurück
      * oder den Leerstring, falls der Wert nicht bestimmt werden kann.
-     * 
+     *
      * @return der aktuelle Wert des Formularfeldes als String
      */
     public abstract String getValue();
 
     /**
      * Setzt den ViewCursor auf die Position des InputFields.
-     * 
-     * @param doc
      */
     public abstract void focus();
 
     /**
      * Löscht das Formularfeld aus dem Dokument
-     * 
-     * @author Christoph Lutz (D-III-ITD-5.1)
      */
     public abstract void dispose();
 
     /**
      * Liefert den Typ des FormField-Objekts zurück
-     * 
-     * @author Christoph Lutz (D-III-ITD-D101)
      */
     public FormFieldType getType();
   }
 
   /**
    * Beschreibt mögliche Typen von FormField-Objekten
-   * 
+   *
    * @author Christoph Lutz (D-III-ITD-D101)
    */
   public enum FormFieldType {
@@ -560,7 +541,7 @@ public final class FormFieldFactory
      * Darstellung des Wertes des Formularfeldes genutzt. Ist innerhalb des Bookmarks
      * noch kein InputField vorhanden, so wird ein neues InputField in den Bookmark
      * eingefügt.
-     * 
+     *
      * @param doc
      *          das Dokument, zu dem das Formularfeld gehört.
      * @param cmd
@@ -594,7 +575,7 @@ public final class FormFieldFactory
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see de.muenchen.allg.itd51.wollmux.FormField#getTrafoName()
      */
     @Override
@@ -606,7 +587,7 @@ public final class FormFieldFactory
     /**
      * Diese Methode liest den Inhalt des internen Formularelements und liefert den
      * Wert als String zurück.
-     * 
+     *
      * @param value
      *          der neue Wert des Formularelements.
      */
@@ -614,7 +595,7 @@ public final class FormFieldFactory
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see de.muenchen.allg.itd51.wollmux.FormField#getValue()
      */
     @Override
@@ -625,7 +606,7 @@ public final class FormFieldFactory
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see de.muenchen.allg.itd51.wollmux.FormField#focus()
      */
     @Override
@@ -653,10 +634,10 @@ public final class FormFieldFactory
      * und beide Formularfelder dem selben Text-Objekt zugeordnet sind und 0, wenn
      * sich die Dokumentkommandos überlappen; lässt sich die Ordnung nicht bestimmen,
      * da die Text-Objekte sich unterscheiden, dann wird -1 geliefert.
-     * 
+     *
      * @param other
      *          Das Vergleichsobjekt.
-     * 
+     *
      * @return
      */
     @Override
@@ -714,7 +695,7 @@ public final class FormFieldFactory
   /**
    * Repräsentiert ein FormField, das den Formularwert in einem Input-Field
    * darstellt.
-   * 
+   *
    * @author Christoph Lutz (D-III-ITD 5.1)
    */
   private static class InputFormField extends BasicFormField
@@ -770,7 +751,7 @@ public final class FormFieldFactory
     {
       return FormFieldType.InputFormField;
     }
-    
+
     @Override
     public void dispose()
     {
@@ -792,7 +773,7 @@ public final class FormFieldFactory
    * aber eines vom Typ c,s,s,text,TextField,InputField erzeugt, wenn mittels focus()
    * oder setFormElementValue(...) darauf zugegriffen wird und der zu setzende Wert
    * nicht der Leerstring ist.
-   * 
+   *
    * @author Christoph Lutz (D-III-ITD 5.1)
    */
   private static class DynamicInputFormField extends InputFormField
@@ -907,7 +888,7 @@ public final class FormFieldFactory
   /**
    * Repräsentiert ein FormField, das den Formularwert in einem DropDown-Field
    * darstellt.
-   * 
+   *
    * @author Christoph Lutz (D-III-ITD 5.1)
    */
   private static class DropDownFormField extends BasicFormField
@@ -957,7 +938,7 @@ public final class FormFieldFactory
      * Die Methode prüft, ob der String value bereits in der zum Zeitpunkt des
      * Konstruktoraufrufs eingelesenen Liste oritItemList der erlaubten Einträge der
      * ComboBox vorhanden ist und erweitert die Liste um value, falls nicht.
-     * 
+     *
      * @param value
      *          der Wert, der ggf. an in die Liste der erlaubten Einträge aufgenommen
      *          wird.
@@ -1015,7 +996,7 @@ public final class FormFieldFactory
 
   /**
    * Repräsentiert ein FormField, das den Formularwert in einer Checkbox darstellt.
-   * 
+   *
    * @author Christoph Lutz (D-III-ITD 5.1)
    */
   private static class CheckboxFormField extends BasicFormField
@@ -1027,7 +1008,7 @@ public final class FormFieldFactory
      * bestehende Checkbox checkbox vom Service-Typ
      * com.sun.star.form.component.CheckBox an der Stelle des Kommandos cmd
      * repräsentiert.
-     * 
+     *
      * @param doc
      *          Das Dokument in dem sich das Checkbox-Formularfeld-Kommando befindet
      * @param cmd
@@ -1057,7 +1038,7 @@ public final class FormFieldFactory
 
     /*
      * (non-Javadoc)
-     * 
+     *
      * @see
      * de.muenchen.allg.itd51.wollmux.FormFieldFactory.BasicFormField#getFormElementValue
      * ()
@@ -1091,7 +1072,7 @@ public final class FormFieldFactory
    * deshalb liefert die Methode getTrafoName() immer null zurück. Die Objekte dieser
    * Klasse betrachten zum Zwecke von equals() und hashCode() die zugrundeliegenden
    * UNO-Objekte.
-   * 
+   *
    * @author Matthias Benkmann, Christoph Lutz (D-III-ITD 5.1)
    */
   private static class DatabaseFormField implements FormField
@@ -1231,7 +1212,7 @@ public final class FormFieldFactory
    * textfield und master dann zusammen gehören, wenn
    * textfield.Content.equals(master.Name) gilt. Die Objekte dieser Klasse betrachten
    * zum Zwecke von equals() und hashCode() die zugrundeliegenden UNO-Objekte.
-   * 
+   *
    * @author Christoph Lutz (D-III-ITD-5.1)
    */
   private static class InputUserFormField implements FormField

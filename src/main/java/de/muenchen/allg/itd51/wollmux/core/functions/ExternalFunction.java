@@ -2,7 +2,7 @@
  * Dateiname: ExternalFunction.java
  * Projekt  : WollMux
  * Funktion : Eine durch ein ConfigThingy beschriebene externe Funktion.
- * 
+ *
  * Copyright (c) 2008-2015 Landeshauptstadt München
  *
  * This program is free software: you can redistribute it and/or modify
@@ -29,7 +29,7 @@
  *
  * @author Matthias Benkmann (D-III-ITD 5.1)
  * @version 1.0
- * 
+ *
  */
 package de.muenchen.allg.itd51.wollmux.core.functions;
 
@@ -52,7 +52,7 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 /**
  * Eine durch ein ConfigThingy beschriebene externe (d,h, nicht als ConfigThingy
  * definierte) Funktion.
- * 
+ *
  * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public class ExternalFunction
@@ -78,7 +78,7 @@ public class ExternalFunction
    * Erzeugt aus einem ConfigThingy (übergeben wird der EXTERN-Knoten) eine
    * ExternalFunction, wobei zum Laden von Java-Klassen der selbe ClassLoader wie für
    * das Laden dieser Klasse verwendet wird.
-   * 
+   *
    * @throws ConfigurationErrorException
    *           falls die Spezifikation in conf fehlerhaft ist. TESTED
    */
@@ -90,7 +90,7 @@ public class ExternalFunction
   /**
    * Erzeugt aus einem ConfigThingy (übergeben wird der EXTERN-Knoten) eine
    * ExternalFunction, wobei zum Laden von Java-Klassen classLoader verwendet wird.
-   * 
+   *
    * @throws ConfigurationErrorException
    *           falls die Spezifikation in conf fehlerhaft ist. TESTED
    */
@@ -178,8 +178,6 @@ public class ExternalFunction
 
   /**
    * Liefert die Namen der Parameter, die die Funktion erwartet.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public String[] parameters()
   {
@@ -188,7 +186,7 @@ public class ExternalFunction
 
   /**
    * Ruft die Funktion auf mit den String-Parametern aus parameters.
-   * 
+   *
    * @param parameters
    *          sollte zu jedem der von {@link #parameters()} gelieferten Namen einen
    *          String-Wert enthalten.
@@ -196,7 +194,6 @@ public class ExternalFunction
    *         nicht zu einer Exception geführt hat.
    * @throws Exception
    *           falls ein Problem auftritt
-   * @author Matthias Benkmann (D-III-ITD 5.1) TESTED
    */
   public Object invoke(Values parameters) throws Exception
   {
@@ -208,7 +205,7 @@ public class ExternalFunction
 
   /**
    * Ruft die Funktion auf mit den Argumenten args.
-   * 
+   *
    * @param args
    *          muss für jeden der von {@link #parameters()} gelieferten Namen einen
    *          Wert enthalten.
@@ -216,7 +213,6 @@ public class ExternalFunction
    *         nicht zu einer Exception geführt hat.
    * @throws Exception
    *           falls ein Problem auftritt
-   * @author Matthias Benkmann (D-III-ITD 5.1) TESTED
    */
   public Object invoke(Object[] args) throws Exception
   {

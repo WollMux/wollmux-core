@@ -3,7 +3,7 @@
  * Projekt  : WollMux
  * Funktion : Repräsentiert einen Textbereich (TextSection) mit einem
  *            Namensanhang in der Form 'GROUPS <ListeMitSichtbarkeitsgruppen>'.
- * 
+ *
  * Copyright (c) 2008-2015 Landeshauptstadt München
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@
  *
  * @author Christoph Lutz (D-III-ITD 5.1)
  * @version 1.0
- * 
+ *
  */
 package de.muenchen.allg.itd51.wollmux.core.document;
 
@@ -46,7 +46,7 @@ import de.muenchen.allg.afid.UNO;
  * Zusatz 'GROUPS <ListeMitSichtbarkeitsgruppen>' ergänzt wurde, über den die
  * Sichtbarkeitsgruppen festgelegt sind, die diesen Bereich sichtbar oder unsichtbar
  * schalten können.
- * 
+ *
  * @author christoph.lutz
  */
 public class TextSection implements VisibilityElement
@@ -60,7 +60,7 @@ public class TextSection implements VisibilityElement
    * Ein Set das die Gruppennamen dieses Sichtbarkeitselements enthält.
    */
   private Set<String> groups;
-  
+
   /**
    * Enthält den Namen der TextSection (zum Erzeugungszeitpunkt). Ändert sich dieser,
    * wird die TextSection invalide.
@@ -69,7 +69,7 @@ public class TextSection implements VisibilityElement
 
   /**
    * Erzeugt ein neues TextSection-Objekt.
-   * 
+   *
    * @param section
    *          UNO-Objekt des Bereichs
    * @param groups
@@ -89,7 +89,7 @@ public class TextSection implements VisibilityElement
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.muenchen.allg.itd51.wollmux.VisibilityElement#isVisible()
    */
   @Override
@@ -107,7 +107,7 @@ public class TextSection implements VisibilityElement
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.muenchen.allg.itd51.wollmux.VisibilityElement#setVisible(boolean)
    */
   @Override
@@ -119,7 +119,7 @@ public class TextSection implements VisibilityElement
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.muenchen.allg.itd51.wollmux.VisibilityElement#getGroups()
    */
   @Override
@@ -130,7 +130,7 @@ public class TextSection implements VisibilityElement
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.muenchen.allg.itd51.wollmux.VisibilityElement#addGroups(java.util.Set)
    */
   @Override
@@ -141,7 +141,7 @@ public class TextSection implements VisibilityElement
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.muenchen.allg.itd51.wollmux.VisibilityElement#getAnchor()
    */
   @Override
@@ -160,12 +160,10 @@ public class TextSection implements VisibilityElement
   /**
    * Liefert den Namen der TextSection oder null, wenn die TextSection zwischenzeitig
    * invalide wurde.
-   * 
+   *
    * TextSection ist dann invalide, wenn sie nicht XNamed implementiert, sich ihr
    * Name seit dem Erzeugungszeitpunkt ändert oder sie nicht mehr im Dokument
    * existiert.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public String getName()
   {
@@ -183,7 +181,7 @@ public class TextSection implements VisibilityElement
   /**
    * Liefert den HashCode von getName() und ermöglicht das Verwenden der TextSection
    * in einem HashSet.
-   * 
+   *
    * @see java.lang.Object#hashCode()
    */
   @Override
@@ -194,7 +192,7 @@ public class TextSection implements VisibilityElement
 
   /**
    * Vergleicht die beiden TextSections über UNORuntime.areSame()
-   * 
+   *
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
@@ -212,17 +210,15 @@ public class TextSection implements VisibilityElement
 
   /**
    * Liefert true, wenn die TextSection (bzw. Ihr Anchor) nicht mehr valide ist.
-   * 
+   *
    * Dies ist der Fall, wenn seit der Erzeugung ihr Name (im Dokument) geändert wurde
    * oder sie nicht mehr existiert.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public boolean isInvalid()
   {
     return getAnchor() == null || getName() == null;
   }
-  
+
   @Override
   public String toString()
   {

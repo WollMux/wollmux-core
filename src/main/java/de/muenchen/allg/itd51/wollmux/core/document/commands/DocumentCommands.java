@@ -2,7 +2,7 @@
  * Dateiname: DocumentCommands.java
  * Projekt  : WollMux
  * Funktion : Verwaltet alle in einem Dokument enthaltenen Dokumentkommandos.
- * 
+ *
  * Copyright (c) 2009-2015 Landeshauptstadt München
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@
  * -------------------------------------------------------------------
  *
  * @author Christoph Lutz (D-III-ITD 5.1)
- * 
+ *
  */
 package de.muenchen.allg.itd51.wollmux.core.document.commands;
 
@@ -75,7 +75,7 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
  * hinaus spezielle Sets bzw. Listen, die nur Dokumentkommandos eines bestimmten Typs
  * beinhalten - je nach Bedarf können die speziellen Listen auch besonders behandelt
  * (z.B. sortiert) sein.
- * 
+ *
  * @author Christoph Lutz (D-III-ITD-5.1)
  */
 public class DocumentCommands implements Iterable<DocumentCommand>
@@ -162,7 +162,7 @@ public class DocumentCommands implements Iterable<DocumentCommand>
 
   /**
    * Erzeugt einen neuen Container für DocumentCommands im TextDocument doc.
-   * 
+   *
    * @param doc
    */
   public DocumentCommands(XBookmarksSupplier doc)
@@ -188,8 +188,6 @@ public class DocumentCommands implements Iterable<DocumentCommand>
    * übergeben, um alle Kommandos zu matchen. Gruppe 1 des Ausdrucks umschließt das
    * ganze Kommando ab "WM" bis inklusive der letzten Klammer vor dem optionalen
    * Zahlenteil am Ende.
-   *
-   * @author Matthias Benkmann (D-III-ITD-D101)
    */
   public static Pattern getPatternForCommand(String wollmuxCommand)
   {
@@ -203,12 +201,10 @@ public class DocumentCommands implements Iterable<DocumentCommand>
    * und mit den Datenstrukturen abgeglichen werden. Die Methode liefert true zurück,
    * wenn seit dem letzten update() Änderungen am Bestand der Dokumentkommandos bzw.
    * TextSections erkannt wurden und false, wenn es keine Änderungen gab.
-   * 
+   *
    * @return true, wenn sich die Menge der Dokumentkommandos bzw. TextSections seit
    *         dem letzten update() verändert hat und false, wenn es keine Änderung
    *         gab.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public boolean update()
   {
@@ -228,15 +224,13 @@ public class DocumentCommands implements Iterable<DocumentCommand>
    * überschrieben werden). cmdStr muss nur das gewünschte Kommando enthalten ohne
    * eine abschließende Zahl, die zur Herstellung eindeutiger Bookmarks benötigt wird
    * - diese Zahl wird bei Bedarf automatisch an den Bookmarknamen angehängt.
-   * 
+   *
    * @param r
    *          Die TextRange, an der das neue Bookmark mit diesem Dokumentkommando
    *          eingefügt werden soll. r darf auch null sein und wird in diesem Fall
    *          ignoriert.
    * @param cmdStr
    *          Das Kommando als String der Form "WM(...)".
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public void addNewDocumentCommand(XTextRange r, String cmdStr)
   {
@@ -253,11 +247,9 @@ public class DocumentCommands implements Iterable<DocumentCommand>
    * werden. Die Methode liefert true zurück, wenn seit dem letzten update()
    * Änderungen am Bestand der Dokumentkommandos erkannt wurden und false, wenn es
    * keine Änderungen gab.
-   * 
+   *
    * @return true, wenn sich die Menge der Dokumentkommandos seit dem letzten
    *         update() verändert hat und false, wenn es keine Änderung gab.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   private boolean updateBookmarks()
   {
@@ -320,11 +312,9 @@ public class DocumentCommands implements Iterable<DocumentCommand>
    * TextSections im Dokument erkannt und mit den Datenstrukturen abgeglichen werden.
    * Die Methode liefert true zurück, wenn seit dem letzten update() Änderungen am
    * Bestand der TextSections erkannt wurden und false, wenn es keine Änderungen gab.
-   * 
+   *
    * @return true, wenn sich die Menge der TextSections seit dem letzten update()
    *         verändert hat und false, wenn es keine Änderung gab.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   private boolean updateTextSections()
   {
@@ -379,12 +369,10 @@ public class DocumentCommands implements Iterable<DocumentCommand>
   /**
    * Abgleich der internen Datenstrukturen: fügt alle in newDocumentCommands
    * enthaltenen Dokumentkommandos in die entsprechenden Sets/Listen hinzu.
-   * 
+   *
    * @param newDocumentCommands
    *          Set mit allen Dokumentkommandos, die seit dem letzten update
    *          hinzugekommen sind.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   private void addNewDocumentCommands(HashSet<DocumentCommand> newDocumentCommands)
   {
@@ -461,12 +449,10 @@ public class DocumentCommands implements Iterable<DocumentCommand>
   /**
    * Abgleich der internen Datenstrukturen: fügt alle in newElements enthaltenen
    * TextSections in die entsprechenden Sets/Listen hinzu.
-   * 
+   *
    * @param newElements
    *          Set mit allen TextSections, die seit dem letzten update hinzugekommen
    *          sind.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   private void addNewTextSections(HashSet<TextSection> newElements)
   {
@@ -486,11 +472,9 @@ public class DocumentCommands implements Iterable<DocumentCommand>
    * Sichtbarkeitselemente hinzu, wobei die Gruppenzuordnung von verschachtelten
    * Sichtbarkeitselementen gemäß der Vererbungsstruktur der Sichtbarkeitsgruppen auf
    * untergeordnete Sichtbarkeitselemente übertragen werden.
-   * 
+   *
    * @param element
    *          das hinzuzufügende Sichtbarkeitselement.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1) TESTED
    */
   private void addNewVisibilityElement(VisibilityElement element)
   {
@@ -539,11 +523,9 @@ public class DocumentCommands implements Iterable<DocumentCommand>
   /**
    * Fügt ein neues SetJumpMark-Kommando cmdB sortiert in die (bereits) vorsortierten
    * Liste aller SetJumpMark-Kommandos ein.
-   * 
+   *
    * @param cmdB
    *          das hinzuzufügende SetJumpMark-Kommando.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1) TESTED
    */
   private void addNewSetJumpMark(SetJumpMark cmdB)
   {
@@ -564,12 +546,10 @@ public class DocumentCommands implements Iterable<DocumentCommand>
   /**
    * Abgleich der internen Datenstrukturen: löscht alle in newDocumentCommands
    * enthaltenen Dokumentkommandos aus den entsprechenden Sets/Listen.
-   * 
+   *
    * @param retired
    *          Set mit allen Dokumentkommandos, die seit dem letzten update ungültig
    *          (gelöscht) wurden.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   private void removeRetiredDocumentCommands(HashSet<DocumentCommand> retired)
   {
@@ -586,12 +566,10 @@ public class DocumentCommands implements Iterable<DocumentCommand>
   /**
    * Abgleich der internen Datenstrukturen: löscht alle in newDocumentCommands
    * enthaltenen Dokumentkommandos aus den entsprechenden Sets/Listen.
-   * 
+   *
    * @param invalid
    *          Set mit allen Dokumentkommandos, die seit dem letzten update ungültig
    *          (gelöscht) wurden.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   private void removeInvalidTextSections(HashSet<TextSection> invalid)
   {
@@ -605,11 +583,9 @@ public class DocumentCommands implements Iterable<DocumentCommand>
    * definierten Reihenfolge oder mit definierten Eigenschaften benötigt werden, so
    * können die speziellen Methoden wie z.B. getSetJumpMarksIterator() verwendet
    * werden.
-   * 
+   *
    * @return ein Iterator über alle Dokumentkommandos des Dokuments in undefinierter
    *         Reihenfolge.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   @Override
   public Iterator<DocumentCommand> iterator()
@@ -623,10 +599,8 @@ public class DocumentCommands implements Iterable<DocumentCommand>
    * Gruppenzugehörigkeit verschachtelter SetGroups-Kommandos gemäß der
    * Vererbungsstruktur von Sichbarkeitsgruppen auf untergeordnete
    * SetGroups-Kommandos vererbt wurde.
-   * 
+   *
    * @return eine Liste aller setGroups-Dokumentkommandos.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public List<VisibilityElement> getSetGroups()
   {
@@ -636,10 +610,8 @@ public class DocumentCommands implements Iterable<DocumentCommand>
   /**
    * Liefert die aktuell erste JumpMark dieses Dokuments oder null, wenn keine
    * Jumpmark verfügbar ist.
-   * 
+   *
    * @return Die aktuell erste JumpMark des Dokuments.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public SetJumpMark getFirstJumpMark()
   {
@@ -656,11 +628,10 @@ public class DocumentCommands implements Iterable<DocumentCommand>
   /**
    * Liefert einen Iterator zurück, der die Iteration aller
    * NotInOrininal-Dokumentkommandos dieses Dokuments ermöglicht.
-   * 
+   *
    * @return ein Iterator, der die Iteration aller NotInOrininal-Dokumentkommandos
    *         dieses Dokuments ermöglicht. Der Iterator kann auch keine Elemente
    *         enthalten.
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public Iterator<DocumentCommand> notInOriginalIterator()
   {
@@ -670,11 +641,10 @@ public class DocumentCommands implements Iterable<DocumentCommand>
   /**
    * Liefert einen Iterator zurück, der die Iteration aller
    * OrininalOnly-Dokumentkommandos dieses Dokuments ermöglicht.
-   * 
+   *
    * @return ein Iterator, der die Iteration aller OriginalOnly-Dokumentkommandos
    *         dieses Dokuments ermöglicht. Der Iterator kann auch keine Elemente
    *         enthalten.
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public Iterator<DocumentCommand> originalOnlyIterator()
   {
@@ -684,10 +654,9 @@ public class DocumentCommands implements Iterable<DocumentCommand>
   /**
    * Liefert einen Iterator zurück, der die Iteration aller
    * DraftOnly-Dokumentkommandos dieses Dokuments ermöglicht.
-   * 
+   *
    * @return ein Iterator, der die Iteration aller DraftOnly-Dokumentkommandos dieses
    *         Dokuments ermöglicht. Der Iterator kann auch keine Elemente enthalten.
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public Iterator<DocumentCommand> draftOnlyIterator()
   {
@@ -697,10 +666,9 @@ public class DocumentCommands implements Iterable<DocumentCommand>
   /**
    * Liefert einen Iterator zurück, der die Iteration aller
    * CopyOnly-Dokumentkommandos dieses Dokuments ermöglicht.
-   * 
+   *
    * @return ein Iterator, der die Iteration aller CopyOnly-Dokumentkommandos dieses
    *         Dokuments ermöglicht. Der Iterator kann auch keine Elemente enthalten.
-   * @author Daniel Benkmann (D-III-ITD-101)
    */
   public Iterator<DocumentCommand> copyOnlyIterator()
   {
@@ -710,11 +678,10 @@ public class DocumentCommands implements Iterable<DocumentCommand>
   /**
    * Liefert einen Iterator zurück, der die Iteration aller
    * AllVersions-Dokumentkommandos dieses Dokuments ermöglicht.
-   * 
+   *
    * @return ein Iterator, der die Iteration aller AllVersions-Dokumentkommandos
    *         dieses Dokuments ermöglicht. Der Iterator kann auch keine Elemente
    *         enthalten.
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public Iterator<DocumentCommand> allVersionsIterator()
   {
@@ -727,11 +694,11 @@ public class DocumentCommands implements Iterable<DocumentCommand>
    * zur unterscheidung verschiedener Bookmarks mit dem selben Dokumentkommando) und
    * dem BookmarksSupplier doc und liefert das neue Dokumentkommando zurück oder
    * null, wenn das Dokumentkommando nicht erzeugt werden konnte.
-   * 
+   *
    * @param bookmarkName
    * @param cmdStr
    * @param doc
-   * @return
+   * @return Das Dokumentkommando oder null.
    */
   private static DocumentCommand createCommand(String bookmarkName, String cmdStr,
       XBookmarksSupplier doc)
@@ -776,16 +743,14 @@ public class DocumentCommands implements Iterable<DocumentCommand>
    * TextSectionsSupplier doc, dessen Gruppen mit dem in groupsStr beschriebenen
    * ConfigThingy definiert sind oder null, wenn die TextSection nicht erzeugt werden
    * konnte.
-   * 
+   *
    * @param name
    *          Der Name der zu erzeugenden TextSection
    * @param groupsStr
    *          der GROUPS-Knoten im ConfigThingy-Format als String
    * @param doc
    *          der XTextSectionsSupplier (das Dokument)
-   * @return
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
+   * @return Die TextSection oder null.
    */
   private static TextSection createTextSection(String name, String groupsStr,
       XTextSectionsSupplier doc)
@@ -832,7 +797,7 @@ public class DocumentCommands implements Iterable<DocumentCommand>
   /**
    * Fabrikmethode für die Erzeugung neuer Dokumentkommandos an dem Bookmark bookmark
    * mit dem als ConfigThingy vorgeparsten Dokumentkommando wmCmd.
-   * 
+   *
    * @param wmCmd
    *          Das vorgeparste Dokumentkommando
    * @param bookmark

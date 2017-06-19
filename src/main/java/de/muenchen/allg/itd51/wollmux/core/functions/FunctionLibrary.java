@@ -2,7 +2,7 @@
  * Dateiname: FunctionLibrary.java
  * Projekt  : WollMux
  * Funktion : Eine Bibliothek von benannten Functions
- * 
+ *
  * Copyright (c) 2008-2015 Landeshauptstadt München
  *
  * This program is free software: you can redistribute it and/or modify
@@ -30,7 +30,7 @@
  *
  * @author Matthias Benkmann (D-III-ITD 5.1)
  * @version 1.0
- * 
+ *
  */
 package de.muenchen.allg.itd51.wollmux.core.functions;
 
@@ -45,7 +45,7 @@ import de.muenchen.allg.itd51.wollmux.core.util.L;
 
 /**
  * Eine Bibliothek von benannten Functions
- * 
+ *
  * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public class FunctionLibrary implements Iterable<Function>
@@ -56,8 +56,6 @@ public class FunctionLibrary implements Iterable<Function>
 
   /**
    * Erzeugt eine leere Funktionsbibliothek.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public FunctionLibrary()
   {
@@ -68,7 +66,7 @@ public class FunctionLibrary implements Iterable<Function>
    * Erzeugt eine Funktionsbibliothek, die baselib referenziert (nicht kopiert!).
    * baselib wird immer dann befragt, wenn die Funktionsbibliothek selbst keine
    * Funktion des entsprechenden Namens enthält. baselib darf null sein.
-   * 
+   *
    * @param baselib
    */
   public FunctionLibrary(FunctionLibrary baselib)
@@ -80,7 +78,7 @@ public class FunctionLibrary implements Iterable<Function>
    * Erzeugt eine Funktionsbibliothek, die baselib referenziert (nicht kopiert!).
    * baselib wird immer dann befragt, wenn die Funktionsbibliothek selbst keine
    * Funktion des entsprechenden Namens enthält. baselib darf null sein.
-   * 
+   *
    * @param ordered
    *          Falls true liefert der Iterator dieser Funktionsbibliothek die
    *          Funktionen in Einfügereihenfolge. Ansonsten werden sie in unbestimmter
@@ -99,8 +97,6 @@ public class FunctionLibrary implements Iterable<Function>
   /**
    * Fügt func dieser Funktionsbibliothek unter dem Namen funcName hinzu. Eine
    * bereits existierende Funktion mit diesem Namen wird dabei ersetzt.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public void add(String funcName, Function func)
   {
@@ -115,8 +111,6 @@ public class FunctionLibrary implements Iterable<Function>
    * diesem Namen bekannt ist. Wurde die Funktionsbibliothek mit einer Referenz auf
    * eine andere Funktionsbibliothek initialisiert, so wird diese befragt, falls die
    * Funktionsbibliothek selbst keine Funktion des entsprechenden Namens kennt.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public Function get(String funcName)
   {
@@ -130,14 +124,13 @@ public class FunctionLibrary implements Iterable<Function>
   /**
    * Versucht, alle Funktionen namens funcName aus dieser und evtl, verketteter
    * Funktionsbibliotheken zu entfernen.
-   * 
-   * @return true, falls nach Ausführung des Befehls {@link #hasFunction(String)) für
+   *
+   * @return true, falls nach Ausführung des Befehls {@link #hasFunction(String)} für
    *         funcName false zurückliefert, false sonst. D.h. true wird geliefert,
    *         wenn alle Funktionen entfernt werden konnten. Falls false
    *         zurückgeliefert wird, wurden evtl. manche, aber definitiv nicht alle
    *         Funktionen entfernt. Falls von vorneherein keine Funktion funcName
    *         vorhanden war, wird auch true geliefert.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public boolean remove(String funcName)
   {
@@ -150,8 +143,6 @@ public class FunctionLibrary implements Iterable<Function>
 
   /**
    * Liefert true wenn diese Funktionsbibliothek eine Funktion namens funcName kennt.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public boolean hasFunction(String funcName)
   {
@@ -167,8 +158,6 @@ public class FunctionLibrary implements Iterable<Function>
   /**
    * Liefert die Namen aller Funktionen, die über diese Funktionsbibliothek verfügbar
    * sind.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public Set<String> getFunctionNames()
   {

@@ -3,7 +3,7 @@
  * Projekt  : WollMux
  * Funktion : Repräsentiert die ausgewertete Liste aller in wollmux.conf definierten
  *            Textfragmente.
- * 
+ *
  * Copyright (c) 2008-2015 Landeshauptstadt München
  *
  * This program is free software: you can redistribute it and/or modify
@@ -31,7 +31,7 @@
  *
  * @author Christoph Lutz (D-III-ITD 5.1)
  * @version 1.0
- * 
+ *
  */
 package de.muenchen.allg.itd51.wollmux.core.document;
 
@@ -55,9 +55,9 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
  * Sie kümmert sich insbesondere um das Auswerten der Variablen in den URL-Attributen
  * und um die Beachtung der Vorrangregelung: Immer das zuletzt definierte
  * Textfragment oder die zuletzt definierte Variable gewinnt.
- * 
+ *
  * @author Christoph Lutz (D-III-ITD 5.1)
- * 
+ *
  */
 public class VisibleTextFragmentList
 {
@@ -69,13 +69,13 @@ public class VisibleTextFragmentList
 
   /**
    * Ersetzen der zu dem Block gehörende Variable VAR durch den Wert VALUE
-   * 
+   *
    * @param node
    *          Knoten der die Url enthält die benötigt wird um die Variable zu
    *          bestimmen die von ihm aus sichtbar ist.
    * @param root
    *          das ConfigThingy das die gesamte Configuration enthält
-   * @return
+   * @return Das ConfigThingy als String ohne Variablen.
    * @throws EndlessLoopException
    */
   private static String expandVariable(ConfigThingy node, ConfigThingy root)
@@ -149,7 +149,7 @@ public class VisibleTextFragmentList
 
   /**
    * Gibt die URLs des unter der frag_id definierten Textfragmente zurück.
-   * 
+   *
    * @param fragId
    *          Die ID des gesuchten Textfragments.
    * @return die URL des unter der frag_id definierten Textfragments.

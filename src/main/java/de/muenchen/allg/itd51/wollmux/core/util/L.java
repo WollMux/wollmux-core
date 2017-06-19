@@ -2,7 +2,7 @@
  * Dateiname: L.java
  * Projekt  : WollMux
  * Funktion : Funktionen zur Lokalisierung.
- * 
+ *
  * Copyright (c) 2008-2015 Landeshauptstadt München
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@
  *
  * @author Matthias Benkmann (D-III-ITD D.10)
  * @version 1.0
- * 
+ *
  */
 package de.muenchen.allg.itd51.wollmux.core.util;
 
@@ -39,7 +39,7 @@ import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 
 /**
  * Funktionen zur Lokalisierung.
- * 
+ *
  * @author Matthias Benkmann (D-III-ITD D.10)
  */
 public class L
@@ -59,8 +59,6 @@ public class L
   /**
    * Falls für original eine Übersetzung verfügbar ist, wird diese zurückgeliefert,
    * ansonsten der Originalstring.
-   * 
-   * @author Matthias Benkmann (D-III-ITD D.10) TESTED
    */
   public static String m(String original)
   {
@@ -75,8 +73,6 @@ public class L
    * Falls für original eine Übersetzung verfügbar ist, wird diese zurückgeliefert,
    * ansonsten der Originalstring. Dabei werden alle Vorkommen von "%1" durch
    * insertion1 ersetzt.
-   * 
-   * @author Matthias Benkmann (D-III-ITD D.10) TESTED
    */
   public static String m(String original, Object insertion1)
   {
@@ -89,8 +85,6 @@ public class L
    * Falls für original eine Übersetzung verfügbar ist, wird diese zurückgeliefert,
    * ansonsten der Originalstring. Dabei werden alle Vorkommen von "%1" durch
    * insertion1 und von "%2" durch insertion2 ersetzt.
-   * 
-   * @author Matthias Benkmann (D-III-ITD D.10) TESTED
    */
   public static String m(String original, Object insertion1, Object insertion2)
   {
@@ -119,8 +113,6 @@ public class L
   /**
    * Ersetzt in where alle Vorkommen von what durch withWhat und liefert das Ergebnis
    * zurück.
-   * 
-   * @author Matthias Benkmann (D-III-ITD D.10) TESTED
    */
   private static String replace(String where, String what, String withWhat)
   {
@@ -142,8 +134,6 @@ public class L
   /**
    * Liefert alle während der Initialisierung aufgelaufenen Debug-Messages zurück und
    * gibt dann ihren Speicher frei.
-   * 
-   * @author Matthias Benkmann (D-III-ITD-D101)
    */
   public static String flushDebugMessages()
   {
@@ -161,11 +151,9 @@ public class L
 
   /**
    * Initialisiert die Übersetzungs-Map mit l10n.
-   * 
+   *
    * @param l10n
    *          ein beliebiger Knoten mit "L10n"-Unterknoten.
-   * @author Matthias Benkmann (D-III-ITD-D101)
-   * 
    */
   public static void init(ConfigThingy l10n)
   {

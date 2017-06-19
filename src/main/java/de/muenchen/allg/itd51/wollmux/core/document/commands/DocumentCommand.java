@@ -2,7 +2,7 @@
  * Dateiname: DocumentCommand.java
  * Projekt  : WollMux
  * Funktion : Beschreibt ein Dokumentkommando mit allen zugehörigen Eigenschaften.
- * 
+ *
  * Copyright (c) 2009-2015 Landeshauptstadt München
  *
  * This program is free software: you can redistribute it and/or modify
@@ -35,7 +35,7 @@
  * -------------------------------------------------------------------
  *
  * @author Christoph Lutz (D-III-ITD 5.1)
- * 
+ *
  */
 package de.muenchen.allg.itd51.wollmux.core.document.commands;
 
@@ -63,7 +63,7 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 /**
  * Beschreibt ein Dokumentkommando mit allen zugehörigen Eigenschaften wie z.B. die
  * Gruppenzugehörigkeit, Sichtbarkeit und Ausführstatus.
- * 
+ *
  * @author Christoph Lutz (D-III-ITD 5.1)
  */
 public abstract class DocumentCommand
@@ -122,7 +122,7 @@ public abstract class DocumentCommand
   /**
    * Der Konstruktor liefert eine Instanz eines DocumentCommand an der Stelle des
    * Bookmarks bookmark mit dem geparsten Kommando wmCmd.
-   * 
+   *
    * @param wmCmd
    *          das geparste WM-Kommando
    * @param bookmark
@@ -148,10 +148,8 @@ public abstract class DocumentCommand
    * Seit der Umstellung auf den neuen Scan über DocumentCommands darf nur noch das
    * Dokumentkommando SetGroups ein GROUPS-Attribut besitzen. Diese Methode stellt
    * das sicher und wird vom SetGroups-Kommando mit Rückgabewert true überschrieben.
-   * 
+   *
    * @return false außer es ist ein SetGroups-Kommando
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   protected boolean canHaveGroupsAttribute()
   {
@@ -161,8 +159,6 @@ public abstract class DocumentCommand
   /**
    * Liefert true, wenn das Dokumentkommando Textinhalte in das zugehörige Bookmark
    * einfügen möchte, ansonsten false.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   protected boolean insertsTextContent()
   {
@@ -171,7 +167,7 @@ public abstract class DocumentCommand
 
   /**
    * Liefert den Namen des zugehörigen Bookmarks zurück.
-   * 
+   *
    * @return Liefert den Namen des zugehörigen Bookmarks zurück.
    */
   public String getBookmarkName()
@@ -195,7 +191,7 @@ public abstract class DocumentCommand
    * Callbackfunktion für die Ausführung des Dokumentkommandos in einem
    * DocumentCommand.Executor wie z.B. dem DocumentCommandInterpreter. Die Methode
    * liefert die Anzahl der bei der Ausführung entstandenen Fehler zurück.
-   * 
+   *
    * @param executor
    * @return Anzahl der aufgetretenen Fehler
    */
@@ -213,11 +209,9 @@ public abstract class DocumentCommand
    * {@link #setTextRangeString(String)},
    * {@link #insertTextContentIntoBookmark(XTextContent, boolean)} und
    * {@link #getTextCursorWithinInsertMarks()} da.
-   * 
+   *
    * @return einen TextCursor für den Anchor des Bookmarks oder <code>null</code>
    *         wenn das Bookmark nicht mehr existiert
-   * 
-   * @author Daniel Benkmann (D-III-ITD-D101)
    */
   public XTextCursor getTextCursor()
   {
@@ -239,8 +233,7 @@ public abstract class DocumentCommand
    * {@link #setTextRangeString(String)},
    * {@link #insertTextContentIntoBookmark(XTextContent, boolean)} und
    * {@link #getTextCursorWithinInsertMarks()} da.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
+   *
    * @see de.muenchen.allg.itd51.wollmux.core.document.VisibilityElement#getAnchor()
    */
   public XTextRange getAnchor()
@@ -258,10 +251,9 @@ public abstract class DocumentCommand
    * zurückgelieferte Cursor besitzt keine Ausdehnung und befindet sich zwischen den
    * beiden eingefügten Insert Marks. Falls das Bookmark nicht mehr existiert liefert
    * die Methode <code>null</code> zurück.
-   * 
+   *
    * @return TextCursor zum Einfügen innerhalb von Insert Marks oder
    *         <code>null</code>
-   * @author Daniel Benkmann (D-III-ITD-D101)
    */
   public XTextCursor getTextCursorWithinInsertMarks()
   {
@@ -288,11 +280,10 @@ public abstract class DocumentCommand
    * ist), bei einem nicht-leeren String wird das Bookmark dekollabiert (sofern nicht
    * schon der Fall) und das dekollabierte Bookmark umfasst anschließend den
    * übergebenen Text.
-   * 
+   *
    * @param text
    *          der einzufügende String; falls leer (oder <code>null</code>) wird
    *          Bookmark kollabiert
-   * @author Daniel Benkmann (D-III-ITD-D101)
    */
   public void setTextRangeString(String text)
   {
@@ -321,7 +312,7 @@ public abstract class DocumentCommand
    * ersetzt werden soll oder nicht. Wird <code>false</code> übergeben, so wird der
    * TextContent an das Ende der TextRange des Bookmarks (aber natürlich noch im
    * Bookmark) hinzugefügt.
-   * 
+   *
    * @param textContent
    *          der einzufügende TextContent
    * @param replace
@@ -330,7 +321,6 @@ public abstract class DocumentCommand
    *          Inhalt ersetzt, ansonsten wird textContent an das Ende der TextRange
    *          des Bookmarks gehängt
    * @throws IllegalArgumentException
-   * @author Daniel Benkmann (D-III-ITD-D101)
    */
   public void insertTextContentIntoBookmark(XTextContent textContent, boolean replace)
   {
@@ -348,8 +338,6 @@ public abstract class DocumentCommand
 
   /**
    * Liefert die Länge des End-Einfügemarkers.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public short getEndMarkLength()
   {
@@ -358,8 +346,6 @@ public abstract class DocumentCommand
 
   /**
    * Liefert die Länge des Start-Einfügemarkers.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public short getStartMarkLength()
   {
@@ -370,8 +356,6 @@ public abstract class DocumentCommand
    * Liefert entweder null falls kein Start-Einfügemarke vorhanden oder liefert 2
    * Cursor, von denen der erste links neben der zweite rechts neben der
    * Start-Einfügemarke steht.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1) TESTED
    */
   public XParagraphCursor[] getStartMark()
   {
@@ -391,8 +375,6 @@ public abstract class DocumentCommand
    * Liefert entweder null falls keine End-Einfügemarke vorhanden oder liefert 2
    * Cursor, von denen der erste links neben der zweite rechts neben der
    * End-Einfügemarke steht.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1) TESTED
    */
   public XParagraphCursor[] getEndMark()
   {
@@ -432,7 +414,7 @@ public abstract class DocumentCommand
    * Liefert true, wenn das Bookmark zu diesem Dokumentkommando nicht mehr existiert
    * und das Dokumentkommando daher nicht mehr zu gebrauchen ist oder andernfalls
    * false.
-   * 
+   *
    * @return true, wenn das Bookmark zu diesem Dokumentkommando nicht mehr existiert,
    *         ansonsten false.
    */
@@ -448,7 +430,7 @@ public abstract class DocumentCommand
    * Beschreibt ob das Kommando bereits abgearbeitet wurde. Ist DONE bisher noch
    * nicht definiert oder gesetzt worden, so wird der Defaultwert false
    * zurückgeliefert.
-   * 
+   *
    * @return true, falls das Kommando bereits bearbeitet wurde, andernfalls false.
    */
   public boolean isDone()
@@ -468,7 +450,7 @@ public abstract class DocumentCommand
    * Markiert ein Dokumentkommando als bearbeitet; Das Dokumentkommando wird
    * daraufhin aus dem Dokument gelöscht, wenn removeBookmark==true oder umbenannt,
    * wenn removeBookmark==false.
-   * 
+   *
    * @param removeBookmark
    *          true, signalisiert, dass das zugehörige Bookmark gelöscht werden soll.
    *          False signalisiert, dass das Bookmark mit dem Zusatz "<alterName>
@@ -485,7 +467,7 @@ public abstract class DocumentCommand
    * Liefert den Fehler-Status der Kommandobearbeitung zurück. Ist das Attribut ERROR
    * bisher nicht definiert oder kein Fehler gesetzt worden, so wird der Defaultwert
    * false zurückgliefert.
-   * 
+   *
    * @return true, wenn bei der Kommandobearbeitung Fehler auftraten; andernfalls
    *         false
    */
@@ -504,7 +486,7 @@ public abstract class DocumentCommand
 
   /**
    * Erlaubt das explizite Setzen des Error-Attributs.
-   * 
+   *
    * @param error
    */
   public void setErrorState(boolean error)
@@ -517,7 +499,7 @@ public abstract class DocumentCommand
    * enthält. Neue Unterknoten werden dabei nur angelegt, wenn dies unbedingt
    * erforderlich ist, d.h. wenn ein Wert vom Defaultwert abweicht oder der Wert
    * bereits vorher gesetzt war.
-   * 
+   *
    * @return Ein ConfigThingy, das das "WM"-Kommando mit allen Statusinformationen
    *         enthält.
    */
@@ -557,7 +539,7 @@ public abstract class DocumentCommand
    * wmCmd) als einen String, der geeignet ist, um den ihn in Bookmarknamen verwenden
    * zu können. D.h. alle Newline, Komma und andere für Bookmarknamen unverträgliche
    * Zeichen werden entfernt.
-   * 
+   *
    * @param conf
    *          Das ConfigThingy-Objekt, zu dem die Stringrepräsentation erzeugt werden
    *          soll.
@@ -582,7 +564,7 @@ public abstract class DocumentCommand
    * enthält zurück, oder null, wenn das zugehörige Bookmark gelöscht wurde. Ist der
    * DEBUG-modus gesetzt, so werden in gar keinem Fall Bookmarks gelöscht, womit die
    * Fehlersuche erleichtert werden soll.
-   * 
+   *
    * @return der Name des neuen Bookmarks oder null.
    */
   protected String flushToBookmark(boolean removeIfDone)
@@ -610,7 +592,7 @@ public abstract class DocumentCommand
   /**
    * Gibt Auskunft, ob ein Key unterhalb des STATE-Knotens definiert ist. z.B.
    * "WM(...) STATE (KEY '...')"
-   * 
+   *
    * @param key
    * @return true, falls der Key definiert ist, andernfalls false.
    */
@@ -621,9 +603,9 @@ public abstract class DocumentCommand
 
   /**
    * Liefert das ConfigThingy zu dem gesuchten Key key unterhalt des STATE-Knotens.
-   * 
+   *
    * @param key
-   * @return
+   * @return Das ConfigThingy, mit dem Key key.
    */
   protected ConfigThingy getState(String key)
   {
@@ -644,7 +626,7 @@ public abstract class DocumentCommand
    * bereits definiert, wird der bestehende Wert überschrieben. Sind der STATE-Knoten
    * oder der Schlüssel nicht definiert, so werden die entsprechenden Knoten erzeugt
    * und der Key key erhält ein Kindknoten mit dem Value value.
-   * 
+   *
    * @param key
    * @param value
    */
@@ -687,7 +669,7 @@ public abstract class DocumentCommand
 
   /**
    * gibt den Sichtbarkeitsstatus des Textinhaltes unter dem Dokumentkommando zurück.
-   * 
+   *
    * @return true=sichtbar, false=ausgeblendet
    * @see de.muenchen.allg.itd51.wollmux.core.document.VisibilityElement#isVisible()
    */
@@ -699,7 +681,7 @@ public abstract class DocumentCommand
   /**
    * Setzt den Sichtbarkeitsstatus des Textinhaltes unter dem Dokumentkommando auf
    * visible. Der Status visible wird zudem nicht persistent im Bookmark hinterlegt.
-   * 
+   *
    * @param visible
    *          true=sichtbar, false=ausgeblendet
    * @see de.muenchen.allg.itd51.wollmux.core.document.VisibilityElement#setVisible(boolean)
@@ -718,7 +700,7 @@ public abstract class DocumentCommand
   /**
    * Kommandos werden extern definiert - um das zu ermöglichen greift hier das
    * Prinzip des Visitor-Designpatterns.
-   * 
+   *
    * @author christoph.lutz
    */
   static interface Executor
@@ -800,9 +782,9 @@ public abstract class DocumentCommand
    * Beschreibt ein Dokumentkommando, das aufgrund eines Syntax-Fehlers oder eines
    * fehlenden Parameters ungültig ist, jedoch trotzdem im Dokument als Fehlerfeld
    * dargestellt werden soll.
-   * 
+   *
    * @author lut
-   * 
+   *
    */
   public static class InvalidCommand extends DocumentCommand
   {
@@ -867,9 +849,9 @@ public abstract class DocumentCommand
    * Beschreibt das Dokumentkommando Form, welches Zugriff auf die
    * Formularbeschreibung des Dokuments ermöglicht, die in Form einer Notiz innerhalb
    * des zum Form-Kommando zugehörigen Bookmarks abgelegt ist.
-   * 
+   *
    * @author lut
-   * 
+   *
    */
   public static class Form extends DocumentCommand
   {
@@ -1182,8 +1164,6 @@ public abstract class DocumentCommand
     /**
      * Liefert die im insertFormValues-Kommando gesetzte id, die garantiert != null
      * ist.
-     * 
-     * @author Christoph Lutz (D-III-ITD-D101)
      */
     public String getID()
     {
@@ -1337,8 +1317,6 @@ public abstract class DocumentCommand
     /**
      * Liefert die neue FragID oder den Leerstring, wenn keine FragID angegeben
      * wurde.
-     * 
-     * @author Christoph Lutz (D-III-ITD-5.1)
      */
     public String getNewFragID()
     {
@@ -1420,7 +1398,7 @@ public abstract class DocumentCommand
      * Liefert alle Gruppen, die dem Dokumentkommando zugeordnet sind, wobei jede
      * Gruppe auch die Gruppenzugehörigkeit des Vaterelements im DocumentCommand-Baum
      * erbt.
-     * 
+     *
      * @return Ein Set, das alle zugeordneten groupId's, einschließlich der vom Vater
      *         geerbten, als Strings enthält.
      * @see de.muenchen.allg.itd51.wollmux.core.document.VisibilityElement#getGroups()

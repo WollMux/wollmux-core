@@ -2,7 +2,7 @@
 * Dateiname: Function.java
 * Projekt  : WollMux
 * Funktion : Eine Funktion, die einen Wert in Abhängigkeit von Parametern berechnet.
-* 
+*
  * Copyright (c) 2008-2015 Landeshauptstadt München
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@
 *
 * @author Matthias Benkmann (D-III-ITD 5.1)
 * @version 1.0
-* 
+*
 */
 package de.muenchen.allg.itd51.wollmux.core.functions;
 
@@ -51,34 +51,31 @@ public interface Function
    * Eine leere Values-Sammlung.
    */
   public static final Values noValues = new Values.None();
-  
+
   /**
    * Liefert die Namen der Parameter, die die Funktion erwartet.
    * Die Reihenfolge ist undefiniert. Es kann kein Name mehrfach vorkommen.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public String[] parameters();
-  
+
   /**
    * Zu set werden die Namen aller Funktionsdialoge hinzugefügt, die diese
    * Funktion referenziert.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public void getFunctionDialogReferences(Collection<String> set);
-  
+
   /**
    * Ruft die Funktion mit Argumenten aus parameters auf und liefert das
    * Funktionsergebnis als String. Falls es sich um einen booleschen Wert
    * handelt, wird der String "true" oder "false" zurückgeliefert.
    * Falls während der Ausführung ein Fehler auftritt, wird möglicherweise (dies
    * hängt von der Funktion ab) das String-Objekt
-   * {@link #ERROR} (== vergleichbar) zurückgeliefert. 
+   * {@link #ERROR} (== vergleichbar) zurückgeliefert.
    * @param parameters sollte zu jedem der von {@link #parameters()} gelieferten
    *        Namen einen String-Wert enthalten.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public String getString(Values parameters);
-  
+
    /**
    * Ruft die Funktion mit Argumenten aus parameters auf und liefert das
    * Funktionsergebnis als boolean. Falls der Wert seiner Natur nach ein
@@ -87,8 +84,6 @@ public interface Function
    * Falls während der Ausführung ein Fehler auftritt wird false zurückgeliefert.
    * @param parameters sollte zu jedem der von {@link #parameters()} gelieferten
    *        Namen einen String-Wert enthalten.
-
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public boolean getBoolean(Values parameters);
 

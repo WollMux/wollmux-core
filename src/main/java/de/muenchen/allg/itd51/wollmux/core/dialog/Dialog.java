@@ -2,7 +2,7 @@
  * Dateiname: Dialog.java
  * Projekt  : WollMux
  * Funktion : Ein Dialog, der dem Benutzer erlaubt verschiedenen Werte zu setzen.
- * 
+ *
  * Copyright (c) 2008-2015 Landeshauptstadt München
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@
  *
  * @author Matthias Benkmann (D-III-ITD 5.1)
  * @version 1.0
- * 
+ *
  */
 package de.muenchen.allg.itd51.wollmux.core.dialog;
 
@@ -45,7 +45,7 @@ public interface Dialog
   /**
    * Liefert die Instanz dieses Dialogs für den gegebenen context (neu erstellt,
    * falls bisher noch nicht verwendet).
-   * 
+   *
    * @param context
    *          Für jeden Kontext hält der Dialog eine unabhängige Kopie von seinem
    *          Zustand vor. Auf diese Weise lässt sich der Dialog an verschiedenen
@@ -54,7 +54,6 @@ public interface Dialog
    * @throws ConfigurationErrorException
    *           wenn der Dialog mit fehlerhaften Daten initialisiert wurde (und der
    *           Fehler erst bei der Instanziierung diagnostiziert werden konnte).
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public Dialog instanceFor(Map<Object, Object> context)
       throws ConfigurationErrorException;
@@ -67,14 +66,12 @@ public interface Dialog
    * von null ist in diesem Fall allerdings nicht verpflichtend, sondern es ist
    * ebenfalls der leere String möglich. Die Rückgabe von null sollte jedoch
    * erfolgen, falls es dem Dialog irgendwie möglich ist.
-   * 
+   *
    * Diese Funktion darf nur für mit instanceFor() erzeugte Instanzen aufgerufen
    * werden. Ansonsten liefert sie immer null. Diese Funktion ist Thread-safe.
    * Insbesondere muss sie nicht im EDT aufgerufen werden. Sie kann sowohl vor,
    * während als auch nach dem Aufruf von show() aufgerufen werden, auch nachdem der
    * Dialog schon geschlossen wurde.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public Object getData(String id);
 
@@ -88,15 +85,13 @@ public interface Dialog
    * mehr Information (d.h. eine größere Menge) zurückgeliefert wird. Das
    * zurückgelieferte Objekt darf verändert werden. Dies hat keine Auswirkungen auf
    * den Dialog.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public Collection<String> getSchema();
 
   /**
    * Zeigt den Dialog an. Diese Funktion darf nur für mit instanceFor() erzeugte
    * Instanzen aufgerufen werden. Ansonsten tut sie nichts.
-   * 
+   *
    * @param dialogEndListener
    *          falls nicht null, wird die
    *          {@link ActionListener#actionPerformed(java.awt.event.ActionEvent)}
@@ -112,7 +107,6 @@ public interface Dialog
    * @throws ConfigurationErrorException
    *           wenn der Dialog mit fehlerhaften Daten initialisiert wurde (und der
    *           Fehler erst bei der Anzeige diagnostiziert werden konnte).
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public void show(ActionListener dialogEndListener, FunctionLibrary funcLib,
       DialogLibrary dialogLib) throws ConfigurationErrorException;

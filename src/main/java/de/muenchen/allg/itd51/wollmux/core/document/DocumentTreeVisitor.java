@@ -14,7 +14,7 @@ import de.muenchen.allg.itd51.wollmux.core.document.nodes.FormControl;
  * aufgerufen (teilweise mehrfach). Die Methoden können alle false zurückliefern um
  * zu signalisieren, dass das Durchlaufen des Baumes abgebrochen werden soll. Die
  * von Standard-Methoden liefern alle true.
- * 
+ *
  * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public abstract class DocumentTreeVisitor
@@ -28,9 +28,8 @@ public abstract class DocumentTreeVisitor
   /**
    * Wird für Knoten aufgerufen, die eine Einfügestelle (insertValue,
    * insertFormValue) repräsentieren.
-   * 
+   *
    * @return false, wenn keine weiteren Knoten besucht werden sollen.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public boolean insertionBookmark(InsertionBookmark bookmark)
   {
@@ -39,9 +38,8 @@ public abstract class DocumentTreeVisitor
 
   /**
    * Wird für Knoten aufgerufen, die Formularsteuerelement repräsentieren.
-   * 
+   *
    * @return false, wenn keine weiteren Knoten besucht werden sollen.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public boolean formControl(FormControl control)
   {
@@ -51,13 +49,12 @@ public abstract class DocumentTreeVisitor
   /**
    * Wird für Knoten aufgerufen, die im inneren des Baumes liegen, d,h, Kindknoten
    * haben können. Dies sind zum Beispiel Absätze.
-   * 
+   *
    * @param count
    *          Der Knoten wird einmal mit count == 0 besucht bevor der erste
    *          Nachfahre besucht wird und einmal nach dem Besuchen aller Nachfahren
    *          mit count == 1.
    * @return false, wenn keine weiteren Knoten besucht werden sollen.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public boolean container(Container container, int count)
   {
@@ -66,9 +63,8 @@ public abstract class DocumentTreeVisitor
 
   /**
    * Wird für Knoten aufgerufen, die Textabschnitte repräsentieren.
-   * 
+   *
    * @return false, wenn keine weiteren Knoten besucht werden sollen.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public boolean textRange(TextRange textRange)
   {

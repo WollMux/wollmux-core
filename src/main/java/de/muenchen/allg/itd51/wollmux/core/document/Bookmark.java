@@ -3,7 +3,7 @@
  * Projekt  : WollMux
  * Funktion : Diese Klasse repräsentiert ein Bookmark in OOo und bietet Methoden
  *            für den vereinfachten Zugriff und die Manipulation von Bookmarks an.
- * 
+ *
  * Copyright (c) 2009-2015 Landeshauptstadt München
  *
  * This program is free software: you can redistribute it and/or modify
@@ -37,7 +37,7 @@
  * -------------------------------------------------------------------
  *
  * @author Christoph Lutz (D-III-ITD 5.1)
- * 
+ *
  */
 package de.muenchen.allg.itd51.wollmux.core.document;
 
@@ -65,7 +65,7 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 /**
  * Diese Klasse repräsentiert ein Bookmark in OOo und bietet Methoden für den
  * vereinfachten Zugriff und die Manipulation von Bookmarks an.
- * 
+ *
  * @author Christoph Lutz (D-III-ITD-5.1)
  */
 public class Bookmark
@@ -90,7 +90,7 @@ public class Bookmark
    * Der Konstruktor liefert eine Instanz eines bereits im Dokument doc bestehenden
    * Bookmarks mit dem Namen name zurück; ist das Bookmark im angebegenen Dokument
    * nicht enthalten, so wird eine NoSuchElementException zurückgegeben.
-   * 
+   *
    * @param name
    *          Der Name des bereits im Dokument vorhandenen Bookmarks.
    * @param doc
@@ -122,7 +122,7 @@ public class Bookmark
    * die durch range beschrieben ist. Sollte die range keine Ausdehnung haben, so
    * wird an der Position ein kollabiertes Bookmark erzeugt, ansonsten ein
    * dekollabiertes Bookmark, das die range umschließt.
-   * 
+   *
    * @param name
    *          Der Name des neu zu erstellenden Bookmarks.
    * @param doc
@@ -185,7 +185,7 @@ public class Bookmark
    * Anwender gelöscht wurde. Ist das Bookmark nicht (mehr) im Dokument vorhanden, so
    * wird ein new UnoService(null) zurückgeliefert, welches leichter verarbeitet
    * werden kann.
-   * 
+   *
    * @param name
    *          Der Name des bereits im Dokument vorhandenen Bookmarks.
    * @param document
@@ -213,7 +213,7 @@ public class Bookmark
 
   /**
    * Diese Methode liefert den (aktuellen) Namen des Bookmarks als String zurück.
-   * 
+   *
    * @return liefert den (aktuellen) Namen des Bookmarks als String zurück.
    */
   public String getName()
@@ -223,8 +223,6 @@ public class Bookmark
 
   /**
    * Setzt den ViewCursor auf dieses Bookmark.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1) TESTED
    */
   public void select()
   {
@@ -265,7 +263,7 @@ public class Bookmark
    * Diese Methode benennt dieses Bookmark in newName um. Ist der Name bereits
    * definiert, so wird automatisch eine Nummer an den Namen angehängt. Die Methode
    * gibt den tatsächlich erzeugten Bookmarknamen zurück.
-   * 
+   *
    * @return den tatsächlich erzeugten Namen des Bookmarks. Falls das Bookmark
    *         verschwunden ist, so wird das Objekt {@link #BROKEN} zurückgeliefert (==
    *         vergleichbar).
@@ -325,7 +323,7 @@ public class Bookmark
 
   /**
    * Diese Methode weist dem Bookmark einen neuen TextRange (als Anchor) zu.
-   * 
+   *
    * @param xTextRange
    *          Der neue TextRange des Bookmarks.
    */
@@ -355,7 +353,7 @@ public class Bookmark
    * ist es besser den von dieser Methode erzeugten Cursor statt direkt die TextRange
    * zu verwenden, da sich mit dem Cursor der Inhalt des Bookmarks sicherer
    * enumerieren lässt.
-   * 
+   *
    * @return einen TextCursor für den Anchor des Bookmarks oder <code>null</code>
    *         wenn das Bookmark nicht mehr existiert
    */
@@ -376,8 +374,6 @@ public class Bookmark
    * Bookmark nicht mehr existiert. Aufgrund von OOo-Issue #67869 sollte überprüft
    * werden, ob es nicht besser ist statt dieser Methode {@link #getTextCursor()} zu
    * verwenden.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public XTextRange getAnchor()
   {
@@ -414,10 +410,9 @@ public class Bookmark
 
   /**
    * Entfernt allen Text (aber keine Bookmarks) aus range.
-   * 
+   *
    * @param doc
    *          das Dokument, das range enthält.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public static void removeTextFromInside(XTextDocument doc, XTextRange range)
   {
@@ -514,11 +509,9 @@ public class Bookmark
    * Ankerobjekt des Bookmarks diese Property besitzt, ansonsten wird false
    * geliefert. Das entsprechende Ankerobjekt wird durch entsprechende Enumerationen
    * über das Bookmarkobject gewonnen.
-   * 
+   *
    * @return true, wenn die Property IsCollapsed existiert und true ist. Ansonsten
    *         wird false geliefert.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public boolean isCollapsed()
   {
@@ -560,8 +553,6 @@ public class Bookmark
    * Weise wird OOo-Issue #73568 umgangen, gemäß dem kein Inhalt in das Bookmark
    * eingefügt werden kann, wenn IsCollapsed==true ist. Ist das Bookmark bereits
    * nicht-kollabiert, so wird nichts unternommen.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public void decollapseBookmark()
   {
@@ -604,8 +595,6 @@ public class Bookmark
    * Beim Kollabieren des Bookmarks wird der vom dekollabierten Bookmark umgebene
    * Inhalt NICHT gelöscht. Das Bookmark befindet sich nach dem Kollabieren direkt
    * vor dem ehemals umschlossenen Inhalt.
-   * 
-   * @author Daniel Benkmann (D-III-ITD-D101)
    */
   public void collapseBookmark()
   {
@@ -639,7 +628,7 @@ public class Bookmark
   /**
    * Definition von equals, damit Bookmarks über HashMaps/HashSets verwaltet werden
    * können.
-   * 
+   *
    * @see java.lang.Object#equals(java.lang.Object)
    */
   @Override
@@ -658,7 +647,7 @@ public class Bookmark
   /**
    * Definition von hashCode, damit Bookmarks über HashMaps/HashSets verwaltet werden
    * können.
-   * 
+   *
    * @see java.lang.Object#hashCode()
    */
   @Override

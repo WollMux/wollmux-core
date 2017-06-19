@@ -2,7 +2,7 @@
  * Dateiname: DocumentTree.java
  * Projekt  : WollMux
  * Funktion : Stellt die interessanten Teile eines Textdokuments als Baum zur Verfügung.
- * 
+ *
  * Copyright (c) 2008-2015 Landeshauptstadt München
  *
  * This program is free software: you can redistribute it and/or modify
@@ -27,7 +27,7 @@
  *
  * @author Matthias Benkmann (D-III-ITD 5.1)
  * @version 1.0
- * 
+ *
  */
 package de.muenchen.allg.itd51.wollmux.core.document;
 
@@ -72,7 +72,7 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 
 /**
  * Stellt die interessanten Teile eines Textdokuments als Baum zur Verfügung.
- * 
+ *
  * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public class DocumentTree
@@ -93,8 +93,6 @@ public class DocumentTree
 
   /**
    * Erzeugt einen neuen Dokumentbaum für das Dokument doc.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public DocumentTree(XTextDocument doc)
   {
@@ -104,7 +102,7 @@ public class DocumentTree
      * Zuerst enumerieren wir den Inhalt des Body Texts
      */
     XEnumerationAccess enuAccess = UNO.XEnumerationAccess(doc.getText());
-    if (enuAccess == null) 
+    if (enuAccess == null)
     {
       return;
     }
@@ -146,7 +144,7 @@ public class DocumentTree
 
     root = new ContainerNode(topLevelNodes);
   }
-  
+
   public Node getRoot()
   {
     return root;
@@ -155,10 +153,9 @@ public class DocumentTree
   /**
    * Nimmt eine XEnumeration enu von Absätzen und TextTables und fügt für jedes
    * Element von enu zu nodes einen entsprechenden {@link ContainerNode} hinzu.
-   * 
+   *
    * @param doc
    *          das Dokument in dem die Absätze liegen.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private void handleParagraphEnumeration(XEnumeration enu, List<Node> nodes,
       XTextDocument doc)
@@ -184,7 +181,7 @@ public class DocumentTree
       // unterstützt nicht XEnumerationAccess, ist wohl SwXTextTable
       {
         XTextTable table = UNO.XTextTable(ele);
-        if (table != null) 
+        if (table != null)
         {
           handleTextTable(table, nodes, doc);
         }
@@ -195,10 +192,9 @@ public class DocumentTree
   /**
    * Fügt nodes einen neuen {@link ContainerNode} hinzu, der die Zellen von table
    * enthält.
-   * 
+   *
    * @param doc
    *          das Dokument das die Tabelle enthält.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private void handleTextTable(XTextTable table, Collection<Node> nodes,
       XTextDocument doc)
@@ -220,10 +216,9 @@ public class DocumentTree
   /**
    * Fügt nodes einen neuen {@link ParagraphNode} hinzu, der die Inhalte des Absatzes
    * paragraph.
-   * 
+   *
    * @param doc
    *          das Dokument das den Absatz enthält.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private void handleParagraph(XEnumerationAccess paragraph, Collection<Node> nodes,
       XTextDocument doc)
@@ -275,7 +270,7 @@ public class DocumentTree
 
     nodes.add(new ParagraphNode(textPortions));
   }
-  
+
   private void handleBookmark(Object textPortion, List<Node> textPortions, XTextDocument doc)
   {
     boolean isStart = false;
@@ -287,7 +282,7 @@ public class DocumentTree
         ((Boolean) UNO.getProperty(textPortion, "IsStart")).booleanValue();
       isCollapsed =
         ((Boolean) UNO.getProperty(textPortion, "IsCollapsed")).booleanValue();
-      if (isCollapsed) 
+      if (isCollapsed)
       {
         isStart = true;
       }
@@ -297,7 +292,7 @@ public class DocumentTree
     {
       return;
     }
-    if (bookmark == null) 
+    if (bookmark == null)
     {
       return;
     }
@@ -421,12 +416,10 @@ public class DocumentTree
       textPortions.add(new CheckboxNode(shape, model, doc));
     }
   }
-  
+
   /**
    * Liefert eine textuelle Baumdarstellung des Baums mit Wurzel root. Jeder Zeile
    * wird childPrefix vorangestellt.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public static String treeDump(Node root, String childPrefix)
   {

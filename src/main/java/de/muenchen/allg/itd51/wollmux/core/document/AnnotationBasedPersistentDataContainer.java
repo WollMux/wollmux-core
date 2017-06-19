@@ -27,7 +27,7 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 
 /**
  * Implementiert die alte Zugriffsmethode auf persistente Daten in Notizen.
- * 
+ *
  * @author Christoph Lutz (D-III-ITD-D101)
  */
 public class AnnotationBasedPersistentDataContainer implements
@@ -94,7 +94,7 @@ public class AnnotationBasedPersistentDataContainer implements
 
   /**
    * Liefert alle Informations-Textfelder mit Id fieldName zurück.
-   * 
+   *
    * @param create
    *          falls true so werden entsprechende Felder angelegt, wenn sie nicht
    *          existieren.
@@ -104,7 +104,6 @@ public class AnnotationBasedPersistentDataContainer implements
    *       bei size == 0 wird mindestens ein Block geliefert.
    * @return leeren Vector falls das Feld nicht existiert und create == false oder
    *         falls ein Fehler auftritt.
-   * @author Matthias Benkmann (D-III-ITD 5.1) TESTED
    */
   private Vector<Object> getWollMuxTextFields(String fieldName, boolean create,
       int size)
@@ -232,8 +231,6 @@ public class AnnotationBasedPersistentDataContainer implements
   /**
    * Speichert dataValue mit der id dataId persistent im Dokument. Falls bereits
    * Daten mit der selben dataId vorhanden sind, werden sie überschrieben.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1) TESTED
    */
   @Override
   public void setData(DataID dataId, String dataValue)
@@ -273,8 +270,6 @@ public class AnnotationBasedPersistentDataContainer implements
 
   /**
    * Entfernt die mit dataId bezeichneten Daten, falls vorhanden.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   @Override
   public void removeData(DataID dataId)
@@ -307,10 +302,10 @@ public class AnnotationBasedPersistentDataContainer implements
    * Entfernt zuerst die mit dataId bezeichneten Daten (falls vorhanden) und
    * speichert dann den alten Wert wieder neu unter dataId. In aller Regel sollte
    * der Zustand der Daten nach Aufruf dieser Methode also völlig unverändert sein.
-   * 
+   *
    * FIXME: Diese Methode wird nur für den Workaround für Issue 100374 benötigt.
    * Sie kann also theoretisch entfernt werden, sobald der Workaround rausfliegt.
-   * 
+   *
    * @param dataId
    *          die ID der Daten die neu geschrieben werden sollen.
    * @author Daniel Benkmann (D-III-ITD-D101)
@@ -327,9 +322,9 @@ public class AnnotationBasedPersistentDataContainer implements
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.muenchen.allg.itd51.wollmux.PersistentData.DataContainer#flush()
-   * 
+   *
    * TESTED
    */
   @Override

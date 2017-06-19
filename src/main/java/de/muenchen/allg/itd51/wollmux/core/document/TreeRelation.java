@@ -8,7 +8,7 @@ import com.sun.star.text.XTextRange;
  * sollen. Dabei legt die TreeRelation fest, ob die beiden Textbereiche
  * identisch, benachbart, Eltern bzw. Kinder des jeweils anderen oder gar
  * nicht vergleichbar sind.
- * 
+ *
  * @author Christoph Lutz (D-III-ITD-5.1)
  */
 public class TreeRelation
@@ -91,8 +91,6 @@ public class TreeRelation
    * startet - Diese Bedingung ist genau dann erfüllt, wenn A als Nachbar vor
    * B liegt oder A den Textbereich B voll umschließt (also B ein Kind von A
    * ist) und A somit z.B. bei sortierten Listen vor B einsortiert gehört.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public boolean isALessThanB()
   {
@@ -104,8 +102,6 @@ public class TreeRelation
    * startet - Diese Bedingung ist genau dann erfüllt, wenn A als Nachbar nach
    * B liegt oder B den Textbereich A voll umschließt (also A ein Kind von B
    * ist) und B somit z.B. bei sortierten Listen vor A einsortiert gehört.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public boolean isAGreaterThanB()
   {

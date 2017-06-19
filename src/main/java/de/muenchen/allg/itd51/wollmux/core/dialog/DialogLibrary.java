@@ -2,7 +2,7 @@
 * Dateiname: DialogLibrary.java
 * Projekt  : WollMux
 * Funktion : Eine Bibliothek von benannten Dialogs
-* 
+*
  * Copyright (c) 2008-2015 Landeshauptstadt München
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@
 *
 * @author Matthias Benkmann (D-III-ITD 5.1)
 * @version 1.0
-* 
+*
 */
 package de.muenchen.allg.itd51.wollmux.core.dialog;
 
@@ -43,18 +43,17 @@ public class DialogLibrary
 {
   private Map<String, Dialog> mapIdToDialog = new HashMap<String, Dialog>();
   private DialogLibrary baselib;
-  
-  
+
+
   /**
-   * Erzeugt eine leere Dialogsbibliothek. 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
+   * Erzeugt eine leere Dialogsbibliothek.
    */
   public DialogLibrary(){}
-  
+
   /**
    * Erzeugt eine Dialogsbibliothek, die baselib referenziert (nicht kopiert!).
    * baselib wird immer dann befragt, wenn die Dialogsbibliothek selbst keinen
-   * Dialog des entsprechenden Namens enthält.  
+   * Dialog des entsprechenden Namens enthält.
    * @param baselib
    */
   public DialogLibrary(DialogLibrary baselib)
@@ -64,7 +63,6 @@ public class DialogLibrary
 
   /**
    * Fügt dialog dieser Dialogsbibliothek unter dem Namen dlgName hinzu.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public void add(String dlgName, Dialog dialog)
   {
@@ -78,7 +76,6 @@ public class DialogLibrary
    * Referenz auf eine andere Bibliothek initialisiert, so wird diese
    * befragt, falls die Dialogsbibliothek selbst keinen Dialog des entsprechenden
    * Namens kennt.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public Dialog get(String dlgName)
   {
@@ -86,5 +83,5 @@ public class DialogLibrary
     if (dialog == null && baselib != null) dialog = baselib.get(dlgName);
     return dialog;
   }
-  
+
 }

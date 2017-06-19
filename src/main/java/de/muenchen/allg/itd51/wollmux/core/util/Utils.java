@@ -23,8 +23,6 @@ public class Utils
    * Konfigurationsknoten /org.openoffice.Setup/Product/oooSetupVersionAboutBox
    * konkateniert mit /org.openoffice.Setup/Product/oooSetupExtension zurück oder
    * null, falls bei der Bestimmung der Versionsnummer Fehler auftraten.
-   * 
-   * @author Christoph Lutz (D-III-ITD-D101)
    */
   public static String getOOoVersion()
   {

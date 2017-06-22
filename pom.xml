@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.muenchen</groupId>
 	<artifactId>wollmux-core</artifactId>
-	<version>17.09-SNAPSHOT</version>
+	<version>17.10-SNAPSHOT</version>
 	<name>WollMux Core Classes</name>
 
 	<properties>

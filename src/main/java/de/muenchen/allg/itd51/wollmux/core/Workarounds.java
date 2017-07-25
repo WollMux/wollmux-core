@@ -4,7 +4,6 @@ import java.util.regex.Pattern;
 
 import de.muenchen.allg.itd51.wollmux.core.util.L;
 import de.muenchen.allg.itd51.wollmux.core.util.Logger;
-import de.muenchen.allg.itd51.wollmux.core.util.Utils;
 
 public class Workarounds
 {
@@ -14,8 +13,6 @@ public class Workarounds
    */
   public static final Pattern INSERTFORMVALUE_BOOKMARK_TEXT_THAT_CAN_BE_SAFELY_DELETED_WORKAROUND =
     Pattern.compile("\\A.*[<\\[{].*[\\]>}]\\z");
-
-  private static Boolean workaround100374 = null;
 
   private static Pattern workaround101249 = null;
 
@@ -46,28 +43,5 @@ public class Workarounds
         INSERTFORMVALUE_BOOKMARK_TEXT_THAT_CAN_BE_SAFELY_DELETED_WORKAROUND;
     }
     return workaround101249;
-  }
-
-  /**
-   * Issue #100374 betrifft OOo 3.0.x. Der Workaround kann entfernt werden, wenn
-   * voraussichtlich OOo 3.1 flächendeckend eingesetzt wird.
-   */
-  public static boolean applyWorkaroundForOOoIssue100374()
-  {
-    if (workaround100374 == null)
-    {
-      String version = Utils.getOOoVersion();
-      // -100374 ist der Marker für unsere selbst gepatchten Versionen ohne den
-      // Fehler
-      if (version != null && version.startsWith("3.0")
-        && !version.contains("-100374"))
-      {
-        workaround100374 = applyWorkaround("100374");
-      }
-      else
-        workaround100374 = Boolean.FALSE;
-    }
-
-    return workaround100374.booleanValue();
   }
 }

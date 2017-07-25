@@ -53,7 +53,6 @@ import com.sun.star.container.XNamed;
 import com.sun.star.drawing.XControlShape;
 import com.sun.star.frame.XController;
 import com.sun.star.lang.XServiceInfo;
-import com.sun.star.table.XCell;
 import com.sun.star.text.XDependentTextField;
 import com.sun.star.text.XTextContent;
 import com.sun.star.text.XTextCursor;
@@ -104,31 +103,7 @@ public final class FormFieldFactory
       return formField;
     }
 
-    /*
-     * Falls die range in einer Tabellenzelle liegt, wird sie auf die ganze Zelle
-     * ausgeweitet, damit die ganze Zelle gescannt wird (Workaround für Bug
-     * http://qa.openoffice.org/issues/show_bug.cgi?id=68261)
-     */
-    XTextRange range = null;
-    if (de.muenchen.allg.itd51.wollmux.core.Workarounds.applyWorkaroundForOOoIssue68261())
-    {
-      range = cmd.getAnchor();
-      if (range != null) {
-        range = range.getText();
-      }
-      XCell cell = UNO.XCell(range);
-      if (cell == null) // range nicht in Tabellenzelle?
-      {
-        range = null;
-      }
-
-      String cellName = (String) UNO.getProperty(cell, "CellName");
-      Logger.debug(L.m("Scanne Zelle %1", cellName));
-    }
-
-    if (range == null) {
-      range = cmd.getTextCursor();
-    }
+    XTextRange range = cmd.getTextCursor();
 
     if (range != null)
     {

@@ -2,7 +2,7 @@
  * Dateiname: Logger.java
  * Projekt  : WollMux
  * Funktion : Logging-Mechanismus zum Schreiben von Nachrichten auf eine PrintStream.
- * 
+ *
  * Copyright (c) 2010-2015 Landeshauptstadt München
  *
  * This program is free software: you can redistribute it and/or modify
@@ -26,7 +26,7 @@
  *                  | System.err als Standardausgabestrom
  * 14.10.2005 | LUT | critical(*) --> error(*)
  *                    + Anzeige des Datums bei allen Meldungen.
- * 27.10.2005 | BNK | Leerzeile nach jeder Logmeldung                  
+ * 27.10.2005 | BNK | Leerzeile nach jeder Logmeldung
  * 31.10.2005 | BNK | +error(msg, e)
  *                  | "critical" -> "error"
  * 02.11.2005 | BNK | LOG aus Default-Modus
@@ -49,9 +49,17 @@ package de.muenchen.allg.itd51.wollmux.core.util;
 
 import java.io.File;
 import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
+import java.io.IOException;
 import java.io.PrintStream;
-import java.util.Calendar;
+
+import org.apache.log4j.Appender;
+import org.apache.log4j.EnhancedPatternLayout;
+import org.apache.log4j.FileAppender;
+import org.apache.log4j.Layout;
+import org.apache.log4j.Level;
+import org.apache.log4j.LogManager;
+import org.apache.log4j.WriterAppender;
+import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -73,16 +81,6 @@ import java.util.Calendar;
 @Deprecated
 public class Logger
 {
-
-  /**
-   * Der PrintStream, auf den die Nachrichten geschrieben werden.
-   */
-  private static PrintStream outputStream = System.err;
-
-  /**
-   * optional: Datei, aus der der PrintStream erzeugt wird.
-   */
-  private static File file = null;
 
   /**
    * Im Logging-Modus <code>NONE</code> werden keine Nachrichten ausgegeben.
@@ -126,14 +124,18 @@ public class Logger
    */
   private static boolean ignoreInit = false;
 
+  private static final Layout LAYOUT = new EnhancedPatternLayout("%d{yyyy-MM-dd HH:mm:ss} %-5p %c:%L - %m%n");
+
+  private static final org.apache.log4j.Logger ROOT_LOGGER = LogManager.getRootLogger();
+
   private Logger()
   {}
-  
+
   /**
    * Über die Methode init wird der Logger mit einem PrintStream und einem
    * Logging-Modus initialisiert. Ohne diese Methode schreibt der Logger auf
    * System.err im Modus LOG.
-   * 
+   *
    * @param loggingMode
    *          Der neue Logging-Modus kann über die statischen Felder Logger.MODUS (z.
    *          B. Logger.DEBUG) angegeben werden.
@@ -143,18 +145,17 @@ public class Logger
     if (ignoreInit) {
       return;
     }
-    
-    outputStream = outputPrintStream;
-    // evtl. vorher erfolgte Zuweisung aufheben, damit outputStream
-    // auch wirklich verwendet wird
-    init((File) null, loggingMode);
+    init(loggingMode);
+    Appender appender = new WriterAppender(LAYOUT, outputPrintStream);
+    ROOT_LOGGER.removeAllAppenders();
+    ROOT_LOGGER.addAppender(appender);
   }
 
   /**
    * Über die Methode init wird der Logger mit einer Ausgabedatei und einem
    * Logging-Modus initialisiert. Ohne diese Methode schreibt der Logger auf
    * System.err im Modus LOG.
-   * 
+   *
    * @param outputFile
    *          Datei, in die die Ausgaben geschrieben werden.
    * @param loggingMode
@@ -167,16 +168,21 @@ public class Logger
     if (ignoreInit) {
       return;
     }
-
-    file = outputFile;
     init(loggingMode);
+    try {
+      Appender appender = new FileAppender(LAYOUT, outputFile.getAbsolutePath(), true);
+      ROOT_LOGGER.removeAllAppenders();
+      ROOT_LOGGER.addAppender(appender);
+    } catch (IOException e) {
+      Logger.error(e);
+    }
   }
 
   /**
    * Über die Methode init wird der Logger in dem Logging-Modus loggingMode
    * initialisiert. Ohne diese Methode schreibt der Logger auf System.err im Modus
    * LOG.
-   * 
+   *
    * @param loggingMode
    *          Der neue Logging-Modus kann über die statischen Felder Logger.MODUS (z.
    *          B. Logger.DEBUG) angegeben werden.
@@ -188,8 +194,27 @@ public class Logger
     }
 
     mode = loggingMode;
+    switch (mode)
+    {
+    case NONE:
+      ROOT_LOGGER.setLevel(Level.OFF);
+      break;
+    case ERROR:
+      ROOT_LOGGER.setLevel(Level.ERROR);
+      break;
+    case DEBUG:
+      ROOT_LOGGER.setLevel(Level.DEBUG);
+      break;
+    case ALL:
+      ROOT_LOGGER.setLevel(Level.TRACE);
+      break;
+    case LOG:
+    default:
+      ROOT_LOGGER.setLevel(Level.INFO);
+      break;
+    }
     Logger.debug2("========================== Logger::init(): LoggingMode = " + mode
-      + " ========================");
+        + " ========================");
   }
 
   /**
@@ -197,7 +222,7 @@ public class Logger
    * initialisiert, der in Form eines den obigen Konstanten-Namen übereinstimmenden
    * Strings vorliegt. Ohne diese Methode schreibt der Logger auf System.err im Modus
    * LOG.
-   * 
+   *
    * @param loggingMode
    *          Der neue Logging-Modus kann über die statischen Felder Logger.MODUS (z.
    *          B. Logger.DEBUG) angegeben werden.
@@ -238,40 +263,40 @@ public class Logger
    * Nachricht der höchsten Priorität "error" absetzen. Als "error" sind nur
    * Ereignisse einzustufen, die den Programmablauf unvorhergesehen verändern oder
    * die weitere Ausführung unmöglich machen.
-   * 
+   *
    * @param msg
    *          Die Logging-Nachricht
    */
   public static void error(String msg)
   {
     if (mode >= ERROR) {
-      printInfo("ERROR(" + getCaller(2) + "): ", msg, null);
+      getLogger(2).error(msg);
     }
   }
 
   /**
    * Wie {@link #error(String)}, nur dass statt dem String eine Exception ausgegeben
    * wird.
-   * 
+   *
    * @param e
    */
   public static void error(Throwable e)
   {
     if (mode >= ERROR) {
-      printInfo("ERROR(" + getCaller(2) + "): ", null, e);
+      getLogger(2).error("", e);
     }
   }
 
   /**
    * Wie {@link #error(String)}, nur dass statt dem String eine Exception ausgegeben
    * wird.
-   * 
+   *
    * @param e
    */
   public static void error(String msg, Exception e)
   {
     if (mode >= ERROR) {
-      printInfo("ERROR(" + getCaller(2) + "): ", msg, e);
+      getLogger(2).error(msg, e);
     }
   }
 
@@ -279,54 +304,54 @@ public class Logger
    * Nachricht der Priorität "log" absetzen. "log" enthält alle Nachrichten, die für
    * den täglichen Programmablauf beim Endanwender oder zur Auffindung der gängigsten
    * Bedienfehler interessant sind.
-   * 
+   *
    * @param msg
    *          Die Logging-Nachricht
    */
   public static void log(String msg)
   {
     if (mode >= LOG) {
-      printInfo("LOG(" + getCaller(2) + "): ", msg, null);
+      getLogger(2).info(msg);
     }
   }
 
   /**
    * Wie {@link #log(String)}, nur dass statt dem String eine Exception ausgegeben
    * wird.
-   * 
+   *
    * @param e
    */
   public static void log(Throwable e)
   {
     if (mode >= LOG) {
-      printInfo("LOG(" + getCaller(2) + "): ", null, e);
+      getLogger(2).info("", e);
     }
   }
 
   /**
    * Nachricht der Priorität "debug" absetzen. Die debug-Priorität dient zu debugging
    * Zwecken. Sie enthält Informationen, die für Programmentwickler interessant sind.
-   * 
+   *
    * @param msg
    *          Die Logging-Nachricht
    */
   public static void debug(String msg)
   {
     if (mode >= DEBUG) {
-      printInfo("DEBUG(" + getCaller(2) + "): ", msg, null);
+      getLogger(2).debug(msg);
     }
   }
 
   /**
    * Wie {@link #debug(String)}, nur dass statt dem String eine Exception ausgegeben
    * wird.
-   * 
+   *
    * @param e
    */
   public static void debug(Throwable e)
   {
     if (mode >= DEBUG) {
-      printInfo("DEBUG(" + getCaller(2) + "): ", null, e);
+      getLogger(2).debug("", e);
     }
   }
 
@@ -337,148 +362,49 @@ public class Logger
    * unübersichtlich machen, aber nicht zum schnellen Auffinden von Standard-Fehlern
    * geeignet sind. "debug2" ist geeignet, um ganz spezielle Fehler ausfindig zu
    * machen.
-   * 
+   *
    * @param msg
    *          Die Logging-Nachricht.
    */
   public static void debug2(String msg)
   {
     if (mode >= ALL) {
-      printInfo("DEBUG2(" + getCaller(2) + "): ", msg, null);
+      getLogger(2).trace(msg);
     }
   }
 
   /**
    * Wie {@link #debug2(String)}, nur dass statt dem String eine Exception ausgegeben
    * wird.
-   * 
+   *
    * @param e
    */
   public static void debug2(Throwable e)
   {
     if (mode >= ALL) {
-      printInfo("DEBUG2(" + getCaller(2) + "): ", null, e);
-    }
-  }
-
-  /**
-   * Gibt msg gefolgt vom Stacktrace von e aus, wobei jeder Zeile prefix
-   * vorangestellt wird.
-   */
-  private static void printInfo(String prefix, String msg, Throwable e)
-  {
-    PrintStream out = null;
-    PrintStream fileOut = null;
-    try
-    {
-      if (file != null)
-        try
-        {
-          fileOut = new PrintStream(new FileOutputStream(file, true));
-          out = fileOut;
-        }
-        catch (FileNotFoundException x)
-        {
-          out = Logger.outputStream;
-        }
-      else
-      {
-        out = Logger.outputStream;
-      }
-
-      // Zeit und Datum holen und aufbereiten
-      Calendar now = Calendar.getInstance();
-      int day = now.get(Calendar.DAY_OF_MONTH);
-      int month = now.get(Calendar.MONTH) + 1;
-      int hour = now.get(Calendar.HOUR_OF_DAY);
-      int minute = now.get(Calendar.MINUTE);
-      int second = now.get(Calendar.SECOND);
-      String dayStr = "" + day;
-      String monthStr = "" + month;
-      String hourStr = "" + hour;
-      String minuteStr = "" + minute;
-      String secondStr = "" + second;
-      if (day < 10) {
-        dayStr = "0" + dayStr;
-      }
-      if (month < 10) {
-        monthStr = "0" + monthStr;
-      }
-      if (hour < 10) {
-        hourStr = "0" + hourStr;
-      }
-      if (minute < 10) {
-        minuteStr = "0" + minuteStr;
-      }
-      if (second < 10) {
-        secondStr = "0" + secondStr;
-      }
-      prefix =
-        "" + now.get(Calendar.YEAR) + "-" + monthStr + "-" + dayStr + " " + hourStr
-          + ":" + minuteStr + ":" + secondStr + " " + prefix;
-
-      // Ausgabe schreiben:
-      if (msg != null)
-      {
-        out.print(prefix);
-        out.println(msg);
-      }
-
-      while (e != null)
-      {
-        out.print(prefix);
-        out.println(e.toString());
-        StackTraceElement[] se = e.getStackTrace();
-        for (int i = 0; i < se.length; i++)
-        {
-          out.print(prefix);
-          out.println(se[i].toString());
-        }
-
-        e = e.getCause();
-        if (e != null)
-        {
-          out.print(prefix);
-          out.println("-------- CAUSED BY ------");
-        }
-      }
-      out.println();
-      out.flush();
-    }
-    finally
-    {
-      // Ein File wird nach der Ausgabe geschlossen:
-      if (fileOut != null)
-      {
-        try
-        {
-          fileOut.close();
-        }
-        catch (Exception e1)
-        {}
-      }
+      getLogger(2).trace("", e);
     }
   }
 
   /**
    * Liefert Datei (ohne java Extension) und Zeilennummer des Elements level des
    * Stacks. Level 1 ist dabei die Funktion, die getCaller() aufruft.
-   * 
+   *
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  private static String getCaller(int level)
+  private static org.slf4j.Logger getLogger(int level)
   {
     try
     {
       Throwable grosserWurf = new Throwable();
       grosserWurf.fillInStackTrace();
       StackTraceElement[] dickTracy = grosserWurf.getStackTrace();
-      return dickTracy[level].getFileName().replaceAll("\\.java", "") + ":"
-        + dickTracy[level].getLineNumber();
+      return LoggerFactory.getLogger(dickTracy[level].getClassName());
     }
     catch (Exception x)
     {
-      return "Unknown:???";
+      Logger.debug2(x);
+      return LoggerFactory.getLogger(org.slf4j.Logger.ROOT_LOGGER_NAME);
     }
   }
 }

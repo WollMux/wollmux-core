@@ -12,7 +12,8 @@ import java.util.Iterator;
 import java.util.NoSuchElementException;
 import java.util.regex.Matcher;
 
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Reads a file and and produces a list of tokens in order with the appearance
@@ -22,6 +23,8 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
  */
 public class Tokenizer implements Iterator<Token>, Closeable
 {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(Tokenizer.class);
 
   /** Number of bytes of UTF-8 ordering mark. */
   private static final int BYTE_ORDERING_MARK_LENGTH = 4;
@@ -137,7 +140,7 @@ public class Tokenizer implements Iterator<Token>, Closeable
         }
       } catch (final IOException e)
       {
-        Logger.error("Die Konfigurationsdatei konnte nicht gelesen werden.", e);
+        LOGGER.error("Die Konfigurationsdatei konnte nicht gelesen werden.", e);
         throw new NoSuchElementException("File can't be read");
       }
     }

@@ -39,6 +39,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.script.provider.XScript;
 import com.sun.star.uno.AnyConverter;
 
@@ -47,7 +50,6 @@ import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
 import de.muenchen.allg.itd51.wollmux.core.parser.NodeNotFoundException;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 
 /**
  * Eine durch ein ConfigThingy beschriebene externe (d,h, nicht als ConfigThingy
@@ -57,6 +59,10 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
  */
 public class ExternalFunction
 {
+
+  private static final Logger LOGGER = LoggerFactory
+      .getLogger(ExternalFunction.class);
+
   /**
    * Falls die Funktion eine Funktion des Scripting Frameworks ist, ist hier die
    * Referenz auf das Skript gespeichert.
@@ -133,7 +139,7 @@ public class ExternalFunction
           {
             if (method != null)
             {
-              Logger.error(L.m("Klasse \"%1\" enthält 2 Methoden namens \"%2\"",
+              LOGGER.error(L.m("Klasse \"%1\" enthält 2 Methoden namens \"%2\"",
                 classStr, methodStr));
               break;
             }

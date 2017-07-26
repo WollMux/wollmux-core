@@ -9,8 +9,10 @@ import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.NoSuchElementException;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.muenchen.allg.itd51.wollmux.core.parser.PathProcessor;
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 
 /**
  * Reads a file and included ones and and produces a list of tokens in order
@@ -20,6 +22,8 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
  */
 public class Scanner implements Iterator<Token>, Closeable
 {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(Scanner.class);
 
   /** Stack of running tokenizers. */
   private final Deque<Tokenizer> stack = new LinkedList<Tokenizer>();
@@ -96,7 +100,7 @@ public class Scanner implements Iterator<Token>, Closeable
             PathProcessor.processInclude(token.getContent()))));
       } catch (final IOException e)
       {
-        Logger.error("Could not open file for token " + token.getContent()
+        LOGGER.error("Could not open file for token " + token.getContent()
             + ".", e);
         throw new NoSuchElementException("No more tokens avaiable");
       }

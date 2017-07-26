@@ -43,6 +43,9 @@ package de.muenchen.allg.itd51.wollmux.core.document;
 import java.util.Map;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.awt.XControlModel;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.NoSuchElementException;
@@ -65,7 +68,6 @@ import de.muenchen.allg.afid.UNO;
 import de.muenchen.allg.itd51.wollmux.core.document.commands.DocumentCommand.InsertFormValue;
 import de.muenchen.allg.itd51.wollmux.core.document.commands.DocumentCommands;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 
 /**
  * Repräsentiert eine Fabrik, die an der Stelle von WM('insertFormValue'...)-Bookmark
@@ -75,6 +77,10 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
  */
 public final class FormFieldFactory
 {
+
+  private static final Logger LOGGER = LoggerFactory
+      .getLogger(FormFieldFactory.class);
+
   public static final Pattern INSERTFORMVALUE =
     DocumentCommands.getPatternForCommand("insertFormValue");
 
@@ -740,7 +746,7 @@ public final class FormFieldFactory
       }
       catch (NoSuchElementException e)
       {
-        Logger.log(e);
+        LOGGER.info("", e);
       }
     }
   }
@@ -788,7 +794,7 @@ public final class FormFieldFactory
             if (textSurroundedByBookmark.length() > 0
               && !p.matcher(trimmedText).matches())
             {
-              Logger.log(L.m(
+              LOGGER.info(L.m(
                 "Kollabiere Textmarke \"%2\", die um den Text \"%1\" herum liegt.",
                 textSurroundedByBookmark, cmd.getBookmarkName()));
 
@@ -835,7 +841,7 @@ public final class FormFieldFactory
 
       String bookmarkName = cmd.getBookmarkName();
 
-      Logger.debug2(L.m("Erzeuge neues Input-Field für Bookmark \"%1\"",
+      LOGGER.trace(L.m("Erzeuge neues Input-Field für Bookmark \"%1\"",
         bookmarkName));
       try
       {
@@ -851,7 +857,7 @@ public final class FormFieldFactory
       }
       catch (java.lang.Exception e)
       {
-        Logger.error(e);
+        LOGGER.error("", e);
       }
     }
 

@@ -2,6 +2,9 @@ package de.muenchen.allg.itd51.wollmux.core.document;
 
 import java.util.HashMap;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XEnumeration;
 import com.sun.star.lang.IllegalArgumentException;
@@ -16,7 +19,6 @@ import com.sun.star.text.XTextDocument;
 
 import de.muenchen.allg.afid.UNO;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 
 /**
  * Implementiert die neue Zugriffsmethode auf persistente Daten im neuen
@@ -29,6 +31,10 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 public class RDFBasedPersistentDataContainer implements
     PersistentDataContainer
 {
+
+  private static final Logger LOGGER = LoggerFactory
+      .getLogger(RDFBasedPersistentDataContainer.class);
+
   /**
    * Enthält den XML-Namespace, der WollMux-Metadaten in der RDF/XML-Datei
    * eindeutig kennzeichnet.
@@ -115,7 +121,7 @@ public class RDFBasedPersistentDataContainer implements
     }
     catch (Exception e)
     {
-      Logger.error(L.m("Kann nicht auf den RDF-Graphen '%1' zugreifen.",
+      LOGGER.error(L.m("Kann nicht auf den RDF-Graphen '%1' zugreifen.",
         WOLLMUX_DATEN_URI_STR), e);
     }
     return null;
@@ -142,7 +148,7 @@ public class RDFBasedPersistentDataContainer implements
     }
     catch (Exception e)
     {
-      Logger.error(L.m("Kann RDF-Graphen '%1' nicht erzeugen.",
+      LOGGER.error(L.m("Kann RDF-Graphen '%1' nicht erzeugen.",
         WOLLMUX_DATEN_URI_STR), e);
     }
     return null;
@@ -198,7 +204,7 @@ public class RDFBasedPersistentDataContainer implements
     }
     catch (Exception e)
     {
-      Logger.error(L.m("Kann RDF-Metadatum zur DataID '%1' nicht auslesen.",
+      LOGGER.error(L.m("Kann RDF-Metadatum zur DataID '%1' nicht auslesen.",
         dataId), e);
     }
     return null;
@@ -234,7 +240,7 @@ public class RDFBasedPersistentDataContainer implements
     }
     catch (Exception e)
     {
-      Logger.error(
+      LOGGER.error(
         L.m("Kann RDF-Metadatum zur DataID '%1' nicht setzen.", dataId), e);
     }
   }
@@ -263,7 +269,7 @@ public class RDFBasedPersistentDataContainer implements
     {/* kann regulär auftreten */}
     catch (Exception e)
     {
-      Logger.error(
+      LOGGER.error(
         L.m("Kann RDF-Metadatum zur DataID '%1' nicht löschen.", dataId), e);
     }
   }
@@ -284,7 +290,7 @@ public class RDFBasedPersistentDataContainer implements
     }
     catch (Exception e)
     {
-      Logger.error(L.m("Kann RDF-Metadaten nicht persistieren."), e);
+      LOGGER.error(L.m("Kann RDF-Metadaten nicht persistieren."), e);
     }
   }
 }

@@ -40,6 +40,9 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.awt.XControlModel;
 import com.sun.star.container.XEnumeration;
 import com.sun.star.container.XEnumerationAccess;
@@ -67,7 +70,6 @@ import de.muenchen.allg.itd51.wollmux.core.document.nodes.ParagraphNode;
 import de.muenchen.allg.itd51.wollmux.core.document.nodes.TextRangeNode;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 
 /**
  * Stellt die interessanten Teile eines Textdokuments als Baum zur Verfügung.
@@ -76,6 +78,10 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
  */
 public class DocumentTree
 {
+
+  private static final Logger LOGGER = LoggerFactory
+      .getLogger(DocumentTree.class);
+
   /**
    * Pattern zum Erkennen von setGroups-Bookmarks.
    */
@@ -313,7 +319,7 @@ public class DocumentTree
       }
       catch (Exception x)
       {
-        Logger.error(L.m("Fehlerhaftes WM()-Bookmark: \"%1\"", name), x);
+        LOGGER.error(L.m("Fehlerhaftes WM()-Bookmark: \"%1\"", name), x);
         return;
       }
       return;
@@ -335,7 +341,7 @@ public class DocumentTree
       }
       catch (Exception x)
       {
-        Logger.error(L.m("Fehlerhaftes WM()-Bookmark: \"%1\"", name), x);
+        LOGGER.error(L.m("Fehlerhaftes WM()-Bookmark: \"%1\"", name), x);
         return;
       }
     }

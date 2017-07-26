@@ -44,6 +44,9 @@ import java.util.Iterator;
 import java.util.Set;
 import java.util.Vector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.text.XParagraphCursor;
 import com.sun.star.text.XText;
@@ -58,7 +61,6 @@ import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.parser.NodeNotFoundException;
 import de.muenchen.allg.itd51.wollmux.core.parser.SyntaxErrorException;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 
 /**
  * Beschreibt ein Dokumentkommando mit allen zugehörigen Eigenschaften wie z.B. die
@@ -68,6 +70,10 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
  */
 public abstract class DocumentCommand
 {
+
+  private static final Logger LOGGER = LoggerFactory
+      .getLogger(DocumentCommand.class);
+
   /**
    * Das geparste ConfigThingy des zugehörenden Bookmarks.
    */
@@ -138,7 +144,7 @@ public abstract class DocumentCommand
     // GROUPS-Attribut besitzen (die jetzt nicht merh unterstützt werden).
     if (wmCmd.query("GROUPS").count() > 0 && !canHaveGroupsAttribute())
     {
-      Logger.error(L.m(
+      LOGGER.error(L.m(
         "Das Dokumentkommando '%1' darf kein GROUPS-Attribut besitzen.",
         getBookmarkName()));
     }
@@ -218,7 +224,7 @@ public abstract class DocumentCommand
     XTextCursor cursor = bookmark.getTextCursor();
     if (cursor == null)
     {
-      Logger.debug(L.m(
+      LOGGER.debug(L.m(
         "Kann keinen Textcursor erstellen für Dokumentkommando '%1'\nIst das Bookmark vielleicht verschwunden?",
         this.toString()));
     }
@@ -1188,7 +1194,7 @@ public abstract class DocumentCommand
       }
       catch (NodeNotFoundException e)
       {
-        Logger.error(e);
+        LOGGER.error("", e);
       }
       flushToBookmark(false);
     }

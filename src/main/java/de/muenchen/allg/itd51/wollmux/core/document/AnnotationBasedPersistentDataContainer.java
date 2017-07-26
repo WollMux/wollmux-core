@@ -4,6 +4,10 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.awt.Size;
 import com.sun.star.container.XEnumeration;
 import com.sun.star.container.XNameAccess;
@@ -22,7 +26,6 @@ import com.sun.star.text.XTextFramesSupplier;
 
 import de.muenchen.allg.afid.UNO;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 
 /**
  * Implementiert die alte Zugriffsmethode auf persistente Daten in Notizen.
@@ -32,6 +35,10 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 public class AnnotationBasedPersistentDataContainer implements
     PersistentDataContainer
 {
+
+  private static final Logger LOGGER = LoggerFactory
+      .getLogger(AnnotationBasedPersistentDataContainer.class);
+
   /**
    * Property von doc zur Steuerung der Änderungsverfolgung, die beim Schreiben von
    * WollMux-Metadaten temporär ausgeschaltet werden muss.
@@ -240,7 +247,7 @@ public class AnnotationBasedPersistentDataContainer implements
       getWollMuxTextFields(dataId.getDescriptor(), true, dataValue.length());
     if (textfields.isEmpty())
     {
-      Logger.error(L.m("Konnte WollMux-Textfeld(er) \"%1\" nicht anlegen", dataId));
+      LOGGER.error(L.m("Konnte WollMux-Textfeld(er) \"%1\" nicht anlegen", dataId));
       UNO.setProperty(doc, RECORD_CHANGES, recordChanges);
       return;
     }
@@ -289,7 +296,7 @@ public class AnnotationBasedPersistentDataContainer implements
         }
         catch (Exception x)
         {
-          Logger.error(x);
+          LOGGER.error("", x);
         }
       }
     }

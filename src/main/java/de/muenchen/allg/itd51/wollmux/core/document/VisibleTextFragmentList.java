@@ -44,11 +44,13 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.parser.InvalidIdentifierException;
 import de.muenchen.allg.itd51.wollmux.core.parser.NodeNotFoundException;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 
 /**
  * TODO: überarbeiten! Die VisibleTextFragmentList repräsentiert die ausgewertete
@@ -62,6 +64,9 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
  */
 public class VisibleTextFragmentList
 {
+
+  private static final Logger LOGGER = LoggerFactory
+      .getLogger(VisibleTextFragmentList.class);
 
   /**
    * Abbruchwert zur Vermeidung von Endlosloops bei Variablenersetzungen.
@@ -95,19 +100,19 @@ public class VisibleTextFragmentList
       }
       catch (NodeNotFoundException e)
       {
-        Logger.error(e);
+        LOGGER.error("", e);
       }
     }
 
     // Debug-Ausgabe:
-    Logger.debug2(L.m("Variablenset an Knoten %1 '%2':", node.getName(),
+    LOGGER.trace(L.m("Variablenset an Knoten %1 '%2':", node.getName(),
       node.toString()));
 
     for (Map.Entry<String, String> ent : variables.entrySet())
     {
       String key = ent.getKey();
       String value = ent.getValue();
-      Logger.debug2("  " + key + "=\"" + value + "\"");
+      LOGGER.trace("  " + key + "=\"" + value + "\"");
     }
 
     // Matcher zum Finden der Variablen ersetzen:
@@ -128,7 +133,7 @@ public class VisibleTextFragmentList
           string.substring(0, m.start()) + variables.get(key)
             + string.substring(m.end());
         // string = m.replaceFirst((String) variables.get(key));
-        Logger.debug2(L.m("  Ersetzen der Variable %1 --> %2", m.group(0), string));
+        LOGGER.trace(L.m("  Ersetzen der Variable %1 --> %2", m.group(0), string));
         // Nach jeder Ersetzung wieder von vorne anfangen.
         m = var.matcher(string);
       }
@@ -137,7 +142,7 @@ public class VisibleTextFragmentList
         // Die Variable kann nicht ersetzt werden und wird auch nicht
         // ersetzt. Eine Exception muss deswegen nicht geworfen werden, es ist
         // aber sinnvoll, die Fehlermeldung in einem Logger rauszuschreiben.
-        Logger.error(L.m("Die Variable '%1' in der URL '%2' ist nicht definiert.",
+        LOGGER.error(L.m("Die Variable '%1' in der URL '%2' ist nicht definiert.",
           key, string));
       }
     }
@@ -194,7 +199,7 @@ public class VisibleTextFragmentList
         }
         catch (NodeNotFoundException e)
         {
-          Logger.error(L.m("FRAG_ID Angabe fehlt in %1",
+          LOGGER.error(L.m("FRAG_ID Angabe fehlt in %1",
             mappingConf.stringRepresentation()));
           continue;
         }
@@ -224,7 +229,7 @@ public class VisibleTextFragmentList
             }
             catch (EndlessLoopException e)
             {
-              Logger.error(
+              LOGGER.error(
                 L.m(
                   "Die URL zum Textfragment '%1' mit der FRAG_ID '%2' ist fehlerhaft.",
                   mappingConf.stringRepresentation(), fragId), e);

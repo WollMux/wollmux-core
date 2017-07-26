@@ -45,6 +45,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XEnumeration;
 import com.sun.star.container.XEnumerationAccess;
@@ -61,7 +64,6 @@ import com.sun.star.uno.AnyConverter;
 import de.muenchen.allg.afid.UNO;
 import de.muenchen.allg.afid.UnoService;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 
 /**
  * Diese Klasse repräsentiert ein Bookmark in OOo und bietet Methoden für den
@@ -71,6 +73,9 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
  */
 public class Bookmark
 {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(Bookmark.class);
+
   /**
    * Wird festgestellt, dass das Bookmark aus dem Dokument gelöscht wurde, so wird
    * der Name auf diesen String gesetzt (== vergleichbar).
@@ -144,7 +149,7 @@ public class Bookmark
     }
     catch (com.sun.star.uno.Exception e)
     {
-      Logger.error(e);
+      LOGGER.error("", e);
     }
 
     // Namen setzen
@@ -175,7 +180,7 @@ public class Bookmark
       }
       catch (IllegalArgumentException e)
       {
-        Logger.error(e);
+        LOGGER.error("", e);
       }
     }
   }
@@ -204,7 +209,7 @@ public class Bookmark
       }
       catch (WrappedTargetException e)
       {
-        Logger.error(e);
+        LOGGER.error("", e);
       }
       catch (NoSuchElementException e)
       {}
@@ -285,7 +290,7 @@ public class Bookmark
       return name;
     }
 
-    Logger.debug("Rename \"" + name + "\" --> \"" + newName + "\"");
+    LOGGER.debug("Rename \"" + name + "\" --> \"" + newName + "\"");
 
     // Falls bookmark <newName> bereits existiert, <newName>N verwenden (N ist
     // eine natürliche Zahl)
@@ -304,11 +309,11 @@ public class Bookmark
     }
     catch (NoSuchElementException x)
     {
-      Logger.debug(L.m("Umbenennung kann nicht durchgeführt werden, da die Textmarke verschwunden ist :~-("));
+      LOGGER.debug(L.m("Umbenennung kann nicht durchgeführt werden, da die Textmarke verschwunden ist :~-("));
     }
     catch (java.lang.Exception x)
     {
-      Logger.error(x);
+      LOGGER.error("", x);
     }
 
     if (bm != null)
@@ -343,7 +348,7 @@ public class Bookmark
     }
     catch (com.sun.star.uno.Exception e)
     {
-      Logger.error(e);
+      LOGGER.error("", e);
     }
   }
 
@@ -404,7 +409,7 @@ public class Bookmark
       }
       catch (NoSuchElementException e)
       {
-        Logger.error(e);
+        LOGGER.error("", e);
       }
     }
   }
@@ -489,7 +494,7 @@ public class Bookmark
         String portionName = iter.next();
         if (!bookmarks.hasByName(portionName))
         {
-          Logger.debug(L.m("Regeneriere Bookmark '%1'", portionName));
+          LOGGER.debug(L.m("Regeneriere Bookmark '%1'", portionName));
           bookmark =
             UNO.XMultiServiceFactory(doc).createInstance(
               "com.sun.star.text.Bookmark");
@@ -501,7 +506,7 @@ public class Bookmark
     }
     catch (com.sun.star.uno.Exception x)
     {
-      Logger.error(x);
+      LOGGER.error("", x);
     }
   }
 
@@ -570,7 +575,7 @@ public class Bookmark
     // Alte Range sichern
     XTextCursor cursor = range.getText().createTextCursorByRange(range);
 
-    Logger.debug(L.m("Dekollabiere Bookmark '%1'", name));
+    LOGGER.debug(L.m("Dekollabiere Bookmark '%1'", name));
 
     // altes Bookmark löschen.
     remove();
@@ -585,7 +590,7 @@ public class Bookmark
     }
     catch (com.sun.star.uno.Exception e)
     {
-      Logger.error(e);
+      LOGGER.error("", e);
     }
   }
 
@@ -607,7 +612,7 @@ public class Bookmark
       return;
     }
 
-    Logger.debug(L.m("Kollabiere Bookmark '%1'", name));
+    LOGGER.debug(L.m("Kollabiere Bookmark '%1'", name));
 
     // altes Bookmark löschen.
     remove();
@@ -622,7 +627,7 @@ public class Bookmark
     }
     catch (com.sun.star.uno.Exception e)
     {
-      Logger.error(e);
+      LOGGER.error("", e);
     }
   }
 

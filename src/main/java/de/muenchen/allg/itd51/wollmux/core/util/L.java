@@ -35,6 +35,8 @@ import java.util.Iterator;
 import java.util.Locale;
 import java.util.Map;
 
+import org.slf4j.LoggerFactory;
+
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 
 /**
@@ -44,6 +46,9 @@ import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
  */
 public class L
 {
+
+  private static final org.slf4j.Logger LOGGER = LoggerFactory.getLogger(L.class);
+
   private static StringBuilder debugMessages;
 
   /**
@@ -227,7 +232,7 @@ public class L
     }
     catch (Exception x)
     {
-      Logger.error("Error initializing localized strings", x);
+      LOGGER.error("Error initializing localized strings", x);
     }
   }
 }

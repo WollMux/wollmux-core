@@ -41,6 +41,9 @@ import java.util.Set;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.container.XNameAccess;
 import com.sun.star.text.XBookmarksSupplier;
 import com.sun.star.text.XTextRange;
@@ -64,7 +67,6 @@ import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.parser.NodeNotFoundException;
 import de.muenchen.allg.itd51.wollmux.core.parser.SyntaxErrorException;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 
 /**
  * Diese Klasse verwaltet die Dokumentkommandos eines Textdokuments und kann sich
@@ -80,6 +82,10 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
  */
 public class DocumentCommands implements Iterable<DocumentCommand>
 {
+
+  private static final Logger LOGGER = LoggerFactory
+      .getLogger(DocumentCommands.class);
+
   /**
    * Folgendes Pattern prüft ob es sich bei einem Bookmark um ein gültiges
    * "WM"-Kommando handelt und entfernt evtl. vorhandene Zahlen-Suffixe.
@@ -297,10 +303,10 @@ public class DocumentCommands implements Iterable<DocumentCommand>
     }
     catch (Exception e)
     {
-      Logger.debug2(e);
+      LOGGER.trace("", e);
     }
 
-    Logger.debug2(L.m(
+    LOGGER.trace(L.m(
       "updateBookmarks fertig nach %1 ms. Entfernte/Neue Dokumentkommandos: ",
       Integer.valueOf((int) (System.currentTimeMillis() - startTime)))
       + retiredDocumentCommands.size() + " / " + newDocumentCommands.size());
@@ -359,7 +365,7 @@ public class DocumentCommands implements Iterable<DocumentCommand>
     removeInvalidTextSections(invalidTextSections);
     addNewTextSections(newTextSections);
 
-    Logger.debug2(L.m(
+    LOGGER.trace(L.m(
       "updateTextSections fertig nach %1 ms. Entfernte/Neue TextSections: ",
       Integer.valueOf((int) (System.currentTimeMillis() - startTime)))
       + invalidTextSections.size() + " / " + newTextSections.size());
@@ -380,7 +386,7 @@ public class DocumentCommands implements Iterable<DocumentCommand>
       0, 0, 0, 0, 0, 0, 0, 0 };
     long[] counters = new long[] {
       0, 0, 0, 0, 0, 0, 0, 0 };
-    Logger.debug2("addNewDocumentCommands");
+    LOGGER.trace("addNewDocumentCommands");
 
     long lastTime = System.currentTimeMillis();
     for (Iterator<DocumentCommand> iter = newDocumentCommands.iterator(); iter.hasNext();)
@@ -435,15 +441,15 @@ public class DocumentCommands implements Iterable<DocumentCommand>
       lastTime = currentTime;
     }
 
-    Logger.debug2("addNewDocumentCommands statistics (number of elements, overalltime to add):");
-    Logger.debug2("- SetGroups:     " + counters[1] + ", " + times[1] + " ms");
-    Logger.debug2("- SetJumpMark:   " + counters[2] + ", " + times[2] + " ms");
-    Logger.debug2("- NotInOriginal: " + counters[3] + ", " + times[3] + " ms");
-    Logger.debug2("- OriginalOnly:  " + counters[4] + ", " + times[4] + " ms");
-    Logger.debug2("- DraftOnly:     " + counters[5] + ", " + times[5] + " ms");
-    Logger.debug2("- AllVersions:   " + counters[6] + ", " + times[6] + " ms");
-    Logger.debug2("- CopyOnly:      " + counters[7] + ", " + times[7] + " ms");
-    Logger.debug2("- Others:        " + counters[0] + ", " + times[0] + " ms");
+    LOGGER.trace("addNewDocumentCommands statistics (number of elements, overalltime to add):");
+    LOGGER.trace("- SetGroups:     " + counters[1] + ", " + times[1] + " ms");
+    LOGGER.trace("- SetJumpMark:   " + counters[2] + ", " + times[2] + " ms");
+    LOGGER.trace("- NotInOriginal: " + counters[3] + ", " + times[3] + " ms");
+    LOGGER.trace("- OriginalOnly:  " + counters[4] + ", " + times[4] + " ms");
+    LOGGER.trace("- DraftOnly:     " + counters[5] + ", " + times[5] + " ms");
+    LOGGER.trace("- AllVersions:   " + counters[6] + ", " + times[6] + " ms");
+    LOGGER.trace("- CopyOnly:      " + counters[7] + ", " + times[7] + " ms");
+    LOGGER.trace("- Others:        " + counters[0] + ", " + times[0] + " ms");
   }
 
   /**
@@ -728,12 +734,11 @@ public class DocumentCommands implements Iterable<DocumentCommand>
       // Paragraphen im GarbageCollector. Ich habe bereits probiert, einen
       // minimalen Testfall ohne WollMux für dieses Problem zu extrahieren, war
       // aber damit nicht erfolgreich.
-      Logger.debug(L.m("Warnung: inkonsistentes Bookmark entdeckt:"));
-      Logger.debug(e);
+      LOGGER.debug(L.m("Warnung: inkonsistentes Bookmark entdeckt:"), e);
     }
     catch (Exception e)
     {
-      Logger.error(e);
+      LOGGER.error("", e);
     }
     return null;
   }
@@ -772,7 +777,7 @@ public class DocumentCommands implements Iterable<DocumentCommand>
     }
     catch (java.lang.Exception e)
     {
-      Logger.error(
+      LOGGER.error(
         L.m(
           "Der Textbereich mit dem Namen '%1' enthält ein fehlerhaftes GROUPS-Attribut.",
           name), e);
@@ -788,7 +793,7 @@ public class DocumentCommands implements Iterable<DocumentCommand>
     }
     catch (java.lang.Exception e)
     {
-      Logger.error(e);
+      LOGGER.error("", e);
     }
 
     return null;

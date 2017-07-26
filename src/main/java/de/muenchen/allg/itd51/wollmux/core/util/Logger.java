@@ -70,6 +70,7 @@ import java.util.Calendar;
  * Logging.LOG voreingestellt.
  * </p>
  */
+@Deprecated
 public class Logger
 {
 
@@ -144,11 +145,9 @@ public class Logger
     }
     
     outputStream = outputPrintStream;
-    file = null; // evtl. vorher erfolgte Zuweisung aufheben, damit outputStream
+    // evtl. vorher erfolgte Zuweisung aufheben, damit outputStream
     // auch wirklich verwendet wird
-    mode = loggingMode;
-    Logger.debug2("========================== Logger::init(): LoggingMode = " + mode
-      + " ========================");
+    init((File) null, loggingMode);
   }
 
   /**
@@ -170,9 +169,7 @@ public class Logger
     }
 
     file = outputFile;
-    mode = loggingMode;
-    Logger.debug2("========================== Logger::init(): LoggingMode = " + mode
-      + " ========================");
+    init(loggingMode);
   }
 
   /**

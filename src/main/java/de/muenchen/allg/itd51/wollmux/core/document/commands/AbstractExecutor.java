@@ -2,6 +2,9 @@ package de.muenchen.allg.itd51.wollmux.core.document.commands;
 
 import java.util.Iterator;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.awt.FontWeight;
 import com.sun.star.text.XTextContent;
 import com.sun.star.text.XTextCursor;
@@ -27,21 +30,24 @@ import de.muenchen.allg.itd51.wollmux.core.document.commands.DocumentCommand.Set
 import de.muenchen.allg.itd51.wollmux.core.document.commands.DocumentCommand.SetType;
 import de.muenchen.allg.itd51.wollmux.core.document.commands.DocumentCommand.UpdateFields;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 
 /**
  * Implementiert einen leer-Executor, von dem abgeleitet werden kann, um konkrete
  * Executoren zu schreiben, mit denen die Dokumentkommandos, die
  * DocumentCommands.iterator() liefert bearbeitet werden können.
- * 
+ *
  * @author Christoph Lutz (D-III-ITD-5.1)
  */
 public abstract class AbstractExecutor implements DocumentCommand.Executor
 {
+
+  private static final Logger LOGGER = LoggerFactory
+      .getLogger(AbstractExecutor.class);
+
   /**
    * Führt alle Dokumentkommandos aus commands aus, die nicht den Status DONE=true
    * oder ERROR=true besitzen.
-   * 
+   *
    * @param commands
    * @return Anzahl der bei der Ausführung aufgetretenen Fehler.
    */
@@ -171,35 +177,35 @@ public abstract class AbstractExecutor implements DocumentCommand.Executor
   public static void insertErrorField(DocumentCommand cmd, XTextDocument doc, java.lang.Exception e)
   {
     String msg = L.m("Fehler in Dokumentkommando '%1'", cmd.getBookmarkName());
-  
+
     // Meldung auch auf dem Logger ausgeben
     if (e != null)
     {
-      Logger.error(msg, e);
+      LOGGER.error(msg, e);
     }
     else
     {
-      Logger.error(msg);
+      LOGGER.error(msg);
     }
-  
+
     cmd.setTextRangeString(L.m("<FEHLER:  >"));
-  
+
     // Cursor erst NACH Aufruf von cmd.setTextRangeString(...) holen, da Bookmark
     // eventuell dekollabiert wird!
     XTextCursor insCursor = cmd.getTextCursor();
     if (insCursor == null)
     {
-      Logger.error(L.m("Kann Fehler-Feld nicht einfügen, da kein InsertCursor erzeugt werden konnte."));
+      LOGGER.error(L.m("Kann Fehler-Feld nicht einfügen, da kein InsertCursor erzeugt werden konnte."));
       return;
       // Anmerkung: Aufruf von cmd.setTextRangeString() oben macht nichts, falls kein
       // InsertCursor erzeugt werden kann, daher kein Problem, dass die Abfrage nach
       // insCursor == null erst danach geschieht
     }
-  
+
     // Text fett und rot machen:
     UNO.setProperty(insCursor, "CharColor", Integer.valueOf(0xff0000));
     UNO.setProperty(insCursor, "CharWeight", Float.valueOf(FontWeight.BOLD));
-  
+
     // Ein Annotation-Textfield erzeugen und einfügen:
     try
     {
@@ -214,7 +220,7 @@ public abstract class AbstractExecutor implements DocumentCommand.Executor
     }
     catch (java.lang.Exception x)
     {
-      Logger.error(x);
+      LOGGER.error("", x);
     }
   }
 }

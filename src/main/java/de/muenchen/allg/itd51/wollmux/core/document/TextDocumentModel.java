@@ -54,6 +54,9 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.container.XEnumeration;
 import com.sun.star.container.XEnumerationAccess;
 import com.sun.star.container.XNamed;
@@ -82,7 +85,6 @@ import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.parser.NodeNotFoundException;
 import de.muenchen.allg.itd51.wollmux.core.parser.SyntaxErrorException;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 
 /**
  * Diese Klasse repräsentiert das Modell eines aktuell geöffneten TextDokuments und
@@ -93,6 +95,10 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
  */
 public class TextDocumentModel
 {
+
+  private static final Logger LOGGER = LoggerFactory
+      .getLogger(TextDocumentModel.class);
+
   public static final String OVERRIDE_FRAG_DB_SPALTE = "OVERRIDE_FRAG_DB_SPALTE";
 
   /**
@@ -470,7 +476,7 @@ public class TextDocumentModel
     }
     catch (IOException e)
     {
-      Logger.error(errmsg, e);
+      LOGGER.error(errmsg, e);
     }
     catch (SyntaxErrorException e)
     {
@@ -485,7 +491,7 @@ public class TextDocumentModel
       catch (java.lang.Exception forgetMe)
       {
         // Fehlermeldung des SyntaxFehlers ausgeben
-        Logger.error(errmsg, e);
+        LOGGER.error(errmsg, e);
       }
     }
 
@@ -534,7 +540,7 @@ public class TextDocumentModel
     }
     catch (java.lang.Exception e)
     {
-      Logger.error(L.m("Die Formularbeschreibung ist fehlerhaft"), e);
+      LOGGER.error(L.m("Die Formularbeschreibung ist fehlerhaft"), e);
       return;
     }
 
@@ -569,7 +575,7 @@ public class TextDocumentModel
     }
     catch (java.lang.Exception e)
     {
-      Logger.error(L.m("Formularwerte-Abschnitt ist fehlerhaft"), e);
+      LOGGER.error(L.m("Formularwerte-Abschnitt ist fehlerhaft"), e);
       return;
     }
 
@@ -586,7 +592,7 @@ public class TextDocumentModel
       }
       catch (NodeNotFoundException e)
       {
-        Logger.error(e);
+        LOGGER.error("", e);
       }
     }
   }
@@ -1017,14 +1023,14 @@ public class TextDocumentModel
   {
     if (formularConf == null)
     {
-      Logger.debug(L.m("Einlesen der Formularbeschreibung von %1", this));
+      LOGGER.debug(L.m("Einlesen der Formularbeschreibung von %1", this));
       formularConf = new ConfigThingy("WM");
       addToFormDescription(formularConf,
         persistentData.getData(DataID.FORMULARBESCHREIBUNG));
 
       ConfigThingy title = formularConf.query("TITLE");
       if (title.count() > 0)
-        Logger.debug(L.m("Formular %1 eingelesen.", title.stringRepresentation(true,
+        LOGGER.debug(L.m("Formular %1 eingelesen.", title.stringRepresentation(true,
           '\'')));
     }
 
@@ -1053,7 +1059,7 @@ public class TextDocumentModel
         }
         catch (java.lang.Exception e)
         {
-          Logger.error(e);
+          LOGGER.error("", e);
         }
     }
     return mailmergeConf;
@@ -1505,7 +1511,7 @@ public class TextDocumentModel
       }
       catch (java.lang.Exception e)
       {
-        Logger.error(e);
+        LOGGER.error("", e);
       }
       if (porEnumAcc == null) {
         continue;
@@ -1521,7 +1527,7 @@ public class TextDocumentModel
         }
         catch (java.lang.Exception e)
         {
-          Logger.error(e);
+          LOGGER.error("", e);
         }
 
         // InputUser-Textfelder verarbeiten
@@ -1803,7 +1809,7 @@ public class TextDocumentModel
         }
         catch (Exception e)
         {
-          Logger.error(e);
+          LOGGER.error("", e);
         }
       }
     }
@@ -1943,7 +1949,7 @@ public class TextDocumentModel
           tabNames.add(name);
         }
         if (!duplicatesAllowed && mapFensterIdToConfigThingy.containsKey(name))
-          Logger.error(L.m(
+          LOGGER.error(L.m(
             "Fehler beim Zusammenfassen mehrerer Formulare zum gemeinsamen Ausfüllen: Mehrere \"%1\" Abschnitte enthalten \"%2\"",
             sectionName, name));
 
@@ -2020,7 +2026,7 @@ public class TextDocumentModel
           }
           catch (Exception x)
           {
-            Logger.error(
+            LOGGER.error(
               L.m("Fehlerhafter ALWAYS-Angabe in Buttonanpassung-Abschnitt"), x);
           }
         }

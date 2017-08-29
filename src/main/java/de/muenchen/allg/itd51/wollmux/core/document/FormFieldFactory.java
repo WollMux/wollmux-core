@@ -133,7 +133,7 @@ public final class FormFieldFactory
     if (range != null)
     {
       XEnumeration xenum = UNO.XEnumerationAccess(range).createEnumeration();
-      handleParagraphEnumeration(xenum, doc, bookmarkNameToFormField);
+      handleParagraphEnumeration(xenum, doc, bookmarkNameToFormField, cmd.getBookmarkName());
     }
 
     return bookmarkNameToFormField.get(bookmarkName);
@@ -195,7 +195,7 @@ public final class FormFieldFactory
    *          das Dokument in dem sich die enumierten Objekte befinden.
    */
   private static void handleParagraphEnumeration(XEnumeration enu,
-      XTextDocument doc, Map<String, FormField> mapBookmarkNameToFormField)
+      XTextDocument doc, Map<String, FormField> mapBookmarkNameToFormField, String bookmarkName)
   {
     XEnumerationAccess enuAccess;
     while (enu.hasMoreElements())
@@ -212,7 +212,7 @@ public final class FormFieldFactory
       enuAccess = UNO.XEnumerationAccess(ele);
       if (enuAccess != null) // ist wohl ein SwXParagraph
       {
-        handleParagraph(enuAccess, doc, mapBookmarkNameToFormField);
+        handleParagraph(enuAccess, doc, mapBookmarkNameToFormField, bookmarkName);
       }
     }
   }
@@ -227,7 +227,7 @@ public final class FormFieldFactory
    *          das Dokument in dem sich die enumierten Objekte befinden.
    */
   private static void handleParagraph(XEnumerationAccess paragraph,
-      XTextDocument doc, Map<String, FormField> mapBookmarkNameToFormField)
+      XTextDocument doc, Map<String, FormField> mapBookmarkNameToFormField, String bookmarkName)
   {
     /*
      * Der Name des zuletzt gestarteten insertFormValue-Bookmarks.
@@ -286,15 +286,18 @@ public final class FormFieldFactory
         }
 
         String name = bookmark.getName();
-        Matcher m = INSERTFORMVALUE.matcher(name);
-        if (m.matches())
+        if(!name.equals(bookmarkName)) continue;
+        
+        if (isStart)
         {
-          if (isStart)
-          {
-            lastInsertFormValueStart = name;
-            lastInsertFormValueBookmark = bookmark;
-          }
-          if ((!isStart || isCollapsed) && name.equals(lastInsertFormValueStart))
+          lastInsertFormValueStart = name;
+          lastInsertFormValueBookmark = bookmark;
+          Logger.debug(L.m("Found Bookmark-Start for %1", name));
+        }
+        if (!isStart || isCollapsed)
+        {
+          Logger.debug(L.m("Found Bookmark-End or Collapsed-Bookmark for %1", name));
+          if (name.equals(lastInsertFormValueStart))
           {
             handleNewInputField(lastInsertFormValueStart, bookmark,
               mapBookmarkNameToFormField, doc);

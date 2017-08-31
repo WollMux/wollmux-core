@@ -1,5 +1,8 @@
 package de.muenchen.allg.itd51.wollmux.core.document;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.text.XTextDocument;
 import com.sun.star.util.XModifiable;
 
@@ -15,12 +18,15 @@ import de.muenchen.allg.afid.UNO;
  * Leseaktion aus einem Container (Notizen bzw. RDF) führt dazu, dass der jeweils
  * andere Container aktualisiert wird (CopyOnRead), wobei sich dabei aber der
  * Modified-Status des Dokuments nicht ändern darf.
- * 
+ *
  * @author Christoph Lutz (D-III-ITD-D101)
  */
 public class TransitionModeDataContainer implements
     PersistentDataContainer
 {
+  private static final Logger LOGGER = LoggerFactory
+    .getLogger(TransitionModeDataContainer.class);
+
   private PersistentDataContainer rdfData;
 
   private PersistentDataContainer legacy;
@@ -29,7 +35,7 @@ public class TransitionModeDataContainer implements
 
   /**
    * Erzeugt einen neuen persistenten Datenspeicher im Dokument doc.
-   * 
+   *
    * @throws RDFMetadataNotSupportedException
    */
   public TransitionModeDataContainer(XTextDocument doc)
@@ -42,11 +48,11 @@ public class TransitionModeDataContainer implements
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * de.muenchen.allg.itd51.wollmux.PersistentDataContainer#getData(java.lang.String
    * )
-   * 
+   *
    * TESTED
    */
   @Override
@@ -70,7 +76,7 @@ public class TransitionModeDataContainer implements
   /**
    * Ruft c.setData(dataId, data) auf, wobei der Modified-Status des Dokuments
    * unangetastet bleibt.
-   * 
+   *
    * @author Christoph Lutz (D-III-ITD-D101) TESTED
    */
   private void copyOnRead(PersistentDataContainer c, DataID dataId, String data)
@@ -89,17 +95,19 @@ public class TransitionModeDataContainer implements
         mod.setModified(modState);
       }
       catch (Exception e)
-      {}
+      {
+        LOGGER.trace("", e);
+      }
     }
   }
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * de.muenchen.allg.itd51.wollmux.PersistentDataContainer#setData(java.lang.String
    * , java.lang.String)
-   * 
+   *
    * TESTED
    */
   @Override
@@ -111,9 +119,9 @@ public class TransitionModeDataContainer implements
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.muenchen.allg.itd51.wollmux.PersistentDataContainer#flush()
-   * 
+   *
    * TESTED
    */
   @Override
@@ -125,7 +133,7 @@ public class TransitionModeDataContainer implements
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * de.muenchen.allg.itd51.wollmux.PersistentDataContainer#removeData(java.lang.
    * String)

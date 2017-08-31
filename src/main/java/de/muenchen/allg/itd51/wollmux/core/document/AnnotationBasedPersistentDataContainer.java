@@ -228,9 +228,10 @@ public class AnnotationBasedPersistentDataContainer implements
       }
       catch (Exception x)
       {
+        LOGGER.trace("", x);
         return textfields;
       }
-    } // if (supp != null)
+    }
     return textfields;
   }
 

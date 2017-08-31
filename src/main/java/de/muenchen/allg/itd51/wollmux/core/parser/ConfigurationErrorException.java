@@ -2,7 +2,7 @@
 * Dateiname: ConfigurationErrorException.java
 * Projekt  : WollMux
 * Funktion : wird geworfen, wenn eine Fehlkonfiguration festgestellt wird (d.h. Benutzer hat Config verbockt)
-* 
+*
  * Copyright (c) 2008-2015 Landeshauptstadt München
  *
  * This program is free software: you can redistribute it and/or modify
@@ -28,7 +28,7 @@
 *
 * @author Matthias Benkmann (D-III-ITD 5.1)
 * @version 1.0
-* 
+*
 */
 package de.muenchen.allg.itd51.wollmux.core.parser;
 

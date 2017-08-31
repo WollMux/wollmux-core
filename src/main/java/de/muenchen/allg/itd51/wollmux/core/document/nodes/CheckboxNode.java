@@ -1,5 +1,8 @@
 package de.muenchen.allg.itd51.wollmux.core.document.nodes;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.awt.XControlModel;
 import com.sun.star.drawing.XControlShape;
 import com.sun.star.text.XTextCursor;
@@ -12,6 +15,9 @@ import de.muenchen.allg.itd51.wollmux.core.document.DocumentTreeVisitor;
 
 public class CheckboxNode extends Node implements FormControl
 {
+  private static final Logger LOGGER = LoggerFactory
+      .getLogger(CheckboxNode.class);
+
   private XTextDocument doc;
 
   private XControlShape shape;
@@ -54,7 +60,7 @@ public class CheckboxNode extends Node implements FormControl
   @Override
   public String getString()
   {
-    return "" + isChecked();
+    return Boolean.toString(isChecked());
   }
 
   @Override
@@ -66,7 +72,9 @@ public class CheckboxNode extends Node implements FormControl
       buf.append((String) UNO.getProperty(model, "HelpText"));
     }
     catch (Exception x)
-    {}
+    {
+      LOGGER.trace("", x);
+    }
 
     if (buf.toString().trim().length() < 2)
     {
@@ -75,7 +83,9 @@ public class CheckboxNode extends Node implements FormControl
         buf.append(UNO.XNamed(model).getName());
       }
       catch (Exception x)
-      {}
+      {
+        LOGGER.trace("", x);
+      }
     }
     return buf.toString();
   }

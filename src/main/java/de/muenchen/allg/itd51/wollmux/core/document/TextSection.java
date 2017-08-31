@@ -33,6 +33,9 @@ package de.muenchen.allg.itd51.wollmux.core.document;
 
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.container.XNamed;
 import com.sun.star.text.XTextRange;
 import com.sun.star.text.XTextSection;
@@ -51,6 +54,9 @@ import de.muenchen.allg.afid.UNO;
  */
 public class TextSection implements VisibilityElement
 {
+  private static final Logger LOGGER = LoggerFactory
+      .getLogger(TextSection.class);
+
   /**
    * Der Bereich selbst
    */
@@ -101,6 +107,7 @@ public class TextSection implements VisibilityElement
     }
     catch (java.lang.Exception e)
     {
+      LOGGER.trace("", e);
       return false;
     }
   }
@@ -153,6 +160,7 @@ public class TextSection implements VisibilityElement
     }
     catch (java.lang.Exception e)
     {
+      LOGGER.trace("", e);
       return null;
     }
   }
@@ -204,6 +212,7 @@ public class TextSection implements VisibilityElement
     }
     catch (java.lang.Exception e)
     {
+      LOGGER.trace("", e);
       return false;
     }
   }

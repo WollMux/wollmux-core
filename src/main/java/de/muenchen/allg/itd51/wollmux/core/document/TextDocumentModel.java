@@ -269,8 +269,9 @@ public class TextDocumentModel
 
   /**
    * Erzeugt ein neues TextDocumentModel zum XTextDocument doc und sollte nie
-   * direkt aufgerufen werden, da neue TextDocumentModels über den DocumentManager
-   * erzeugt und verwaltet werden.
+   * direkt aufgerufen werden, da neue TextDocumentModels über
+   * {@link DocumentManager#getTextDocumentController(XTextDocument)}  erzeugt und
+   * verwaltet werden.
    *
    * @param doc
    */
@@ -508,6 +509,7 @@ public class TextDocumentModel
       catch (NodeNotFoundException e)
       {
         // kann nicht vorkommen wg. obigem Query
+        LOGGER.trace("", e);
         continue;
       }
 
@@ -742,7 +744,7 @@ public class TextDocumentModel
    */
   public synchronized boolean hasURL()
   {
-    return doc.getURL() != null && !doc.getURL().equals("");
+    return doc.getURL() != null && !doc.getURL().isEmpty();
   }
 
   /**
@@ -788,6 +790,7 @@ public class TextDocumentModel
     }
     catch (NodeNotFoundException e)
     {
+      LOGGER.trace("", e);
       return false;
     }
   }
@@ -867,7 +870,6 @@ public class TextDocumentModel
       persistentData.removeData(DataID.PRINTFUNCTION);
     }
     else
-    // if (printFunctions.size() > 0)
     {
       /*
        * Momentan ist es noch unnötig umständlich, die Bedingung
@@ -929,7 +931,9 @@ public class TextDocumentModel
       getViewCursor().gotoRange(visibleElement.getAnchor().getStart(), false);
     }
     catch (java.lang.Exception e)
-    {}
+    {
+      LOGGER.trace("", e);
+    }
   }
 
   /**
@@ -1127,6 +1131,7 @@ public class TextDocumentModel
     catch (RuntimeException e)
     {
       // Absicherung gegen das manuelle Löschen von Dokumentinhalten.
+      LOGGER.trace("", e);
     }
   }
 
@@ -1177,6 +1182,7 @@ public class TextDocumentModel
     }
     catch (java.lang.Exception e)
     {
+      LOGGER.trace("", e);
       return 0;
     }
   }
@@ -1193,6 +1199,7 @@ public class TextDocumentModel
     }
     catch (java.lang.Exception x)
     {
+      LOGGER.trace("", x);
       return false;
     }
   }
@@ -1209,7 +1216,9 @@ public class TextDocumentModel
       UNO.XModifiable(doc).setModified(state);
     }
     catch (java.lang.Exception x)
-    {}
+    {
+      LOGGER.trace("", x);
+    }
   }
 
   /**
@@ -1233,7 +1242,9 @@ public class TextDocumentModel
       }
     }
     catch (java.lang.Exception x)
-    {}
+    {
+      LOGGER.trace("", x);
+    }
   }
 
   /**
@@ -1285,7 +1296,9 @@ public class TextDocumentModel
         }
       }
       catch (CloseVetoException e)
-      {}
+      {
+        LOGGER.trace("", e);
+      }
 
     }
     else if (UNO.XFramesSupplier(UNO.desktop) != null)
@@ -1361,6 +1374,7 @@ public class TextDocumentModel
     }
     catch (Exception x)
     {
+      LOGGER.trace("", x);
       return null;
     }
 
@@ -1390,7 +1404,9 @@ public class TextDocumentModel
       wm = new ConfigThingy("", cmdStr).get("WM");
     }
     catch (java.lang.Exception e)
-    {}
+    {
+      LOGGER.trace("", e);
+    }
 
     String cmd = "";
     try
@@ -1398,7 +1414,9 @@ public class TextDocumentModel
       cmd = wm.get("CMD").toString();
     }
     catch (NodeNotFoundException e)
-    {}
+    {
+      LOGGER.trace("", e);
+    }
 
     if ("insertFormValue".equalsIgnoreCase(cmd)) {
       try
@@ -1406,7 +1424,9 @@ public class TextDocumentModel
         return wm.get("TRAFO").toString();
       }
       catch (NodeNotFoundException e)
-      {}
+      {
+        LOGGER.trace("", e);
+      }
     }
     return null;
   }
@@ -1431,7 +1451,7 @@ public class TextDocumentModel
       return null;
     }
 
-    HashMap<String, Integer> collectedTrafos = collectTrafosFromEnumeration(vc);
+    Map<String, Integer> collectedTrafos = collectTrafosFromEnumeration(vc);
 
     // Auswertung von collectedTrafos
     HashSet<String> completeFields = new HashSet<String>();
@@ -1472,7 +1492,9 @@ public class TextDocumentModel
           trafoName, 2).getLastChild();
       }
       catch (NodeNotFoundException e)
-      {}
+      {
+        LOGGER.trace("", e);
+      }
 
     return null;
   }
@@ -1487,7 +1509,7 @@ public class TextDocumentModel
    * @param textRange
    *          die XTextRange an der gesucht werden soll.
    */
-  private static HashMap<String, Integer> collectTrafosFromEnumeration(
+  private static Map<String, Integer> collectTrafosFromEnumeration(
       XTextRange textRange)
   {
     HashMap<String, Integer> collectedTrafos = new HashMap<String, Integer>();
@@ -1560,7 +1582,9 @@ public class TextDocumentModel
             isEnd = !isStart || isCollapsed;
           }
           catch (IllegalArgumentException e)
-          {}
+          {
+            LOGGER.trace("", e);
+          }
 
           String docCmd = getDocumentCommandByBookmarkName(name);
           if (docCmd != null)
@@ -1864,7 +1888,9 @@ public class TextDocumentModel
         plausiColor = conf.get("PLAUSI_MARKER_COLOR", 1).toString();
       }
       catch (Exception x)
-      {}
+      {
+        LOGGER.trace("", x);
+      }
 
       mergeSection(conf, "Fenster", mapFensterIdToConfigThingy, tabNames, true);
       mergeSection(conf, "Sichtbarkeit", mapSichtbarkeitIdToConfigThingy, null,
@@ -2059,7 +2085,9 @@ public class TextDocumentModel
           action = buttonConf.get("ACTION").toString();
         }
         catch (Exception x)
-        {}
+        {
+          LOGGER.trace("", x);
+        }
         if (action == null || !neverActions.contains(action))
           existingUIElements.add(new ActionUIElementPair(action, buttonConf));
       }
@@ -2158,7 +2186,9 @@ public class TextDocumentModel
         type = act.uiElementDesc.get("TYPE").toString();
       }
       catch (Exception x)
-      {}
+      {
+        LOGGER.trace("", x);
+      }
       if (type != null && "glue".equals(type))
         liter.remove();
       else

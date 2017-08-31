@@ -187,6 +187,7 @@ public final class FormFieldFactory
       }
       catch (java.lang.Exception x)
       {
+        LOGGER.trace("", x);
         continue;
       }
       enuAccess = UNO.XEnumerationAccess(ele);
@@ -213,7 +214,6 @@ public final class FormFieldFactory
      * Der Name des zuletzt gestarteten insertFormValue-Bookmarks.
      */
     String lastInsertFormValueStart = null;
-    XNamed lastInsertFormValueBookmark = null;
 
     /*
      * enumeriere alle TextPortions des Paragraphs
@@ -231,9 +231,9 @@ public final class FormFieldFactory
       }
       catch (java.lang.Exception x)
       {
+        LOGGER.trace("", x);
         continue;
       }
-      ;
 
       String textPortionType =
         (String) UNO.getProperty(textPortion, "TextPortionType");
@@ -259,6 +259,7 @@ public final class FormFieldFactory
         }
         catch (java.lang.Exception x)
         {
+          LOGGER.trace("", x);
           continue;
         }
         if (bookmark == null) {
@@ -267,20 +268,19 @@ public final class FormFieldFactory
 
         String name = bookmark.getName();
         if(!name.equals(bookmarkName)) continue;
-        
+
         if (isStart)
         {
           lastInsertFormValueStart = name;
-          lastInsertFormValueBookmark = bookmark;
-          Logger.debug(L.m("Found Bookmark-Start for %1", name));
+          LOGGER.debug(L.m("Found Bookmark-Start for %1", name));
         }
         if (!isStart || isCollapsed)
         {
-          Logger.debug(L.m("Found Bookmark-End or Collapsed-Bookmark for %1", name));
+          LOGGER.debug(L.m("Found Bookmark-End or Collapsed-Bookmark for %1", name));
           if (name.equals(lastInsertFormValueStart))
           {
-            handleNewInputField(lastInsertFormValueStart, bookmark,
-              mapBookmarkNameToFormField, doc);
+            handleNewInputField(lastInsertFormValueStart,
+                mapBookmarkNameToFormField, doc);
             lastInsertFormValueStart = null;
           }
         }
@@ -303,6 +303,7 @@ public final class FormFieldFactory
         }
         catch (java.lang.Exception x)
         {
+          LOGGER.trace("", x);
           continue;
         }
 
@@ -337,6 +338,7 @@ public final class FormFieldFactory
             catch (Exception x)
             {
               // Wegen OOo Bugs kann nextElement() werfen auch wenn hasMoreElements()
+              LOGGER.trace("", x);
               continue;
             }
 
@@ -353,6 +355,7 @@ public final class FormFieldFactory
         }
         catch (java.lang.Exception x)
         {
+          LOGGER.trace("", x);
           continue;
         }
 
@@ -366,8 +369,8 @@ public final class FormFieldFactory
     }
 
     if (lastInsertFormValueStart != null)
-      handleNewInputField(lastInsertFormValueStart, lastInsertFormValueBookmark,
-        mapBookmarkNameToFormField, doc);
+      handleNewInputField(lastInsertFormValueStart, mapBookmarkNameToFormField,
+          doc);
 
   }
 
@@ -376,7 +379,7 @@ public final class FormFieldFactory
    * dazugehöriges FormField und setzt ein passendes Mapping von bookmarkName auf
    * dieses FormField in mapBookmarkNameToFormField.
    */
-  private static void handleNewInputField(String bookmarkName, XNamed bookmark,
+  private static void handleNewInputField(String bookmarkName,
       Map<String, FormField> mapBookmarkNameToFormField, XTextDocument doc)
   {
     FormField formField = new DynamicInputFormField(doc);
@@ -608,7 +611,9 @@ public final class FormFieldFactory
         }
       }
       catch (java.lang.Exception e)
-      {}
+      {
+        LOGGER.trace("", e);
+      }
     }
 
     /**
@@ -633,6 +638,7 @@ public final class FormFieldFactory
       }
       catch (Exception x)
       {
+        LOGGER.trace("", x);
         return -1;
       }
 
@@ -802,7 +808,9 @@ public final class FormFieldFactory
             }
           }
           catch (Exception x)
-          {}
+          {
+            LOGGER.trace("", x);
+          }
         }
       }
     }
@@ -1013,10 +1021,8 @@ public final class FormFieldFactory
     @Override
     public void setValue(String value)
     {
-      Boolean bv = Boolean.valueOf(value);
-
       UNO.setProperty(checkbox, "State",
-        ((bv.booleanValue()) ? Short.valueOf((short) 1) : Short.valueOf((short) 0)));
+        Boolean.parseBoolean(value) ? Short.valueOf((short) 1) : Short.valueOf((short) 0));
     }
 
     /*
@@ -1121,7 +1127,9 @@ public final class FormFieldFactory
         }
       }
       catch (java.lang.Exception e)
-      {}
+      {
+        LOGGER.trace("", e);
+      }
     }
 
     @Override
@@ -1266,7 +1274,9 @@ public final class FormFieldFactory
         }
       }
       catch (java.lang.Exception e)
-      {}
+      {
+        LOGGER.trace("", e);
+      }
     }
 
     @Override

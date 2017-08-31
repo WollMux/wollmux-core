@@ -88,7 +88,7 @@ public class ExternalFunction
    * @throws ConfigurationErrorException
    *           falls die Spezifikation in conf fehlerhaft ist. TESTED
    */
-  public ExternalFunction(ConfigThingy conf)
+  public ExternalFunction(ConfigThingy conf) throws ConfigurationErrorException
   {
     this(conf, null);
   }
@@ -100,7 +100,7 @@ public class ExternalFunction
    * @throws ConfigurationErrorException
    *           falls die Spezifikation in conf fehlerhaft ist. TESTED
    */
-  public ExternalFunction(ConfigThingy conf, ClassLoader classLoader)
+  public ExternalFunction(ConfigThingy conf, ClassLoader classLoader) throws ConfigurationErrorException
   {
     ClassLoader cLoader;
     if (classLoader == null) {
@@ -156,7 +156,7 @@ public class ExternalFunction
         script = UNO.masterScriptProvider.getScript(url);
       }
     }
-    catch (Throwable e)
+    catch (Exception e)
     {
       throw new ConfigurationErrorException(
         L.m("Skript \"%1\" nicht verfügbar", url), e);

@@ -74,6 +74,8 @@ import de.muenchen.allg.itd51.wollmux.core.util.L;
 public class Bookmark
 {
 
+  private static final String COM_SUN_STAR_TEXT_BOOKMARK = "com.sun.star.text.Bookmark";
+
   private static final Logger LOGGER = LoggerFactory.getLogger(Bookmark.class);
 
   /**
@@ -145,7 +147,7 @@ public class Bookmark
     UnoService bookmark = new UnoService(null);
     try
     {
-      bookmark = document.create("com.sun.star.text.Bookmark");
+      bookmark = document.create(COM_SUN_STAR_TEXT_BOOKMARK);
     }
     catch (com.sun.star.uno.Exception e)
     {
@@ -212,7 +214,9 @@ public class Bookmark
         LOGGER.error("", e);
       }
       catch (NoSuchElementException e)
-      {}
+      {
+        LOGGER.trace("", e);
+      }
     }
     return new UnoService(null);
   }
@@ -243,7 +247,9 @@ public class Bookmark
           cursor, false);
       }
       catch (java.lang.Exception x)
-      {}
+      {
+        LOGGER.trace("", x);
+      }
     }
   }
 
@@ -309,7 +315,7 @@ public class Bookmark
     }
     catch (NoSuchElementException x)
     {
-      LOGGER.debug(L.m("Umbenennung kann nicht durchgeführt werden, da die Textmarke verschwunden ist :~-("));
+      LOGGER.debug(L.m("Umbenennung kann nicht durchgeführt werden, da die Textmarke verschwunden ist :~-(", x));
     }
     catch (java.lang.Exception x)
     {
@@ -341,7 +347,7 @@ public class Bookmark
     // neues Bookmark unter dem alten Namen mit neuer Ausdehnung hinzufügen.
     try
     {
-      UnoService bookmark = document.create("com.sun.star.text.Bookmark");
+      UnoService bookmark = document.create(COM_SUN_STAR_TEXT_BOOKMARK);
       bookmark.xNamed().setName(name);
       xTextRange.getText().insertTextContent(xTextRange, bookmark.xTextContent(),
         true);
@@ -390,6 +396,7 @@ public class Bookmark
     }
     catch (com.sun.star.uno.Exception x)
     {
+      LOGGER.trace("", x);
       return null;
     }
   }
@@ -429,7 +436,7 @@ public class Bookmark
       // eine
       // eigene Textportion ist.
       Object bookmark =
-        UNO.XMultiServiceFactory(doc).createInstance("com.sun.star.text.Bookmark");
+        UNO.XMultiServiceFactory(doc).createInstance(COM_SUN_STAR_TEXT_BOOKMARK);
       UNO.XNamed(bookmark).setName("killer");
       range.getText().insertTextContent(range, UNO.XTextContent(bookmark), true);
       String name = UNO.XNamed(bookmark).getName();
@@ -497,7 +504,7 @@ public class Bookmark
           LOGGER.debug(L.m("Regeneriere Bookmark '%1'", portionName));
           bookmark =
             UNO.XMultiServiceFactory(doc).createInstance(
-              "com.sun.star.text.Bookmark");
+              COM_SUN_STAR_TEXT_BOOKMARK);
           UNO.XNamed(bookmark).setName(portionName);
           range.getText().insertTextContent(range, UNO.XTextContent(bookmark), true);
         }
@@ -535,7 +542,7 @@ public class Bookmark
         {
           Object element = xenum.nextElement();
           String tpt = "" + UNO.getProperty(element, "TextPortionType");
-          if (!tpt.equals("Bookmark")) {
+          if (!"Bookmark".equals(tpt)) {
             continue;
           }
           XNamed bm = UNO.XNamed(UNO.getProperty(element, "Bookmark"));
@@ -545,11 +552,15 @@ public class Bookmark
           return AnyConverter.toBoolean(UNO.getProperty(element, "IsCollapsed"));
         }
         catch (java.lang.Exception e2)
-        {}
+        {
+          LOGGER.trace("", e2);
+        }
       }
     }
     catch (java.lang.Exception e)
-    {}
+    {
+      LOGGER.trace("", e);
+    }
     return false;
   }
 
@@ -583,7 +594,7 @@ public class Bookmark
     // neues Bookmark unter dem alten Namen mit neuer Ausdehnung hinzufügen.
     try
     {
-      UnoService bookmark = document.create("com.sun.star.text.Bookmark");
+      UnoService bookmark = document.create(COM_SUN_STAR_TEXT_BOOKMARK);
       bookmark.xNamed().setName(name);
       cursor.getText().insertString(cursor, ".", true);
       cursor.getText().insertTextContent(cursor, bookmark.xTextContent(), true);
@@ -620,7 +631,7 @@ public class Bookmark
     // neues (kollabiertes) Bookmark unter dem alten Namen hinzufügen.
     try
     {
-      UnoService bookmark = document.create("com.sun.star.text.Bookmark");
+      UnoService bookmark = document.create(COM_SUN_STAR_TEXT_BOOKMARK);
       bookmark.xNamed().setName(name);
       range.getText().insertTextContent(range.getStart(), bookmark.xTextContent(),
         false);
@@ -646,6 +657,7 @@ public class Bookmark
     }
     catch (java.lang.Exception e)
     {
+      LOGGER.trace("", e);
       return false;
     }
   }

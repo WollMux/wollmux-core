@@ -25,7 +25,7 @@ import de.muenchen.allg.itd51.wollmux.core.util.L;
  * RDF-Metadatenframework
  * (http://wiki.services.openoffice.org/wiki/Documentation/DevGuide
  * /OfficeDev/RDF_metadata).
- * 
+ *
  * @author Christoph Lutz (D-III-ITD-D101)
  */
 public class RDFBasedPersistentDataContainer implements
@@ -83,7 +83,7 @@ public class RDFBasedPersistentDataContainer implements
 
   /**
    * Erzeugt einen neuen persistenten Datenspeicher im Dokument doc.
-   * 
+   *
    * @throws Exception
    */
   public RDFBasedPersistentDataContainer(XTextDocument doc)
@@ -99,16 +99,16 @@ public class RDFBasedPersistentDataContainer implements
       wollmuxDatenURI = URI.create(UNO.defaultContext, WOLLMUX_DATEN_URI_STR);
       this.doc = doc;
     }
-    catch (Throwable e)
+    catch (Exception e)
     {
-      throw new RDFMetadataNotSupportedException();
+      throw new RDFMetadataNotSupportedException(e);
     }
   }
 
   /**
    * Liefert den RDF-Graphen unter dem WollMux-Metadaten gespeichert sind oder
    * null, falls es diesen Graph (noch) nicht gibt.
-   * 
+   *
    * @author Christoph Lutz (D-III-ITD-D101)
    */
   private XNamedGraph getWollMuxDatenGraph()
@@ -130,7 +130,7 @@ public class RDFBasedPersistentDataContainer implements
   /**
    * Liefert den RDF-Graphen unter dem WollMux-Metadaten gespeichert sind oder
    * erzeugt einen neuen, falls bisher keiner existiert.
-   * 
+   *
    * @return Kann im Fehlerfall auch null zurück liefern.
    * @author Christoph Lutz (D-III-ITD-D101)
    */
@@ -156,13 +156,13 @@ public class RDFBasedPersistentDataContainer implements
 
   /**
    * Liefert die RDF-URI, die WollMux-Metadatum zu dataId kennzeichnet.
-   * 
+   *
    * @throws IllegalArgumentException
    *           Wenn dataId zu einer ungültigen URI führt.
-   * 
+   *
    * @author Christoph Lutz (D-III-ITD-D101)
    */
-  private XURI getDataIdURI(DataID dataId) throws IllegalArgumentException
+  private XURI getDataIdURI(DataID dataId)
   {
     XURI uri = mapDataIdToURI.get(dataId);
     if (uri == null)
@@ -176,11 +176,11 @@ public class RDFBasedPersistentDataContainer implements
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * de.muenchen.allg.itd51.wollmux.PersistentData.DataContainer#getData(java.lang
    * .String)
-   * 
+   *
    * TESTED
    */
   @Override
@@ -198,7 +198,10 @@ public class RDFBasedPersistentDataContainer implements
         xEnum = g.getStatements(xDMA, getDataIdURI(dataId), null);
       }
       catch (NoSuchElementException x)
-      {/* kann regulär vorkommen */}
+      {
+        /* kann regulär vorkommen */
+        LOGGER.trace("", x);
+      }
       if (xEnum != null && xEnum.hasMoreElements())
         return ((Statement) xEnum.nextElement()).Object.getStringValue();
     }
@@ -212,11 +215,11 @@ public class RDFBasedPersistentDataContainer implements
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * de.muenchen.allg.itd51.wollmux.PersistentData.DataContainer#setData(java.lang
    * .String, java.lang.String)
-   * 
+   *
    * TESTED
    */
   @Override
@@ -235,7 +238,10 @@ public class RDFBasedPersistentDataContainer implements
         g.removeStatements(xDMA, uri, null);
       }
       catch (NoSuchElementException x)
-      {/* kann regulär auftreten */}
+      {
+        /* kann regulär vorkommen */
+        LOGGER.trace("", x);
+      }
       g.addStatement(xDMA, uri, Literal.create(UNO.defaultContext, dataValue));
     }
     catch (Exception e)
@@ -247,11 +253,11 @@ public class RDFBasedPersistentDataContainer implements
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see
    * de.muenchen.allg.itd51.wollmux.PersistentData.DataContainer#removeData(java
    * .lang.String)
-   * 
+   *
    * TESTED
    */
   @Override
@@ -266,7 +272,10 @@ public class RDFBasedPersistentDataContainer implements
       g.removeStatements(xDMA, getDataIdURI(dataId), null);
     }
     catch (NoSuchElementException x)
-    {/* kann regulär auftreten */}
+    {
+      /* kann regulär vorkommen */
+      LOGGER.trace("", x);
+    }
     catch (Exception e)
     {
       LOGGER.error(
@@ -276,9 +285,9 @@ public class RDFBasedPersistentDataContainer implements
 
   /*
    * (non-Javadoc)
-   * 
+   *
    * @see de.muenchen.allg.itd51.wollmux.PersistentData.DataContainer#flush()
-   * 
+   *
    * TESTED
    */
   @Override

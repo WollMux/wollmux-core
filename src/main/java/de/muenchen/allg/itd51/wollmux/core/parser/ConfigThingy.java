@@ -89,9 +89,11 @@ import java.util.Collection;
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Ein ConfigThingy repräsentiert einen Knoten eines Baumes, der durch das Parsen
@@ -101,6 +103,9 @@ import java.util.regex.Pattern;
  */
 public class ConfigThingy implements Iterable<ConfigThingy>
 {
+  private static final Logger LOGGER = LoggerFactory
+      .getLogger(ConfigThingy.class);
+
   /**
    * Wegen JIT bug http://bugs.sun.com/view_bug.do?bug_id=6196102, den die
    * hirnverbrannten Idioten von Sun seit 2004 nicht behoben haben, weil es Ihnen
@@ -228,7 +233,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
   public ConfigThingy(String name)
   {
     this.name = name;
-    this.children = new Vector<ConfigThingy>(1);
+    this.children = new ArrayList<ConfigThingy>(1);
   }
 
   /**
@@ -279,9 +284,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
         ConfigThingy child;
         switch (token1.type())
         {
-          case Token.INCLUDE:
+          case INCLUDE:
             token2 = liter.next();
-            if (token2.type() == Token.STRING && !token2.contentString().isEmpty())
+            if (token2.type() == TokenType.STRING && !token2.contentString().isEmpty())
             {
               try
               {
@@ -293,7 +298,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
               {
                 throw new IOException(token2.url() + " in Zeile " + token2.line()
                   + " bei Zeichen " + token2.position()
-                  + ": %include fehlgeschlagen: " + iox.toString());
+                  + ": %include fehlgeschlagen: ", iox);
               }
             }
             else
@@ -304,16 +309,16 @@ public class ConfigThingy implements Iterable<ConfigThingy>
             }
             break;
 
-          case Token.KEY:
+          case KEY:
             token2 = liter.next();
             switch (token2.type())
             {
-              case Token.OPENPAREN:
+              case OPENPAREN:
                 child = new ConfigThingy(token1.contentString());
                 stack.peek().addChild(child);
                 stack.push(child);
                 break;
-              case Token.STRING:
+              case STRING:
                 child = new ConfigThingy(token1.contentString());
                 ConfigThingy grandchild = new ConfigThingy(token2.contentString());
                 child.addChild(grandchild);
@@ -326,12 +331,12 @@ public class ConfigThingy implements Iterable<ConfigThingy>
             }
             break;
 
-          case Token.STRING:
+          case STRING:
             child = new ConfigThingy(token1.contentString());
             stack.peek().addChild(child);
             break;
 
-          case Token.CLOSEPAREN:
+          case CLOSEPAREN:
             // Achtung: Wurzel darf nicht gepoppt werden.
             if (stack.size() <= 1)
               throw new SyntaxErrorException(token1.url()
@@ -340,13 +345,13 @@ public class ConfigThingy implements Iterable<ConfigThingy>
             stack.pop();
             break;
 
-          case Token.OPENPAREN:
+          case OPENPAREN:
             child = new ConfigThingy("");
             stack.peek().addChild(child);
             stack.push(child);
             break;
 
-          case Token.END:
+          case END:
             break;
 
           default:
@@ -354,7 +359,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
               + token1.line() + " bei Zeichen " + token1.position());
         }
 
-      } while (token1.type() != Token.END);
+      } while (token1.type() != TokenType.END);
 
       if (stack.size() > 1)
       {
@@ -400,13 +405,15 @@ public class ConfigThingy implements Iterable<ConfigThingy>
           buffy.append(ch);
         }
         else
-          buffy.append(URLEncoder.encode("" + ch, CHARSET));
+          buffy.append(URLEncoder.encode(Character.toString(ch), CHARSET));
       }
 
       url = buffy.toString();
     }
     catch (UnsupportedEncodingException x)
-    {}
+    {
+      LOGGER.trace("", x);
+    }
     return url;
   }
 
@@ -959,7 +966,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
     {
       int idx = locations.remove(locations.size() - 1).intValue();
 
-      String repstr = "" + buffy.charAt(idx);
+      String repstr = Character.toString(buffy.charAt(idx));
 
       if (escapeAll)
       {
@@ -1117,6 +1124,17 @@ public class ConfigThingy implements Iterable<ConfigThingy>
       throw new InvalidIdentifierException(id);
   }
 
+  private enum TokenType
+  {
+    KEY,
+    STRING,
+    OPENPAREN,
+    CLOSEPAREN,
+    END,
+    INCLUDE,
+    LINECOMMENT;
+  }
+
   /**
    * Die Methode {@link ConfigThingy#tokenize(URL)} liefert eine Liste von Objekten,
    * die alle dieses Interface implementieren.
@@ -1125,20 +1143,6 @@ public class ConfigThingy implements Iterable<ConfigThingy>
    */
   private interface Token
   {
-    public static final int KEY = 0;
-
-    public static final int STRING = 1;
-
-    public static final int OPENPAREN = 2;
-
-    public static final int CLOSEPAREN = 3;
-
-    public static final int END = 4;
-
-    public static final int INCLUDE = 5;
-
-    public static final int LINECOMMENT = 6;
-
     /**
      * Liefert die URL des Dokuments, in dem dieses Token gefunden wurde.
      */
@@ -1158,7 +1162,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
     /**
      * Liefert die Art dieses Tokens, z.B. {@link #KEY}.
      */
-    public int type();
+    public TokenType type();
 
     /**
      * Liefert die Textrepräsentation dieses Tokens. Diese ist NICHT zwangsweise
@@ -1248,7 +1252,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
        * %-Escapes auswerten, sowie quotequote durch quote ersetzen
        */
       StringBuilder buffy = new StringBuilder(tokenData.substring(1, len - 1));
-      String quoteStr = "" + quote;
+      String quoteStr = Character.toString(quote);
       int startidx = 0;
       int idx;
       while (true)
@@ -1277,7 +1281,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
           }
 
           // default: durch selbes Zeichen, also % ersetzen
-          repstr = "" + buffy.charAt(idx);
+          repstr = Character.toString(buffy.charAt(idx));
           replen = 1;
 
           switch (buffy.charAt(idx + 1))
@@ -1318,7 +1322,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
       try
       {
         char ch = (char) Integer.parseInt(code, 16);
-        return "" + ch;
+        return Character.toString(ch);
       }
       catch (NumberFormatException x)
       {
@@ -1328,9 +1332,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
     }
 
     @Override
-    public int type()
+    public TokenType type()
     {
-      return Token.STRING;
+      return TokenType.STRING;
     }
 
     /**
@@ -1393,9 +1397,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
     }
 
     @Override
-    public int type()
+    public TokenType type()
     {
-      return Token.KEY;
+      return TokenType.KEY;
     }
 
     /**
@@ -1426,9 +1430,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
     }
 
     @Override
-    public int type()
+    public TokenType type()
     {
-      return Token.OPENPAREN;
+      return TokenType.OPENPAREN;
     }
 
     /**
@@ -1454,9 +1458,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
     }
 
     @Override
-    public int type()
+    public TokenType type()
     {
-      return Token.CLOSEPAREN;
+      return TokenType.CLOSEPAREN;
     }
 
     /**
@@ -1484,9 +1488,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
     }
 
     @Override
-    public int type()
+    public TokenType type()
     {
-      return Token.INCLUDE;
+      return TokenType.INCLUDE;
     }
 
     /**
@@ -1522,9 +1526,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
     }
 
     @Override
-    public int type()
+    public TokenType type()
     {
-      return Token.LINECOMMENT;
+      return TokenType.LINECOMMENT;
     }
 
     /**
@@ -1551,9 +1555,9 @@ public class ConfigThingy implements Iterable<ConfigThingy>
     }
 
     @Override
-    public int type()
+    public TokenType type()
     {
-      return Token.END;
+      return TokenType.END;
     }
   }
 

@@ -134,6 +134,7 @@ public class DocumentTree
         }
         catch (Exception x)
         {
+          LOGGER.trace("", x);
           continue;
         }
 
@@ -175,6 +176,7 @@ public class DocumentTree
       }
       catch (Exception x)
       {
+        LOGGER.trace("", x);
         continue;
       }
       enuAccess = UNO.XEnumerationAccess(ele);
@@ -243,6 +245,7 @@ public class DocumentTree
       }
       catch (Exception x)
       {
+        LOGGER.trace("", x);
         continue;
       }
 
@@ -295,6 +298,7 @@ public class DocumentTree
     }
     catch (Exception x)
     {
+      LOGGER.trace("", x);
       return;
     }
     if (bookmark == null)
@@ -365,6 +369,7 @@ public class DocumentTree
     }
     catch (Exception x)
     {
+      LOGGER.trace("", x);
       return;
     }
 
@@ -397,6 +402,7 @@ public class DocumentTree
         }
         catch (com.sun.star.uno.Exception x)
         { // Wegen OOo Bugs kann nextElement() werfen auch wenn hasMoreElements()
+          LOGGER.trace("", x);
           continue;
         }
         if (tempShape != null)
@@ -413,6 +419,7 @@ public class DocumentTree
     }
     catch (Exception x)
     {
+      LOGGER.trace("", x);
       return;
     }
 

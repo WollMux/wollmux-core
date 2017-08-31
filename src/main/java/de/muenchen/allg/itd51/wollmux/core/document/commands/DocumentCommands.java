@@ -627,6 +627,7 @@ public class DocumentCommands implements Iterable<DocumentCommand>
     }
     catch (NoSuchElementException e)
     {
+      LOGGER.trace("", e);
       return null;
     }
   }

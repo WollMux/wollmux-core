@@ -41,6 +41,7 @@ package de.muenchen.allg.itd51.wollmux.core.document.commands;
 
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
@@ -483,8 +484,7 @@ public abstract class DocumentCommand
       return error.booleanValue();
     else if (isDefinedState("ERROR"))
     {
-      Boolean errorBool = Boolean.valueOf(getState("ERROR").toString());
-      return errorBool.booleanValue();
+      return Boolean.parseBoolean(getState("ERROR").toString());
     }
     else
       return STATE_DEFAULT_ERROR.booleanValue();
@@ -521,7 +521,7 @@ public abstract class DocumentCommand
     }
     else if (isDone() != STATE_DEFAULT_DONE.booleanValue())
     {
-      setOrCreate("DONE", "" + isDone() + "");
+      setOrCreate("DONE", Boolean.toString(isDone()));
     }
 
     // ERRORS:
@@ -534,7 +534,7 @@ public abstract class DocumentCommand
     }
     else if (hasError() != STATE_DEFAULT_ERROR.booleanValue())
     {
-      setOrCreate("ERRORS", "" + hasError() + "");
+      setOrCreate("ERRORS", Boolean.toString(hasError()));
     }
 
     return wmCmd;
@@ -623,6 +623,7 @@ public abstract class DocumentCommand
     }
     catch (NodeNotFoundException e1)
     {
+      LOGGER.trace("", e1);
       return null;
     }
   }
@@ -648,6 +649,7 @@ public abstract class DocumentCommand
     }
     catch (NodeNotFoundException e1)
     {
+      LOGGER.trace("", e1);
       state = wmCmd.add("STATE");
     }
 
@@ -659,6 +661,7 @@ public abstract class DocumentCommand
     }
     catch (NodeNotFoundException e)
     {
+      LOGGER.trace("", e);
       ctKey = state.add(key);
     }
 
@@ -669,6 +672,7 @@ public abstract class DocumentCommand
     }
     catch (NodeNotFoundException e)
     {
+      LOGGER.trace("", e);
       ctKey.add(value);
     }
   }
@@ -881,7 +885,7 @@ public abstract class DocumentCommand
   {
     private String fragID;
 
-    private Vector<String> args = null;
+    private List<String> args = null;
 
     private boolean manualMode = false;
 
@@ -898,7 +902,7 @@ public abstract class DocumentCommand
       }
       catch (NodeNotFoundException e)
       {
-        throw new InvalidCommandException(L.m("Fehlendes Attribut FRAG_ID"));
+        throw new InvalidCommandException(L.m("Fehlendes Attribut FRAG_ID", e));
       }
 
       args = new Vector<String>();
@@ -965,7 +969,7 @@ public abstract class DocumentCommand
       return fragID;
     }
 
-    public Vector<String> getArgs()
+    public List<String> getArgs()
     {
       return args;
     }

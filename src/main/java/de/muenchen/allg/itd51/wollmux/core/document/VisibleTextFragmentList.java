@@ -64,7 +64,6 @@ import de.muenchen.allg.itd51.wollmux.core.util.L;
  */
 public class VisibleTextFragmentList
 {
-
   private static final Logger LOGGER = LoggerFactory
       .getLogger(VisibleTextFragmentList.class);
 
@@ -72,6 +71,8 @@ public class VisibleTextFragmentList
    * Abbruchwert zur Vermeidung von Endlosloops bei Variablenersetzungen.
    */
   private static final int MAXCOUNT = 100;
+
+  private VisibleTextFragmentList() {}
 
   /**
    * Ersetzen der zu dem Block gehörende Variable VAR durch den Wert VALUE
@@ -200,7 +201,7 @@ public class VisibleTextFragmentList
         catch (NodeNotFoundException e)
         {
           LOGGER.error(L.m("FRAG_ID Angabe fehlt in %1",
-            mappingConf.stringRepresentation()));
+            mappingConf.stringRepresentation()), e);
           continue;
         }
 
@@ -211,6 +212,7 @@ public class VisibleTextFragmentList
         }
         catch (NodeNotFoundException e)
         {
+          LOGGER.trace("", e);
           // kommt nicht vor, da obiger queryByChild immer URL liefert
           continue;
         }

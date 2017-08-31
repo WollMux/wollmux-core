@@ -1,5 +1,8 @@
 package de.muenchen.allg.itd51.wollmux.core.document.nodes;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.text.XDependentTextField;
 import com.sun.star.text.XTextDocument;
 import com.sun.star.text.XTextRange;
@@ -11,6 +14,9 @@ import de.muenchen.allg.itd51.wollmux.core.document.DocumentTreeVisitor;
 public class DropdownNode extends TextFieldNode implements
     DropdownFormControl
 {
+  private static final Logger LOGGER = LoggerFactory
+      .getLogger(DropdownNode.class);
+
   public DropdownNode(XDependentTextField textField, XTextDocument doc)
   {
     super(textField, doc);
@@ -30,6 +36,7 @@ public class DropdownNode extends TextFieldNode implements
     }
     catch (Exception x)
     {
+      LOGGER.trace("", x);
       return "";
     }
   }
@@ -87,9 +94,11 @@ public class DropdownNode extends TextFieldNode implements
       buf.append((String) UNO.getProperty(textfield, "Name"));
     }
     catch (Exception x)
-    {}
+    {
+      LOGGER.trace("", x);
+    }
 
-    if (buf.toString().trim().length() < 2) 
+    if (buf.toString().trim().length() < 2)
     {
       buf.append(getSelectedItem());
     }

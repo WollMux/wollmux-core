@@ -159,7 +159,6 @@ public class AnnotationBasedPersistentDataContainer implements
             Short.valueOf(RelOrientation.PAGE_LEFT));
           UNO.setProperty(frame, "VertOrient",
             Short.valueOf(VertOrientation.BOTTOM));
-          // UNO.setProperty(frame, "VertOrientPosition", Integer.valueOf(0));
           UNO.setProperty(frame, "VertOrientRelation",
             Short.valueOf(RelOrientation.PAGE_FRAME));
           UNO.setProperty(frame, "FrameIsAutomaticHeight", Boolean.FALSE);

@@ -48,7 +48,10 @@ public class DialogLibrary
   /**
    * Erzeugt eine leere Dialogsbibliothek.
    */
-  public DialogLibrary(){}
+  public DialogLibrary()
+  {
+    // empty dialog library
+  }
 
   /**
    * Erzeugt eine Dialogsbibliothek, die baselib referenziert (nicht kopiert!).

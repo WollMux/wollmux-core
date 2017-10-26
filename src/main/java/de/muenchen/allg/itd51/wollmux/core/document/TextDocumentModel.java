@@ -133,7 +133,7 @@ public class TextDocumentModel
    * FormFields sind nicht in {@link #idToTextFieldFormFields} enthalten und
    * umgekehrt.
    */
-  private HashMap<String, List<FormField>> idToFormFields;
+  private Map<String, List<FormField>> idToFormFields;
 
   /**
    * Liefert zu einer ID eine {@link java.util.List} von FormField-Objekten, die alle
@@ -141,7 +141,7 @@ public class TextDocumentModel
    * vom WollMux interpretiert werden. Die in dieser Map enthaltenen FormFields sind
    * nicht in {@link #idToFormFields} enthalten und umgekehrt.
    */
-  private HashMap<String, List<FormField>> idToTextFieldFormFields;
+  private Map<String, List<FormField>> idToTextFieldFormFields;
 
   /**
    * Enthält alle Textfelder ohne ein umschließendes WollMux-Bookmark, die vom
@@ -174,7 +174,7 @@ public class TextDocumentModel
   /**
    * Enthält die Namen der aktuell gesetzten Druckfunktionen.
    */
-  private volatile HashSet<String> printFunctions;
+  private volatile Set<String> printFunctions;
 
   /**
    * Enthält die Formularbeschreibung des Dokuments oder null, wenn die
@@ -185,7 +185,7 @@ public class TextDocumentModel
   /**
    * Enthält die aktuellen Werte der Formularfelder als Zuordnung id -> Wert.
    */
-  private HashMap<String, String> formFieldValues;
+  private Map<String, String> formFieldValues;
 
   /**
    * Verantwortlich für das Speichern persistenter Daten.
@@ -201,7 +201,7 @@ public class TextDocumentModel
    * Enthält eine Map mit den Namen aller (bisher gesetzter) Sichtbarkeitsgruppen auf
    * deren aktuellen Sichtbarkeitsstatus (sichtbar = true, unsichtbar = false)
    */
-  private HashMap<String, Boolean> mapGroupIdToVisibilityState;
+  private Map<String, Boolean> mapGroupIdToVisibilityState;
 
   /**
    * Kann über setPartOfMultiformDocument gesetzt werden und sollte dann true
@@ -214,7 +214,7 @@ public class TextDocumentModel
    * newFragId, die über im Dokument enthaltene Dokumentkommando WM(CMD
    * 'overrideFrag' FRAG_ID 'fragId' NEW_FRAG_ID 'newFragId') entstanden sind.
    */
-  private HashMap<String, String> overrideFragMap;
+  private Map<String, String> overrideFragMap;
 
   /**
    * Enthält null oder ab dem ersten Aufruf von getMailmergeConf() die Metadaten für
@@ -310,7 +310,7 @@ public class TextDocumentModel
     setType(setTypeData);
   }
 
-  public HashMap<String, List<FormField>> getIdToTextFieldFormFields()
+  public Map<String, List<FormField>> getIdToTextFieldFormFields()
   {
     return idToTextFieldFormFields;
   }
@@ -320,17 +320,17 @@ public class TextDocumentModel
     return staticTextFieldFormFields;
   }
 
-  public HashMap<String, List<FormField>> getIdToFormFields()
+  public Map<String, List<FormField>> getIdToFormFields()
   {
     return idToFormFields;
   }
 
-  public HashMap<String, Boolean> getMapGroupIdToVisibilityState()
+  public Map<String, Boolean> getMapGroupIdToVisibilityState()
   {
     return mapGroupIdToVisibilityState;
   }
 
-  public void setMapGroupIdToVisibilityState(HashMap<String, Boolean> mapGroupIdToVisibilityState)
+  public void setMapGroupIdToVisibilityState(Map<String, Boolean> mapGroupIdToVisibilityState)
   {
     this.mapGroupIdToVisibilityState = mapGroupIdToVisibilityState;
   }
@@ -599,7 +599,7 @@ public class TextDocumentModel
    * @param idToFormFields
    */
   public synchronized void setIDToFormFields(
-      HashMap<String, List<FormFieldFactory.FormField>> idToFormFields)
+      Map<String, List<FormFieldFactory.FormField>> idToFormFields)
   {
     this.idToFormFields = idToFormFields;
   }

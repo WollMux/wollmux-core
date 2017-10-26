@@ -83,11 +83,12 @@ import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
 import java.net.URL;
 import java.net.URLEncoder;
+import java.util.ArrayDeque;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Deque;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Stack;
 import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -266,7 +267,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
   {
     try
     {
-      Stack<ConfigThingy> stack = new Stack<ConfigThingy>();
+      Deque<ConfigThingy> stack = new ArrayDeque<ConfigThingy>();
       stack.push(this);
       List<StringContentToken> tokens = tokenize(url, read);
       Iterator<StringContentToken> liter = tokens.iterator();
@@ -381,7 +382,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
   public static String urlEncode(String url)
   {
     url = url.replaceAll("\\\\", "/");
-    StringBuffer buffy = new StringBuffer();
+    StringBuilder buffy = new StringBuilder();
     try
     {
       for (int i = 0; i < url.length(); ++i)
@@ -460,24 +461,24 @@ public class ConfigThingy implements Iterable<ConfigThingy>
   public static ConfigThingy getNodesVisibleAt(ConfigThingy node,
       String nodeNameToScanFor, ConfigThingy root)
   {
-    Stack<Vector<ConfigThingy>> s = new Stack<Vector<ConfigThingy>>();
-    Vector<ConfigThingy> r = new Vector<ConfigThingy>();
+    Deque<List<ConfigThingy>> s = new ArrayDeque<List<ConfigThingy>>();
+    List<ConfigThingy> r = new ArrayList<ConfigThingy>();
     getNodesVisibleAt(node, nodeNameToScanFor, s, root, r);
     return new ConfigThingy("<visible nodes>", r);
   }
 
   private static boolean getNodesVisibleAt(ConfigThingy node,
-      String nodeNameToScanFor, Stack<Vector<ConfigThingy>> s, ConfigThingy root,
+      String nodeNameToScanFor, Deque<List<ConfigThingy>> s, ConfigThingy root,
       Collection<ConfigThingy> result)
   {
     if (root == node)
     {
-      for (Vector<ConfigThingy> v : s)
+      for (List<ConfigThingy> v : s)
         result.addAll(v);
       return true;
     }
 
-    Vector<ConfigThingy> v = new Vector<ConfigThingy>();
+    List<ConfigThingy> v = new ArrayList<ConfigThingy>();
     for (ConfigThingy child : root)
     {
       if (child.getName().equals(nodeNameToScanFor)) {
@@ -829,7 +830,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
   protected ConfigThingy query(String name, boolean getParents, int maxlevel,
       int minlevel)
   {
-    Vector<ConfigThingy> found = new Vector<ConfigThingy>();
+    List<ConfigThingy> found = new ArrayList<ConfigThingy>();
     boolean haveMore;
     int searchlevel = minlevel;
     do
@@ -902,7 +903,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
       throw new java.lang.IllegalArgumentException(
         "Als Stringbegrenzer sind nur \" und ' erlaubt.");
 
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     if (!childrenOnly)
       stringRepresentation(buf, "", stringChar, escapeAll);
     else
@@ -1001,7 +1002,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
    *          falls true werden in Strings alle Zeichen, die nicht Buchstabe oder
    *          Ziffer sind mit der %u Syntax escapet.
    */
-  private void stringRepresentation(StringBuffer buf, String childPrefix,
+  private void stringRepresentation(StringBuilder buf, String childPrefix,
       char stringChar, boolean escapeAll)
   {
 
@@ -1570,7 +1571,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
   private static List<StringContentToken> tokenize(URL url, Reader read)
       throws IOException, SyntaxErrorException
   {
-    List<StringContentToken> tokens = new Vector<StringContentToken>();
+    List<StringContentToken> tokens = new ArrayList<StringContentToken>();
     BufferedReader in = new BufferedReader(read);
     String line;
 
@@ -1658,7 +1659,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
    */
   public static String treeDump(ConfigThingy conf, String childPrefix)
   {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     buf.append("\"" + conf.name + "\"\n");
     Iterator<ConfigThingy> iter = conf.iterator();
     while (iter.hasNext())

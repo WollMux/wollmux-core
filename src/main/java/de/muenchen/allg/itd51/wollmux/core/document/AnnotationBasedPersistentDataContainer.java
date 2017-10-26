@@ -1,9 +1,9 @@
 package de.muenchen.allg.itd51.wollmux.core.document;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
-import java.util.Vector;
-
+import java.util.List;
 import com.sun.star.awt.Size;
 import com.sun.star.container.XEnumeration;
 import com.sun.star.container.XNameAccess;
@@ -77,7 +77,7 @@ public class AnnotationBasedPersistentDataContainer implements
   @Override
   public String getData(DataID dataId)
   {
-    Vector<Object> textfields =
+    List<Object> textfields =
       getWollMuxTextFields(dataId.getDescriptor(), false, 0);
     if (textfields.isEmpty()) {
       return null;
@@ -104,10 +104,10 @@ public class AnnotationBasedPersistentDataContainer implements
    * @return leeren Vector falls das Feld nicht existiert und create == false oder
    *         falls ein Fehler auftritt.
    */
-  private Vector<Object> getWollMuxTextFields(String fieldName, boolean create,
+  private List<Object> getWollMuxTextFields(String fieldName, boolean create,
       int size)
   {
-    Vector<Object> textfields = new Vector<Object>();
+    List<Object> textfields = new ArrayList<Object>();
     XTextFramesSupplier supp = UNO.XTextFramesSupplier(doc);
     if (supp != null)
     {
@@ -236,7 +236,7 @@ public class AnnotationBasedPersistentDataContainer implements
   {
     Object recordChanges = UNO.getProperty(doc, RECORD_CHANGES);
     UNO.setProperty(doc, RECORD_CHANGES, false);
-    Vector<Object> textfields =
+    List<Object> textfields =
       getWollMuxTextFields(dataId.getDescriptor(), true, dataValue.length());
     if (textfields.isEmpty())
     {
@@ -275,7 +275,7 @@ public class AnnotationBasedPersistentDataContainer implements
   {
     Object recordChanges = UNO.getProperty(doc, RECORD_CHANGES);
     UNO.setProperty(doc, RECORD_CHANGES, false);
-    Vector<Object> textfields =
+    List<Object> textfields =
       getWollMuxTextFields(dataId.getDescriptor(), false, 0);
     if (!textfields.isEmpty())
     {

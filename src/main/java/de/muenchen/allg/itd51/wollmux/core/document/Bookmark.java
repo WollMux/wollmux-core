@@ -41,8 +41,9 @@
  */
 package de.muenchen.allg.itd51.wollmux.core.document;
 
+import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.Vector;
+import java.util.List;
 
 import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XEnumeration;
@@ -431,8 +432,8 @@ public class Bookmark
       // Aufsammeln der zu entfernenden TextPortions (sollte genau eine sein)
       // und
       // der Bookmarks, die evtl. als Kollateralschaden entfernt werden.
-      Vector<String> collateral = new Vector<String>();
-      Vector<Object> victims = new Vector<Object>();
+      List<String> collateral = new ArrayList<String>();
+      List<Object> victims = new ArrayList<Object>();
       XEnumeration xEnum = UNO.XEnumerationAccess(range).createEnumeration();
       while (xEnum.hasMoreElements())
       {

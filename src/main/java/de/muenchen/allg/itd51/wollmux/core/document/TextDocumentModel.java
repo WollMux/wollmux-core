@@ -1850,7 +1850,7 @@ public class TextDocumentModel
       new HashMap<String, ConfigThingy>();
     Map<String, ConfigThingy> mapFunktionsdialogeIdToConfigThingy =
       new HashMap<String, ConfigThingy>();
-    List<String> tabNames = new Vector<String>();
+    List<String> tabNames = new ArrayList<String>();
     for (ConfigThingy conf : desc)
     {
       try
@@ -1993,7 +1993,7 @@ public class TextDocumentModel
      * NEVER und ALWAYS Angaben aufsammeln
      */
     Set<String> neverActions = new HashSet<String>();
-    List<ActionUIElementPair> alwaysActions = new Vector<ActionUIElementPair>(); // of
+    List<ActionUIElementPair> alwaysActions = new ArrayList<ActionUIElementPair>(); // of
     // ActionUIElementPair
     Iterator<ConfigThingy> anpOuterIter = anpassung.iterator(); // durchläuft die
     // *Tab Abschnitte
@@ -2031,7 +2031,7 @@ public class TextDocumentModel
      * Existierende Buttons-Abschnitte durchgehen, ihre Elemente aufsammeln (außer
      * denen, die durch NEVER verboten sind)
      */
-    List<ActionUIElementPair> existingUIElements = new Vector<ActionUIElementPair>(); // of
+    List<ActionUIElementPair> existingUIElements = new ArrayList<ActionUIElementPair>(); // of
     // ActionUIElementPair
     ConfigThingy buttonsConf = tabConf.query("Buttons");
     Iterator<ConfigThingy> buttonsOuterIter = buttonsConf.iterator(); // durchläuft

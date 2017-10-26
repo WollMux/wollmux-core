@@ -35,11 +35,12 @@
  */
 package de.muenchen.allg.itd51.wollmux.core.document;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -155,7 +156,7 @@ public class VisibleTextFragmentList
    * @return die URL des unter der frag_id definierten Textfragments.
    * @throws InvalidIdentifierException
    */
-  public static Vector<String> getURLsByID(ConfigThingy conf, String fragId)
+  public static List<String> getURLsByID(ConfigThingy conf, String fragId)
       throws InvalidIdentifierException
   {
     ConfigThingy.checkIdentifier(fragId);
@@ -170,7 +171,7 @@ public class VisibleTextFragmentList
     }
 
     Iterator<ConfigThingy> iterTbListe = tfListe.iterator();
-    Vector<String> urls = new Vector<String>();
+    List<String> urls = new ArrayList<String>();
     while (iterTbListe.hasNext())
     {
       ConfigThingy textfragmente = iterTbListe.next();

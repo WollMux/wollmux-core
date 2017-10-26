@@ -2169,9 +2169,9 @@ public class TextDocumentModel
 
   private static class ActionUIElementPair
   {
-    public String action;
+    public final String action;
 
-    public ConfigThingy uiElementDesc;
+    public final ConfigThingy uiElementDesc;
 
     public ActionUIElementPair(String action, ConfigThingy uiElementDesc)
     {

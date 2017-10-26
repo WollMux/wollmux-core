@@ -41,7 +41,6 @@
 package de.muenchen.allg.itd51.wollmux.core.document;
 
 import java.util.Map;
-import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import com.sun.star.awt.XControlModel;

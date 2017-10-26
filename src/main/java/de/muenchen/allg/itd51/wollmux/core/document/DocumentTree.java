@@ -57,7 +57,6 @@ import com.sun.star.text.XTextTable;
 import de.muenchen.allg.afid.UNO;
 import de.muenchen.allg.itd51.wollmux.core.document.commands.DocumentCommands;
 import de.muenchen.allg.itd51.wollmux.core.document.nodes.CheckboxNode;
-import de.muenchen.allg.itd51.wollmux.core.document.nodes.Container;
 import de.muenchen.allg.itd51.wollmux.core.document.nodes.ContainerNode;
 import de.muenchen.allg.itd51.wollmux.core.document.nodes.DropdownNode;
 import de.muenchen.allg.itd51.wollmux.core.document.nodes.GroupBookmarkNode;

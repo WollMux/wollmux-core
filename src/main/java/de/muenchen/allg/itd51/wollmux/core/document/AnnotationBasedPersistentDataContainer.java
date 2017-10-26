@@ -297,28 +297,6 @@ public class AnnotationBasedPersistentDataContainer implements
     modifiedDataIDs.remove(dataId);
   }
 
-  /**
-   * Entfernt zuerst die mit dataId bezeichneten Daten (falls vorhanden) und
-   * speichert dann den alten Wert wieder neu unter dataId. In aller Regel sollte
-   * der Zustand der Daten nach Aufruf dieser Methode also völlig unverändert sein.
-   *
-   * FIXME: Diese Methode wird nur für den Workaround für Issue 100374 benötigt.
-   * Sie kann also theoretisch entfernt werden, sobald der Workaround rausfliegt.
-   *
-   * @param dataId
-   *          die ID der Daten die neu geschrieben werden sollen.
-   * @author Daniel Benkmann (D-III-ITD-D101)
-   */
-  private void rewriteData(DataID dataId)
-  {
-    String oldValue = getData(dataId);
-    if (oldValue != null)
-    {
-      removeData(dataId);
-      setData(dataId, oldValue);
-    }
-  }
-
   /*
    * (non-Javadoc)
    *

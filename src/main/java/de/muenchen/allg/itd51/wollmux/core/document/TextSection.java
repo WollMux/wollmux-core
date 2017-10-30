@@ -46,7 +46,7 @@ import de.muenchen.allg.afid.UNO;
 
 /**
  * Diese Klasse repräsentiert einen Textbereich (TextSection), dessen Namen um den
- * Zusatz 'GROUPS <ListeMitSichtbarkeitsgruppen>' ergänzt wurde, über den die
+ * Zusatz {@code GROUPS <ListeMitSichtbarkeitsgruppen>} ergänzt wurde, über den die
  * Sichtbarkeitsgruppen festgelegt sind, die diesen Bereich sichtbar oder unsichtbar
  * schalten können.
  *
@@ -166,12 +166,14 @@ public class TextSection implements VisibilityElement
   }
 
   /**
-   * Liefert den Namen der TextSection oder null, wenn die TextSection zwischenzeitig
-   * invalide wurde.
+   * Liefert den Namen der TextSection oder null, wenn die TextSection
+   * zwischenzeitig invalide wurde.
    *
-   * TextSection ist dann invalide, wenn sie nicht XNamed implementiert, sich ihr
-   * Name seit dem Erzeugungszeitpunkt ändert oder sie nicht mehr im Dokument
-   * existiert.
+   * TextSection ist dann invalide, wenn sie nicht XNamed implementiert, sich
+   * ihr Name seit dem Erzeugungszeitpunkt ändert oder sie nicht mehr im
+   * Dokument existiert.
+   *
+   * @return Den Namen oder null.
    */
   public String getName()
   {

@@ -254,7 +254,7 @@ public class Bookmark
   }
 
   /**
-   * Diese Methode liefert eine String-Repräsentation mit dem Aufbau "Bookmark[<name>]"
+   * Diese Methode liefert eine String-Repräsentation mit dem Aufbau {@code Bookmark[<name>]}
    * zurück.
    */
   @Override
@@ -279,7 +279,6 @@ public class Bookmark
    * @return den tatsächlich erzeugten Namen des Bookmarks. Falls das Bookmark
    *         verschwunden ist, so wird das Objekt {@link #BROKEN} zurückgeliefert (==
    *         vergleichbar).
-   * @throws com.sun.star.uno.Exception
    */
   public String rename(String newName)
   {

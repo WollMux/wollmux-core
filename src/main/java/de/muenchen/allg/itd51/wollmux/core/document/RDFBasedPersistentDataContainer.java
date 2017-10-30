@@ -83,8 +83,6 @@ public class RDFBasedPersistentDataContainer implements
 
   /**
    * Erzeugt einen neuen persistenten Datenspeicher im Dokument doc.
-   *
-   * @throws Exception
    */
   public RDFBasedPersistentDataContainer(XTextDocument doc)
       throws RDFMetadataNotSupportedException

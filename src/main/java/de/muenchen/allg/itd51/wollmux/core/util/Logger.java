@@ -161,7 +161,6 @@ public class Logger
    * @param loggingMode
    *          Der neue Logging-Modus kann über die statischen Felder Logger.MODUS (z.
    *          B. Logger.DEBUG) angegeben werden.
-   * @throws FileNotFoundException
    */
   public static void init(File outputFile, int loggingMode)
   {

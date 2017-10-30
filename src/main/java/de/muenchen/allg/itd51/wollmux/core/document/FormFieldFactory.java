@@ -460,9 +460,9 @@ public final class FormFieldFactory
     /**
      * Eine Rückgabe von true gibt an, dass die Trafo (falls definiert) nur einen
      * Parameter sinnvoll verarbeiten kann. Ein derartiges Verhalten ist für alle
-     * Dokumentkommandos WM(CMD'insertFormValue' ID'<id>' TRAFO '<trafo>')
+     * Dokumentkommandos {@code WM(CMD'insertFormValue' ID'<id>' TRAFO '<trafo>')}
      * spezifiziert. In diesem Fall erwartet die Trafo für jeden in der Funktion
-     * geforderten Parameter den Wert von <id>; Eine Rückgabe von false beschreibt,
+     * geforderten Parameter den Wert von {@code <id>}; Eine Rückgabe von false beschreibt,
      * dass die Trafo auch mehrere Parameter verarbeiten kann (wie z.B.
      * InputUserFields der Fall).
      */

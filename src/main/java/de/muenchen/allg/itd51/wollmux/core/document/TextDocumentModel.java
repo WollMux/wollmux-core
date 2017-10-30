@@ -270,7 +270,7 @@ public class TextDocumentModel
   /**
    * Erzeugt ein neues TextDocumentModel zum XTextDocument doc und sollte nie
    * direkt aufgerufen werden, da neue TextDocumentModels über
-   * {@link DocumentManager#getTextDocumentController(XTextDocument)}  erzeugt und
+   * die Methode getTextDocumentController(XTextDocument) des DocumentManager erzeugt und
    * verwaltet werden.
    *
    * @param doc
@@ -1345,8 +1345,8 @@ public class TextDocumentModel
 
   /**
    * Wenn das Benutzerfeld mit dem Namen userFieldName vom WollMux interpretiert wird
-   * (weil der Name in der Form "WM(FUNCTION '<name>')" aufgebaut ist), dann liefert
-   * diese Funktion den Namen <name> der Funktion zurück; in allen anderen Fällen
+   * (weil der Name in der Form {@code WM(FUNCTION '<name>')} aufgebaut ist), dann liefert
+   * diese Funktion den Namen {@code <name>} der Funktion zurück; in allen anderen Fällen
    * liefert die Methode null zurück.
    *
    * @param userFieldName
@@ -1392,8 +1392,8 @@ public class TextDocumentModel
    * verwendet dieses Dokumentkommando keine Funktion, so wird null zurück geliefert.
    *
    * @param cmdStr
-   *          Ein Kommandostring eines Dokumentkommandos in der Form "WM(CMD
-   *          '<command>' ...)"
+   *          Ein Kommandostring eines Dokumentkommandos in der Form {@code WM(CMD
+   *          '<command>' ...)}
    * @return Name der Trafofunktion oder null.
    */
   public static String getFunctionNameForDocumentCommand(String cmdStr)
@@ -1862,7 +1862,7 @@ public class TextDocumentModel
    *          ein ButtonAnpassung-Abschnitt wie bei wollmux:Open dokumentiert, oder
    *          null, wenn keine Anpassung erforderlich. Der oberste Knoten muss nicht
    *          Buttonanpassung sein. In der Tat ist es auch erlaubt, dass ein
-   *          &lt;query results> Knoten mit mehreren Buttonanpassung-Abschnitten
+   *          {@code <query results>} Knoten mit mehreren Buttonanpassung-Abschnitten
    *          übergeben wird. Es ist nur wichtig, dass alle ...Tab-Abschnitte auf der
    *          selben Höhe im Baum sind.
    */

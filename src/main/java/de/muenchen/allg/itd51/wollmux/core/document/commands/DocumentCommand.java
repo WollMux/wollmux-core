@@ -184,7 +184,7 @@ public abstract class DocumentCommand
 
   /**
    * Diese Methode liefert eine String-Repräsentation des DokumentCommands zurück.
-   * Die String-Repräsentation hat den Aufbau DocumentCommand[<bookmarkName>].
+   * Die String-Repräsentation hat den Aufbau {@code DocumentCommand[<bookmarkName>]}.
    */
   @Override
   public String toString()
@@ -460,8 +460,8 @@ public abstract class DocumentCommand
    *
    * @param removeBookmark
    *          true, signalisiert, dass das zugehörige Bookmark gelöscht werden soll.
-   *          False signalisiert, dass das Bookmark mit dem Zusatz "<alterName>
-   *          STATE(DONE 'true')" versehen wird.
+   *          False signalisiert, dass das Bookmark mit dem Zusatz {@code <alterName>
+   *          STATE(DONE 'true')} versehen wird.
    */
   public void markDone(boolean removeBookmark)
   {
@@ -1449,7 +1449,7 @@ public abstract class DocumentCommand
 
     /**
      * Diese Methode liefert eine String-Repräsentation des DokumentCommands zurück.
-     * Die String-Repräsentation hat den Aufbau DocumentCommand[<bookmarkName>].
+     * Die String-Repräsentation hat den Aufbau {@code DocumentCommand[<bookmarkName>]}.
      */
     @Override
     public String toString()

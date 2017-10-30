@@ -459,7 +459,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
   }
 
   /**
-   * Liefert ein ConfigThingy names "<visible nodes>", dessen Kinder alle Knoten des
+   * Liefert ein ConfigThingy names {@code <visible nodes>}, dessen Kinder alle Knoten des
    * ConfigThingy-Baumes mit Wurzel root sind, die Name nodeNameToScanFor haben und
    * vom Knoten node aus sichtbar sind. Dabei ist ein Knoten sichtbar von node, wenn
    * er node selbst, ein Bruder- bzw. Schwesterknoten von node, ein Vorfahre von node
@@ -634,7 +634,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
    *         bestimmt auf der entsprechende Knoten zu finden sind und es werden alle
    *         Knoten auf dieser Suchtiefe zurückgeliefert. Falls dies genau einer ist,
    *         wird er direkt zurückgeliefert, ansonsten wird ein ConfigThingy mit
-   *         Namen "<query results>" geliefert, das diese Knoten (und nur diese) als
+   *         Namen {@code <query results>} geliefert, das diese Knoten (und nur diese) als
    *         Kinder hat.
    * @throws NodeNotFoundException
    *           falls keine entsprechenden Knoten gefunden wurden. Falls das nicht
@@ -691,7 +691,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
 
   /**
    * Wie {@link #get(String)}, aber es wird grundsätzlich ein ConfigThingy mit Namen
-   * "&lt;query results>" über die Resultate gesetzt. Im Falle, dass es keine
+   * {@code <query results>} über die Resultate gesetzt. Im Falle, dass es keine
    * Resultate gibt, wird nicht null sondern ein ConfigThingy ohne Kinder geliefert.
    */
   public ConfigThingy query(String name)
@@ -701,7 +701,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
 
   /**
    * Wie {@link #get(String, int)}, aber es wird grundsätzlich ein ConfigThingy mit
-   * Namen "<query results>" über die Resultate gesetzt. Im Falle, dass es keine
+   * Namen {@code <query results>} über die Resultate gesetzt. Im Falle, dass es keine
    * Resultate gibt, wird nicht null sondern ein ConfigThingy ohne Kinder geliefert.
    */
   public ConfigThingy query(String name, int maxlevel)
@@ -711,7 +711,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
 
   /**
    * Wie {@link #get(String, int, int)}, aber es wird grundsätzlich ein ConfigThingy
-   * mit Namen "<query results>" über die Resultate gesetzt. Im Falle, dass es keine
+   * mit Namen {@code <query results>} über die Resultate gesetzt. Im Falle, dass es keine
    * Resultate gibt, wird nicht null sondern ein ConfigThingy ohne Kinder geliefert.
    */
   public ConfigThingy query(String name, int maxlevel, int minlevel)

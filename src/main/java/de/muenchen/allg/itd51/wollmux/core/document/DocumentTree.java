@@ -447,21 +447,4 @@ public class DocumentTree
     }
     return buf.toString();
   }
-
-  public static void main(String[] args) throws Exception
-  {
-    UNO.init();
-    XTextDocument doc = UNO.XTextDocument(UNO.desktop.getCurrentComponent());
-
-    /*
-     * Parsen dauert ca. 1/10 s pro Seite
-     */
-    long start = System.currentTimeMillis();
-    DocumentTree tree = new DocumentTree(doc);
-    long time = System.currentTimeMillis() - start;
-    System.out.println(L.m("Dokument geparst in %1ms", time));
-    System.out.println(treeDump(tree.root, ""));
-    System.exit(0);
-  }
-
 }

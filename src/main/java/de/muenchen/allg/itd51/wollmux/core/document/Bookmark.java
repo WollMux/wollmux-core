@@ -364,7 +364,7 @@ public class Bookmark
     // http://www.openoffice.org/issues/show_bug.cgi?id=67869 . Ein
     // TextCursor-Objekt verhält sich dahingehend robuster.
     XTextRange range = getAnchor();
-    if (range != null) {
+    if (range != null && range.getText() != null) {
       return range.getText().createTextCursorByRange(range);
     }
     return null;

@@ -88,9 +88,9 @@ public class FunctionLibrary implements Iterable<Function>
   public FunctionLibrary(FunctionLibrary baselib, boolean ordered)
   {
     if (ordered)
-      mapIdToFunction = new LinkedHashMap<String, Function>();
+      mapIdToFunction = new LinkedHashMap<>();
     else
-      mapIdToFunction = new HashMap<String, Function>();
+      mapIdToFunction = new HashMap<>();
     this.baselib = baselib;
   }
 
@@ -161,7 +161,7 @@ public class FunctionLibrary implements Iterable<Function>
    */
   public Set<String> getFunctionNames()
   {
-    Set<String> names = new HashSet<String>(mapIdToFunction.keySet());
+    Set<String> names = new HashSet<>(mapIdToFunction.keySet());
     if (baselib != null) {
       names.addAll(baselib.getFunctionNames());
     }

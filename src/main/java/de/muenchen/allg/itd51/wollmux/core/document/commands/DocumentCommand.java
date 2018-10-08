@@ -905,7 +905,7 @@ public abstract class DocumentCommand
         throw new InvalidCommandException(L.m("Fehlendes Attribut FRAG_ID", e));
       }
 
-      args = new Vector<String>();
+      args = new Vector<>();
       try
       {
         ConfigThingy argsConf = wmCmd.get("WM").get("ARGS");
@@ -935,7 +935,7 @@ public abstract class DocumentCommand
         // MODE ist optional;
       }
 
-      styles = new HashSet<String>();
+      styles = new HashSet<>();
       try
       {
         ConfigThingy stylesConf = wmCmd.get("WM").get("STYLES");
@@ -1395,7 +1395,7 @@ public abstract class DocumentCommand
     public SetGroups(ConfigThingy wmCmd, Bookmark bookmark)
     {
       super(wmCmd, bookmark);
-      groupsSet = new HashSet<String>();
+      groupsSet = new HashSet<>();
     }
 
     @Override

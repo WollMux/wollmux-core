@@ -164,7 +164,7 @@ public class ExternalFunction
 
     ConfigThingy paramsConf = conf.query("PARAMS");
 
-    List<String> paramList = new ArrayList<String>();
+    List<String> paramList = new ArrayList<>();
     Iterator<ConfigThingy> iter = paramsConf.iterator();
     while (iter.hasNext())
     {

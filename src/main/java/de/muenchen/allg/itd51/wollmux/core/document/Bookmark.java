@@ -443,8 +443,8 @@ public class Bookmark
       // Aufsammeln der zu entfernenden TextPortions (sollte genau eine sein)
       // und
       // der Bookmarks, die evtl. als Kollateralschaden entfernt werden.
-      List<String> collateral = new ArrayList<String>();
-      List<Object> victims = new ArrayList<Object>();
+      List<String> collateral = new ArrayList<>();
+      List<Object> victims = new ArrayList<>();
       XEnumeration xEnum = UNO.XEnumerationAccess(range).createEnumeration();
       while (xEnum.hasMoreElements())
       {
@@ -650,6 +650,16 @@ public class Bookmark
   @Override
   public boolean equals(Object b)
   {
+    if (b == null)
+    {
+      return false;
+    }
+
+    if (this.getClass() != b.getClass())
+    {
+      return false;
+    }
+
     try
     {
       return name.equals(((Bookmark) b).name);

@@ -26,7 +26,7 @@ public class Scanner implements Iterator<Token>, Closeable
   private static final Logger LOGGER = LoggerFactory.getLogger(Scanner.class);
 
   /** Stack of running tokenizers. */
-  private final Deque<Tokenizer> stack = new LinkedList<Tokenizer>();
+  private final Deque<Tokenizer> stack = new LinkedList<>();
   /** Is this the first time to read. */
   private boolean isStart;
 

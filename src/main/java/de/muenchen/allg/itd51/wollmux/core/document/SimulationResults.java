@@ -70,9 +70,9 @@ public class SimulationResults
    */
   public SimulationResults()
   {
-    this.mapFormFieldToContentValue = new HashMap<FormField, String>();
-    this.mapFormFieldIDToValue = new HashMap<String, String>();
-    this.mapGroupIdToVisibilityState = new HashMap<String, Boolean>();
+    this.mapFormFieldToContentValue = new HashMap<>();
+    this.mapFormFieldIDToValue = new HashMap<>();
+    this.mapGroupIdToVisibilityState = new HashMap<>();
   }
 
   /**

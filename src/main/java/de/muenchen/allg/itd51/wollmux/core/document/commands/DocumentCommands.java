@@ -174,16 +174,16 @@ public class DocumentCommands implements Iterable<DocumentCommand>
   public DocumentCommands(XBookmarksSupplier doc)
   {
     this.doc = doc;
-    this.allCommands = new HashSet<DocumentCommand>();
+    this.allCommands = new HashSet<>();
 
-    this.visibilityElements = new LinkedList<VisibilityElement>();
-    this.setJumpMarkCommands = new LinkedList<SetJumpMark>();
-    this.notInOriginalCommands = new HashSet<DocumentCommand>();
-    this.originalOnlyCommands = new HashSet<DocumentCommand>();
-    this.draftOnlyCommands = new HashSet<DocumentCommand>();
-    this.copyOnlyCommands = new HashSet<DocumentCommand>();
-    this.allVersionsCommands = new HashSet<DocumentCommand>();
-    this.allTextSectionsWithGROUPS = new HashSet<TextSection>();
+    this.visibilityElements = new LinkedList<>();
+    this.setJumpMarkCommands = new LinkedList<>();
+    this.notInOriginalCommands = new HashSet<>();
+    this.originalOnlyCommands = new HashSet<>();
+    this.draftOnlyCommands = new HashSet<>();
+    this.copyOnlyCommands = new HashSet<>();
+    this.allVersionsCommands = new HashSet<>();
+    this.allTextSectionsWithGROUPS = new HashSet<>();
   }
 
   /**
@@ -266,9 +266,9 @@ public class DocumentCommands implements Iterable<DocumentCommand>
 
     // HashSets mit den Namen der bekannten, gültigen Dokumentkommandos
     // und den ungültigen Dokumentkommandos erstellen:
-    HashSet<String> knownBookmarks = new HashSet<String>();
+    HashSet<String> knownBookmarks = new HashSet<>();
     HashSet<DocumentCommand> retiredDocumentCommands =
-      new HashSet<DocumentCommand>();
+      new HashSet<>();
     for (Iterator<DocumentCommand> iter = allCommands.iterator(); iter.hasNext();)
     {
       DocumentCommand cmd = iter.next();
@@ -279,7 +279,7 @@ public class DocumentCommands implements Iterable<DocumentCommand>
     }
 
     // Bookmarks scannen und HashSet mit allen neuen Dokumentkommandos aufbauen:
-    HashSet<DocumentCommand> newDocumentCommands = new HashSet<DocumentCommand>();
+    HashSet<DocumentCommand> newDocumentCommands = new HashSet<>();
     try
     {
       String[] bookmarkNames = doc.getBookmarks().getElementNames();
@@ -332,8 +332,8 @@ public class DocumentCommands implements Iterable<DocumentCommand>
 
     // HashSets mit den Namen der bekannten, gültigen TextSections
     // und den ungültigen TextSections erstellen:
-    HashSet<String> knownTextSections = new HashSet<String>();
-    HashSet<TextSection> invalidTextSections = new HashSet<TextSection>();
+    HashSet<String> knownTextSections = new HashSet<>();
+    HashSet<TextSection> invalidTextSections = new HashSet<>();
     for (Iterator<TextSection> iter = allTextSectionsWithGROUPS.iterator(); iter.hasNext();)
     {
       TextSection s = iter.next();
@@ -344,7 +344,7 @@ public class DocumentCommands implements Iterable<DocumentCommand>
     }
 
     // TextSections scannen und HashSet mit allen TextSections aufbauen:
-    HashSet<TextSection> newTextSections = new HashSet<TextSection>();
+    HashSet<TextSection> newTextSections = new HashSet<>();
     String[] textSectionNames = supp.getTextSections().getElementNames();
     for (int i = 0; i < textSectionNames.length; i++)
     {
@@ -767,7 +767,7 @@ public class DocumentCommands implements Iterable<DocumentCommand>
     XNameAccess sectionsAccess = doc.getTextSections();
 
     // HashSet mit allen Gruppen GROUPS aufbauen:
-    Set<String> groups = new HashSet<String>();
+    Set<String> groups = new HashSet<>();
     try
     {
       ConfigThingy groupsCfg =

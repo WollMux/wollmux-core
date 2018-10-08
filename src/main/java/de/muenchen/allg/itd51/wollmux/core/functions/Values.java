@@ -93,7 +93,7 @@ public interface Values
    */
   public static class SimpleMap implements Values
   {
-    private HashMap<String, String> values = new HashMap<String, String>();
+    private HashMap<String, String> values = new HashMap<>();
 
     /**
      * Fügt den Wert value hinzu, identifiziert mit id. Ein bereits vorhandener Wert

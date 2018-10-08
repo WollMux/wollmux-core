@@ -56,7 +56,7 @@ public class L
    * einen übersetzten String ab.
    */
   private static final Map<String, String> mapMessageToTranslation =
-    new HashMap<String, String>();
+    new HashMap<>();
 
   private L()
   {}

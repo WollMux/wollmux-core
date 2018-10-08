@@ -89,7 +89,7 @@ public class VisibleTextFragmentList
       throws EndlessLoopException
   {
     // Map der sichtbaren Variablen erzeugen:
-    Map<String, String> variables = new HashMap<String, String>();
+    Map<String, String> variables = new HashMap<>();
     Iterator<ConfigThingy> i =
       ConfigThingy.getNodesVisibleAt(node, "VAR", root).iterator();
     while (i.hasNext())
@@ -167,7 +167,7 @@ public class VisibleTextFragmentList
   {
     ConfigThingy.checkIdentifier(fragId);
 
-    LinkedList<ConfigThingy> tfListe = new LinkedList<ConfigThingy>();
+    LinkedList<ConfigThingy> tfListe = new LinkedList<>();
     ConfigThingy tfConf = conf.query("Textfragmente");
     Iterator<ConfigThingy> iter = tfConf.iterator();
     while (iter.hasNext())
@@ -177,7 +177,7 @@ public class VisibleTextFragmentList
     }
 
     Iterator<ConfigThingy> iterTbListe = tfListe.iterator();
-    List<String> urls = new ArrayList<String>();
+    List<String> urls = new ArrayList<>();
     while (iterTbListe.hasNext())
     {
       ConfigThingy textfragmente = iterTbListe.next();

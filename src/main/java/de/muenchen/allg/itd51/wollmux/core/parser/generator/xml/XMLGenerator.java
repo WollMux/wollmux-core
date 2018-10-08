@@ -87,7 +87,7 @@ public class XMLGenerator
           .newDocument();
       this.config = document.createElement(XMLTags.CONFIG.getName());
       document.appendChild(config);
-      files = new LinkedList<Element>();
+      files = new LinkedList<>();
     } catch (final ParserConfigurationException e)
     {
       throw new XMLGeneratorException("Couldn't create document.", e);
@@ -116,7 +116,7 @@ public class XMLGenerator
           .newDocument();
       this.config = document.createElement(XMLTags.CONFIG.getName());
       document.appendChild(config);
-      files = new LinkedList<Element>();
+      files = new LinkedList<>();
     } catch (final ParserConfigurationException e)
     {
       throw new XMLGeneratorException("Couldn't create document.", e);

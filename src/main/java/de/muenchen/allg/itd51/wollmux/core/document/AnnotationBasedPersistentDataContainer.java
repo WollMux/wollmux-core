@@ -74,7 +74,7 @@ public class AnnotationBasedPersistentDataContainer implements
   public AnnotationBasedPersistentDataContainer(XTextDocument doc)
   {
     this.doc = doc;
-    this.modifiedDataIDs = new HashSet<DataID>();
+    this.modifiedDataIDs = new HashSet<>();
   }
 
   /**
@@ -114,7 +114,7 @@ public class AnnotationBasedPersistentDataContainer implements
   private List<Object> getWollMuxTextFields(String fieldName, boolean create,
       int size)
   {
-    List<Object> textfields = new ArrayList<Object>();
+    List<Object> textfields = new ArrayList<>();
     XTextFramesSupplier supp = UNO.XTextFramesSupplier(doc);
     if (supp != null)
     {

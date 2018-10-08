@@ -233,7 +233,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
   public ConfigThingy(String name)
   {
     this.name = name;
-    this.children = new ArrayList<ConfigThingy>(1);
+    this.children = new ArrayList<>(1);
   }
 
   /**
@@ -272,7 +272,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
   {
     try
     {
-      Deque<ConfigThingy> stack = new ArrayDeque<ConfigThingy>();
+      Deque<ConfigThingy> stack = new ArrayDeque<>();
       stack.push(this);
       List<StringContentToken> tokens = tokenize(url, read);
       Iterator<StringContentToken> liter = tokens.iterator();
@@ -468,8 +468,8 @@ public class ConfigThingy implements Iterable<ConfigThingy>
   public static ConfigThingy getNodesVisibleAt(ConfigThingy node,
       String nodeNameToScanFor, ConfigThingy root)
   {
-    Deque<List<ConfigThingy>> s = new ArrayDeque<List<ConfigThingy>>();
-    List<ConfigThingy> r = new ArrayList<ConfigThingy>();
+    Deque<List<ConfigThingy>> s = new ArrayDeque<>();
+    List<ConfigThingy> r = new ArrayList<>();
     getNodesVisibleAt(node, nodeNameToScanFor, s, root, r);
     return new ConfigThingy("<visible nodes>", r);
   }
@@ -485,7 +485,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
       return true;
     }
 
-    List<ConfigThingy> v = new ArrayList<ConfigThingy>();
+    List<ConfigThingy> v = new ArrayList<>();
     for (ConfigThingy child : root)
     {
       if (child.getName().equals(nodeNameToScanFor)) {
@@ -816,7 +816,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
    */
   public ConfigThingy queryAll(String name, int maxlevel, boolean getParents)
   {
-    ArrayList<ConfigThingy> found = new ArrayList<ConfigThingy>();
+    ArrayList<ConfigThingy> found = new ArrayList<>();
 
     boolean hasMore;
 
@@ -837,7 +837,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
   protected ConfigThingy query(String name, boolean getParents, int maxlevel,
       int minlevel)
   {
-    List<ConfigThingy> found = new ArrayList<ConfigThingy>();
+    List<ConfigThingy> found = new ArrayList<>();
     boolean haveMore;
     int searchlevel = minlevel;
     do
@@ -958,7 +958,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
       p = CONFIGTHINGY_SPECIAL;
 
     Matcher m = p.matcher(str);
-    ArrayList<Integer> locations = new ArrayList<Integer>();
+    ArrayList<Integer> locations = new ArrayList<>();
     while (m.find())
       locations.add(Integer.valueOf(m.start()));
     StringBuilder buffy = new StringBuilder(str);
@@ -1575,7 +1575,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
   private static List<StringContentToken> tokenize(URL url, Reader read)
       throws IOException, SyntaxErrorException
   {
-    List<StringContentToken> tokens = new ArrayList<StringContentToken>();
+    List<StringContentToken> tokens = new ArrayList<>();
     BufferedReader in = new BufferedReader(read);
     String line;
 

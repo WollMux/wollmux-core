@@ -79,7 +79,7 @@ public class RDFBasedPersistentDataContainer implements
    * damit diese Objekte nicht mehrfach erzeugt werden müssen.
    */
   private final HashMap<DataID, XURI> mapDataIdToURI =
-    new HashMap<DataID, XURI>();
+    new HashMap<>();
 
   /**
    * Erzeugt einen neuen persistenten Datenspeicher im Dokument doc.

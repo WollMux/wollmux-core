@@ -208,6 +208,15 @@ public class TextSection implements VisibilityElement
   @Override
   public boolean equals(Object obj)
   {
+    if (obj == null)
+    {
+      return false;
+    }
+
+    if (this.getClass() != obj.getClass())
+    {
+      return false;
+    }
     try
     {
       return UnoRuntime.areSame(((TextSection) obj).section, this.section);

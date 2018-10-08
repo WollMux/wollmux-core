@@ -119,7 +119,7 @@ public class ConfGenerator
   {
     try
     {
-      Map<String, String> map = new LinkedHashMap<String, String>(nodes.getLength());
+      Map<String, String> map = new LinkedHashMap<>(nodes.getLength());
       for (int file = 0; file < nodes.getLength(); file++)
       {
         ByteArrayOutputStream os = new ByteArrayOutputStream();

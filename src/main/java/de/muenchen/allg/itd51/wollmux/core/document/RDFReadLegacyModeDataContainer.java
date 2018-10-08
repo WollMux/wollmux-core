@@ -45,7 +45,7 @@ public class RDFReadLegacyModeDataContainer implements
     this.rdfData = new RDFBasedPersistentDataContainer(doc);
     this.legacy = new AnnotationBasedPersistentDataContainer(doc);
     this.doc = doc;
-    this.removedFromLegacy = new HashSet<DataID>();
+    this.removedFromLegacy = new HashSet<>();
   }
 
   /*

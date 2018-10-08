@@ -41,7 +41,7 @@ import de.muenchen.allg.itd51.wollmux.core.util.L;
  */
 public class DialogLibrary
 {
-  private Map<String, Dialog> mapIdToDialog = new HashMap<String, Dialog>();
+  private Map<String, Dialog> mapIdToDialog = new HashMap<>();
   private DialogLibrary baselib;
 
 
@@ -69,7 +69,11 @@ public class DialogLibrary
    */
   public void add(String dlgName, Dialog dialog)
   {
-    if (dialog == null || dlgName == null) throw new NullPointerException(L.m("Weder Dialogname noch Dialog darf null sein"));
+    if (dialog == null || dlgName == null)
+    {
+      throw new NullPointerException(
+          L.m("Weder Dialogname noch Dialog darf null sein"));
+    }
     mapIdToDialog.put(dlgName, dialog);
   }
 
@@ -83,7 +87,10 @@ public class DialogLibrary
   public Dialog get(String dlgName)
   {
     Dialog dialog = mapIdToDialog.get(dlgName);
-    if (dialog == null && baselib != null) dialog = baselib.get(dlgName);
+    if (dialog == null && baselib != null)
+    {
+      dialog = baselib.get(dlgName);
+    }
     return dialog;
   }
 

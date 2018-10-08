@@ -280,15 +280,15 @@ public class TextDocumentModel
     this.doc = doc;
     this.wollmuxVersion = wollmuxVersion;
     this.oooVersion = oooVersion;
-    this.idToFormFields = new HashMap<String, List<FormField>>();
-    idToTextFieldFormFields = new HashMap<String, List<FormField>>();
-    staticTextFieldFormFields = new Vector<FormField>();
+    this.idToFormFields = new HashMap<>();
+    idToTextFieldFormFields = new HashMap<>();
+    staticTextFieldFormFields = new Vector<>();
     this.fragUrls = new String[] {};
-    this.printFunctions = new HashSet<String>();
+    this.printFunctions = new HashSet<>();
     this.formularConf = null;
-    this.formFieldValues = new HashMap<String, String>();
-    this.mapGroupIdToVisibilityState = new HashMap<String, Boolean>();
-    this.overrideFragMap = new HashMap<String, String>();
+    this.formFieldValues = new HashMap<>();
+    this.mapGroupIdToVisibilityState = new HashMap<>();
+    this.overrideFragMap = new HashMap<>();
 
     // Kommandobaum erzeugen (modified-Status dabei unberührt lassen):
     boolean modified = isDocumentModified();
@@ -440,7 +440,7 @@ public class TextDocumentModel
    */
   public synchronized Iterator<VisibilityElement> visibleElementsIterator()
   {
-    ArrayList<VisibilityElement> visibleElements = new ArrayList<VisibilityElement>();
+    ArrayList<VisibilityElement> visibleElements = new ArrayList<>();
     for (VisibilityElement ve : documentCommands.getSetGroups())
     {
       visibleElements.add(ve);
@@ -883,7 +883,7 @@ public class TextDocumentModel
       boolean needConfigThingy = printFunctions.size() > 1;
 
       // Elemente nach Namen sortieren (definierte Reihenfolge bei der Ausgabe)
-      ArrayList<String> names = new ArrayList<String>(printFunctions);
+      ArrayList<String> names = new ArrayList<>(printFunctions);
       Collections.sort(names);
 
       ConfigThingy wm = new ConfigThingy("WM");
@@ -955,7 +955,7 @@ public class TextDocumentModel
    */
   public synchronized Set<String> getAllFieldIDs()
   {
-    HashSet<String> ids = new HashSet<String>();
+    HashSet<String> ids = new HashSet<>();
     ids.addAll(idToFormFields.keySet());
     ids.addAll(getIdToTextFieldFormFields().keySet());
     return ids;
@@ -973,7 +973,7 @@ public class TextDocumentModel
    */
   public synchronized Map<String, String> getFormFieldValuesMap()
   {
-    return new HashMap<String, String>(formFieldValues);
+    return new HashMap<>(formFieldValues);
   }
 
   public synchronized void clearFormFieldValues()
@@ -1454,9 +1454,9 @@ public class TextDocumentModel
     Map<String, Integer> collectedTrafos = collectTrafosFromEnumeration(vc);
 
     // Auswertung von collectedTrafos
-    HashSet<String> completeFields = new HashSet<String>();
-    HashSet<String> startedFields = new HashSet<String>();
-    HashSet<String> finishedFields = new HashSet<String>();
+    HashSet<String> completeFields = new HashSet<>();
+    HashSet<String> startedFields = new HashSet<>();
+    HashSet<String> finishedFields = new HashSet<>();
 
     for (Map.Entry<String, Integer> ent : collectedTrafos.entrySet())
     {
@@ -1512,7 +1512,7 @@ public class TextDocumentModel
   private static Map<String, Integer> collectTrafosFromEnumeration(
       XTextRange textRange)
   {
-    HashMap<String, Integer> collectedTrafos = new HashMap<String, Integer>();
+    HashMap<String, Integer> collectedTrafos = new HashMap<>();
 
     if (textRange == null) {
       return collectedTrafos;
@@ -1641,11 +1641,11 @@ public class TextDocumentModel
   public synchronized ReferencedFieldID[] getReferencedFieldIDsThatAreNotInSchema(
       Set<String> schema)
   {
-    ArrayList<ReferencedFieldID> list = new ArrayList<ReferencedFieldID>();
+    ArrayList<ReferencedFieldID> list = new ArrayList<>();
 
     // Alle ReferencedFieldIDs des Dokuments alphabetisch sortiert
     // zurückliefern.
-    List<String> sortedIDs = new ArrayList<String>(getAllFieldIDs());
+    List<String> sortedIDs = new ArrayList<>(getAllFieldIDs());
     Collections.sort(sortedIDs);
     for (Iterator<String> iter = sortedIDs.iterator(); iter.hasNext();)
     {
@@ -1653,7 +1653,7 @@ public class TextDocumentModel
       if (schema.contains(id)) {
         continue;
       }
-      List<FormField> fields = new ArrayList<FormField>();
+      List<FormField> fields = new ArrayList<>();
       if (idToFormFields.containsKey(id)) {
         fields.addAll(idToFormFields.get(id));
       }
@@ -1729,7 +1729,7 @@ public class TextDocumentModel
   public static class FieldSubstitution implements
       Iterable<FieldSubstitution.SubstElement>
   {
-    private List<SubstElement> list = new ArrayList<SubstElement>();
+    private List<SubstElement> list = new ArrayList<>();
 
     public void addField(String fieldname)
     {
@@ -1873,14 +1873,14 @@ public class TextDocumentModel
       buttonAnpassung = new ConfigThingy("Buttonanpassung");
     String plausiColor = null;
     Map<String, ConfigThingy> mapFensterIdToConfigThingy =
-      new HashMap<String, ConfigThingy>();
+      new HashMap<>();
     Map<String, ConfigThingy> mapSichtbarkeitIdToConfigThingy =
-      new HashMap<String, ConfigThingy>();
+      new HashMap<>();
     Map<String, ConfigThingy> mapFunktionenIdToConfigThingy =
-      new HashMap<String, ConfigThingy>();
+      new HashMap<>();
     Map<String, ConfigThingy> mapFunktionsdialogeIdToConfigThingy =
-      new HashMap<String, ConfigThingy>();
-    List<String> tabNames = new ArrayList<String>();
+      new HashMap<>();
+    List<String> tabNames = new ArrayList<>();
     for (ConfigThingy conf : desc)
     {
       try
@@ -2024,8 +2024,8 @@ public class TextDocumentModel
     /*
      * NEVER und ALWAYS Angaben aufsammeln
      */
-    Set<String> neverActions = new HashSet<String>();
-    List<ActionUIElementPair> alwaysActions = new ArrayList<ActionUIElementPair>(); // of
+    Set<String> neverActions = new HashSet<>();
+    List<ActionUIElementPair> alwaysActions = new ArrayList<>(); // of
     // ActionUIElementPair
     Iterator<ConfigThingy> anpOuterIter = anpassung.iterator(); // durchläuft die
     // *Tab Abschnitte
@@ -2063,7 +2063,7 @@ public class TextDocumentModel
      * Existierende Buttons-Abschnitte durchgehen, ihre Elemente aufsammeln (außer
      * denen, die durch NEVER verboten sind)
      */
-    List<ActionUIElementPair> existingUIElements = new ArrayList<ActionUIElementPair>(); // of
+    List<ActionUIElementPair> existingUIElements = new ArrayList<>(); // of
     // ActionUIElementPair
     ConfigThingy buttonsConf = tabConf.query("Buttons");
     Iterator<ConfigThingy> buttonsOuterIter = buttonsConf.iterator(); // durchläuft

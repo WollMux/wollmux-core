@@ -101,7 +101,7 @@ public class DocumentTree
    */
   public DocumentTree(XTextDocument doc)
   {
-    List<Node> topLevelNodes = new ArrayList<Node>();
+    List<Node> topLevelNodes = new ArrayList<>();
 
     /*
      * Zuerst enumerieren wir den Inhalt des Body Texts
@@ -111,7 +111,7 @@ public class DocumentTree
     {
       return;
     }
-    List<Node> nodes = new ArrayList<Node>();
+    List<Node> nodes = new ArrayList<>();
     XEnumeration enu = enuAccess.createEnumeration();
     handleParagraphEnumeration(enu, nodes, doc);
     topLevelNodes.add(new ContainerNode(nodes));
@@ -124,7 +124,7 @@ public class DocumentTree
     String[] names = access.getElementNames();
     if (names.length > 0)
     {
-      nodes = new Vector<Node>(names.length);
+      nodes = new Vector<>(names.length);
       for (int i = 0; i < names.length; ++i)
       {
         Object frame;
@@ -139,7 +139,7 @@ public class DocumentTree
         }
 
         enu = UNO.XEnumerationAccess(frame).createEnumeration();
-        List<Node> childNodes = new ArrayList<Node>();
+        List<Node> childNodes = new ArrayList<>();
         handleParagraphEnumeration(enu, childNodes, doc);
 
         nodes.add(new ContainerNode(childNodes));
@@ -206,12 +206,12 @@ public class DocumentTree
   private void handleTextTable(XTextTable table, Collection<Node> nodes,
       XTextDocument doc)
   {
-    List<Node> cells = new ArrayList<Node>();
+    List<Node> cells = new ArrayList<>();
     String[] cellNames = table.getCellNames();
     for (int i = 0; i < cellNames.length; ++i)
     {
       XCell cell = table.getCellByName(cellNames[i]);
-      List<Node> cellContents = new ArrayList<Node>();
+      List<Node> cellContents = new ArrayList<>();
       handleParagraphEnumeration(UNO.XEnumerationAccess(cell).createEnumeration(),
         cellContents, doc);
       cells.add(new ContainerNode(cellContents));
@@ -230,7 +230,7 @@ public class DocumentTree
   private void handleParagraph(XEnumerationAccess paragraph, Collection<Node> nodes,
       XTextDocument doc)
   {
-    List<Node> textPortions = new ArrayList<Node>();
+    List<Node> textPortions = new ArrayList<>();
 
     /*
      * enumeriere alle TextPortions des Paragraphs

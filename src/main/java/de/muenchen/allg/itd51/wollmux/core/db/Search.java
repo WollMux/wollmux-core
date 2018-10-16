@@ -30,16 +30,11 @@
  */
 package de.muenchen.allg.itd51.wollmux.core.db;
 
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
-import de.muenchen.allg.itd51.wollmux.core.db.DJDataset;
-import de.muenchen.allg.itd51.wollmux.core.db.DatasourceJoiner;
-import de.muenchen.allg.itd51.wollmux.core.db.Query;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryPart;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResults;
-import de.muenchen.allg.itd51.wollmux.core.db.TimeoutException;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 
 /**
@@ -94,26 +89,55 @@ public class Search
     List<Query> queries = parseQuery(searchStrategy, queryString);
 
     QueryResults results = null;
+    List<QueryResults> listOfQueryResultsList = new ArrayList<>();
 
-    Iterator<Query> iter = queries.iterator();
-    while (iter.hasNext())
+    for (Query query : queries)
     {
-      Query query = iter.next();
       if (query.numberOfQueryParts() == 0)
       {
-        results =
-          useDjMainDatasource ? dj.getContentsOfMainDatasource()
-                              : dj.getContentsOf(query.getDatasourceName());
-      }
-      else
+        results = (useDjMainDatasource ? dj.getContentsOfMainDatasource() : dj.getContentsOf(query.getDatasourceName()));
+      } else
       {
-        results =
-          useDjMainDatasource ? dj.find(query.getQueryParts()) : dj.find(query);
+        results = (useDjMainDatasource ? dj.find(query.getQueryParts()) : dj.find(query));
       }
-      if (!results.isEmpty()) {
-        break;
+      listOfQueryResultsList.add(results);
+    }
+    return mergeListOfQueryResultsList(listOfQueryResultsList);
+  }
+
+  /**
+   * Führt die Ergenismengen zusammen. Dabei werden mehrfache Ergebnisse
+   * ausgefiltert.
+   * 
+   * @return bereinigte Ergebnisliste.
+   */
+  private static QueryResults mergeListOfQueryResultsList(List<QueryResults> listOfQueryResultsList)
+  {
+    QueryResultsSet results = new QueryResultsSet(new Comparator<Dataset>()
+    {
+
+      @Override
+      public int compare(Dataset o1, Dataset o2)
+      {
+        if (o1.getClass() == o2.getClass() && o1.getKey() == o2.getKey())
+        {
+          return 0;
+        }
+        return 1;
+      }
+    });
+
+    if (listOfQueryResultsList.size() == 1)
+    {
+      return listOfQueryResultsList.get(0);
+    } else
+    {
+      for (QueryResults queryResults : listOfQueryResultsList)
+      {
+        results.addAll(queryResults);
       }
     }
+
     return results;
   }
 
@@ -131,7 +155,7 @@ public class Search
   private static List<Query> parseQuery(SearchStrategy searchStrategy,
       String queryString)
   {
-    List<Query> queryList = new Vector<Query>();
+    List<Query> queryList = new ArrayList<>();
 
     /*
      * Kommata durch Space ersetzen (d.h. "Benkmann,Matthias" -> "Benkmann Matthias")
@@ -209,7 +233,7 @@ public class Search
   private static Query resolveTemplate(Query template, String[] words, int wordcount)
   {
     String dbName = template.getDatasourceName();
-    List<QueryPart> listOfQueryParts = new Vector<QueryPart>();
+    List<QueryPart> listOfQueryParts = new ArrayList<>();
     Iterator<QueryPart> qpIter = template.iterator();
     while (qpIter.hasNext())
     {

@@ -240,10 +240,27 @@ public class LDAPDatasource implements Datasource
           + L.m("Keine OBJECT_CLASS definiert."), e);
     }
 
+    String user = "";
+    String password = "";
+    try
+    {
+      user = sourceDesc.get("USER").toString();
+      password = sourceDesc.get("PASSWORD").toString();
+    } catch (NodeNotFoundException e)
+    {
+      LOGGER.debug(L.m("Username oder Passwort für den LDAP-Server fehlt."), e);
+    }
+
     // set properties
     properties.put(Context.INITIAL_CONTEXT_FACTORY,
       "com.sun.jndi.ldap.LdapCtxFactory");
     properties.put(Context.PROVIDER_URL, url);
+
+    if (!user.isEmpty() && !password.isEmpty())
+    {
+      properties.put(Context.SECURITY_PRINCIPAL, user);
+      properties.put(Context.SECURITY_CREDENTIALS, password);
+    }
 
     ConfigThingy spalten = sourceDesc.query("Spalten");
 

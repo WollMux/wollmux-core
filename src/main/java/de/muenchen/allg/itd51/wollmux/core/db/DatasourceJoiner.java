@@ -57,34 +57,20 @@
 package de.muenchen.allg.itd51.wollmux.core.db;
 
 import java.io.File;
-import java.io.IOException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.regex.Pattern;
 
-import de.muenchen.allg.itd51.wollmux.core.db.ColumnNotFoundException;
-import de.muenchen.allg.itd51.wollmux.core.db.DJDataset;
-import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
-import de.muenchen.allg.itd51.wollmux.core.db.DatasetNotFoundException;
-import de.muenchen.allg.itd51.wollmux.core.db.Datasource;
-import de.muenchen.allg.itd51.wollmux.core.db.DummyDatasourceWithMessagebox;
-import de.muenchen.allg.itd51.wollmux.core.db.EmptyDatasource;
-import de.muenchen.allg.itd51.wollmux.core.db.LocalOverrideStorage;
-import de.muenchen.allg.itd51.wollmux.core.db.NoBackingStoreException;
-import de.muenchen.allg.itd51.wollmux.core.db.Query;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryPart;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResults;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResultsList;
-import de.muenchen.allg.itd51.wollmux.core.db.TimeoutException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 
 /**
  * Stellt eine virtuelle Datenbank zur Verfügung, die ihre Daten aus verschiedenen
@@ -94,6 +80,9 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
  */
 public class DatasourceJoiner
 {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(DatasourceJoiner.class);
+
   /**
    * Dummy-Schema für Datenquellen.
    */
@@ -117,7 +106,7 @@ public class DatasourceJoiner
    * einem Namen in der Config-Datei aufgeführte Datebank ist hier verzeichnet.
    */
   private Map<String, Datasource> nameToDatasource =
-    new HashMap<String, Datasource>();
+    new HashMap<>();
 
   private LocalOverrideStorage myLOS;
 
@@ -136,7 +125,7 @@ public class DatasourceJoiner
    * Hintergrunddatenbank verknüpft sind, deren Schlüssel jedoch darin nicht mehr
    * gefunden wurde und deshalb nicht aktualisiert werden konnte.
    */
-  public List<Dataset> lostDatasets = new ArrayList<Dataset>(0);
+  public List<Dataset> lostDatasets = new ArrayList<>(0);
 
   public static final long DATASOURCE_TIMEOUT = 10000;
   
@@ -152,15 +141,10 @@ public class DatasourceJoiner
      * Hintergrunddatenbank verknüpft sind, deren Schlüssel jedoch darin nicht mehr
      * gefunden wurde und deshalb nicht aktualisiert werden konnte.
      */
-    public List<Dataset> lostDatasets = new Vector<Dataset>(0);
+    public List<Dataset> lostDatasets = new ArrayList<>(0);
   }
 
   private Status status;
-
-  public Status getStatus()
-  {
-    return status;
-  }
 
   /**
    * Erzeugt einen neuen DatasourceJoiner.
@@ -213,7 +197,7 @@ public class DatasourceJoiner
       
       if (!mainSourceName.equals(NOCONFIG))
       {
-        Logger.error(L.m("Datenquelle \"%1\" nicht definiert => verwende alte Daten aus Cache",
+        LOGGER.error(L.m("Datenquelle \"%1\" nicht definiert => verwende alte Daten aus Cache",
                                         mainSourceName));
         mainDatasource = new EmptyDatasource(schema, mainSourceName);
       }
@@ -234,11 +218,16 @@ public class DatasourceJoiner
       }
       catch (TimeoutException x)
       {
-        Logger.error(L.m(
+        LOGGER.error(L.m(
           "Timeout beim Zugriff auf Datenquelle \"%1\" => Benutze Daten aus Cache",
           mainDatasource.getName()), x);
       }
     }
+  }
+
+  public Status getStatus()
+  {
+    return status;
   }
 
   /**
@@ -307,7 +296,7 @@ public class DatasourceJoiner
     if (suchString == null || !SUCHSTRING_PATTERN.matcher(suchString).matches())
       throw new IllegalArgumentException(L.m("Illegaler Suchstring: %1", suchString));
 
-    List<QueryPart> query = new Vector<QueryPart>();
+    List<QueryPart> query = new ArrayList<>();
     query.add(new QueryPart(spaltenName, suchString));
     return find(query);
   }
@@ -329,7 +318,7 @@ public class DatasourceJoiner
       throw new IllegalArgumentException(
         L.m("Illegaler Suchstring: %1", suchString2));
 
-    List<QueryPart> query = new Vector<QueryPart>();
+    List<QueryPart> query = new ArrayList<>();
     query.add(new QueryPart(spaltenName1, suchString1));
     query.add(new QueryPart(spaltenName2, suchString2));
     return find(query);
@@ -386,7 +375,7 @@ public class DatasourceJoiner
   public QueryResults find(List<QueryPart> query) throws TimeoutException
   { // TESTED
     QueryResults res = mainDatasource.find(query, queryTimeout());
-    List<DJDatasetWrapper> djDatasetsList = new Vector<DJDatasetWrapper>(res.size());
+    List<DJDatasetWrapper> djDatasetsList = new ArrayList<>(res.size());
     Iterator<Dataset> iter = res.iterator();
     while (iter.hasNext())
     {
@@ -449,7 +438,7 @@ public class DatasourceJoiner
   public QueryResults getContentsOfMainDatasource() throws TimeoutException
   {
     QueryResults res = mainDatasource.getContents(queryTimeout());
-    List<DJDatasetWrapper> djDatasetsList = new Vector<DJDatasetWrapper>(res.size());
+    List<DJDatasetWrapper> djDatasetsList = new ArrayList<>(res.size());
     Iterator<Dataset> iter = res.iterator();
     while (iter.hasNext())
     {
@@ -469,13 +458,13 @@ public class DatasourceJoiner
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public ConfigThingy saveCacheAndLOS(File cacheFile) throws IOException
+  public ConfigThingy saveCacheAndLOS(File cacheFile)
   {
-    Logger.debug(L.m("Speichere Cache nach %1.", cacheFile));
+    LOGGER.debug(L.m("Speichere Cache nach %1.", cacheFile));
     Set<String> schema = myLOS.getSchema();
     if (schema == null)
     {
-      Logger.error(L.m("Kann Cache nicht speichern, weil nicht initialisiert."));
+      LOGGER.error(L.m("Kann Cache nicht speichern, weil nicht initialisiert."));
       return null;
     }
 
@@ -498,7 +487,9 @@ public class DatasourceJoiner
       ausgewaehlt.add(Integer.toString(getSelectedDatasetSameKeyIndex()));
     }
     catch (DatasetNotFoundException x)
-    {}
+    {
+      LOGGER.trace("", x);
+    }
 
     return conf;
   }

@@ -88,11 +88,9 @@ import javax.swing.event.ListSelectionEvent;
 import javax.swing.event.ListSelectionListener;
 import javax.swing.text.JTextComponent;
 
-import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
-import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
-import de.muenchen.allg.itd51.wollmux.core.parser.NodeNotFoundException;
-import de.muenchen.allg.itd51.wollmux.core.util.L;
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.muenchen.allg.itd51.wollmux.core.dialog.controls.Box;
 import de.muenchen.allg.itd51.wollmux.core.dialog.controls.Button;
 import de.muenchen.allg.itd51.wollmux.core.dialog.controls.Checkbox;
@@ -103,6 +101,10 @@ import de.muenchen.allg.itd51.wollmux.core.dialog.controls.Separator;
 import de.muenchen.allg.itd51.wollmux.core.dialog.controls.Textarea;
 import de.muenchen.allg.itd51.wollmux.core.dialog.controls.Textfield;
 import de.muenchen.allg.itd51.wollmux.core.dialog.controls.UIElement;
+import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
+import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
+import de.muenchen.allg.itd51.wollmux.core.parser.NodeNotFoundException;
+import de.muenchen.allg.itd51.wollmux.core.util.L;
 
 /**
  * Erzeugt zu ConfigThingys passende UI Elemente.
@@ -111,17 +113,14 @@ import de.muenchen.allg.itd51.wollmux.core.dialog.controls.UIElement;
  */
 public class UIElementFactory
 {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(UIElementFactory.class);
+
   /**
    * Standardbreite für Textfelder und Textareas. Wird verwendet, wenn nicht mit
    * setTextfieldWidth() ein anderer Wert gesetzt wurde.
    */
-  private final static int TEXTFIELD_DEFAULT_WIDTH = 22;
-
-  /**
-   * Wird in einer der übergebenen Maps ein TYPE nicht gefunden, so wird stattdessen
-   * nach einem Eintrag für diesen Namen gesucht.
-   */
-  private static final String DEFAULT = "default";
+  private static final int TEXTFIELD_DEFAULT_WIDTH = 22;
 
   /**
    * Die Breite (in Zeichen) für Textfields und Textareas. Kann mit
@@ -241,7 +240,6 @@ public class UIElementFactory
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public UIElement createUIElement(UIElementContext context, ConfigThingy conf)
-      throws ConfigurationErrorException
   {
     String label = "";
     String tip = "";
@@ -272,7 +270,8 @@ public class UIElementFactory
         action = str;
       else if (name.equals("READONLY"))
         readonly = str.equals("true");
-      else if (name.equals("EDIT")) editable = str.equals("true");
+      else if (name.equals("EDIT"))
+        editable = str.equals("true");
     }
 
     if (type.length() == 0)
@@ -302,13 +301,19 @@ public class UIElementFactory
         button = new JMenuItem(label);
 
       button.setMnemonic(hotkey);
-      if (!tip.equals("")) button.setToolTipText(tip);
+      if (!tip.equals(""))
+      {
+        button.setToolTipText(tip);
+      }
       uiElement = new Button(id, button, layoutConstraints);
 
       ActionListener actionL =
         getAction(uiElement, action, conf, context.uiElementEventHandler,
           context.supportedActions);
-      if (actionL != null) button.addActionListener(actionL);
+      if (actionL != null)
+      {
+        button.addActionListener(actionL);
+      }
       button.addFocusListener(new UIElementFocusListener(
         context.uiElementEventHandler, uiElement));
       return uiElement;
@@ -323,7 +328,10 @@ public class UIElementFactory
       JTextField tf = new JTextField(textfieldWidth);
       tf.setEditable(!readonly);
       tf.setFocusable(!readonly);
-      if (!tip.equals("")) tf.setToolTipText(tip);
+      if (!tip.equals(""))
+      {
+        tf.setToolTipText(tip);
+      }
       uiElement =
         new Textfield(id, tf, layoutConstraints, labelType, label,
           labelLayoutConstraints);
@@ -337,7 +345,10 @@ public class UIElementFactory
         ActionListener actionL =
           getAction(uiElement, action, conf, context.uiElementEventHandler,
             context.supportedActions);
-        if (actionL != null) tf.addActionListener(actionL);
+        if (actionL != null)
+        {
+          tf.addActionListener(actionL);
+        }
       }
       return uiElement;
     }
@@ -366,29 +377,30 @@ public class UIElementFactory
         textarea.setWrapStyleWord(true);
       }
       textarea.setFont(new JTextField().getFont());
-      if (!tip.equals("")) textarea.setToolTipText(tip);
+      if (!tip.equals(""))
+      {
+        textarea.setToolTipText(tip);
+      }
 
       /*
        * Tab auch zum Weiterschalten und Shift-Tab zum Zurückschalten erlauben
        */
       Set<AWTKeyStroke> focusKeys =
         textarea.getFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS);
-      focusKeys = new HashSet<AWTKeyStroke>(focusKeys);
+      focusKeys = new HashSet<>(focusKeys);
       focusKeys.add(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0));
       textarea.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
         focusKeys);
       focusKeys =
         textarea.getFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS);
-      focusKeys = new HashSet<AWTKeyStroke>(focusKeys);
+      focusKeys = new HashSet<>(focusKeys);
       focusKeys.add(KeyStroke.getKeyStroke(KeyEvent.VK_TAB,
         InputEvent.SHIFT_DOWN_MASK));
       textarea.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
         focusKeys);
 
       JPanel panel = new JPanel(new GridLayout(1, 1));
-      JScrollPane scrollPane = new JScrollPane(textarea);// ,
-      // JScrollPane.HORIZONTAL_SCROLLBAR_NEVER,
-      // JScrollPane.VERTICAL_SCROLLBAR_NEVER);
+      JScrollPane scrollPane = new JScrollPane(textarea);
       scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
       scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
       panel.add(scrollPane);
@@ -404,11 +416,14 @@ public class UIElementFactory
     }
     else if (type.equals("combobox"))
     {
-      JComboBox<Object> combo = new JComboBox<Object>();
+      JComboBox<Object> combo = new JComboBox<>();
       combo.setEnabled(!readonly);
       combo.setFocusable(!readonly);
       combo.setEditable(editable);
-      if (!tip.equals("")) combo.setToolTipText(tip);
+      if (!tip.equals(""))
+      {
+        combo.setToolTipText(tip);
+      }
       try
       {
         Iterator<ConfigThingy> values = conf.get("VALUES").iterator();
@@ -419,7 +434,7 @@ public class UIElementFactory
       }
       catch (Exception x)
       {
-        Logger.error(L.m("Fehlerhaftes Element des Typs \"combobox\""), x);
+        LOGGER.error(L.m("Fehlerhaftes Element des Typs \"combobox\""), x);
       }
 
       uiElement =
@@ -455,7 +470,10 @@ public class UIElementFactory
       copySpaceBindingToEnter(boxBruceleitner);
       boxBruceleitner.setEnabled(!readonly);
       boxBruceleitner.setFocusable(!readonly);
-      if (!tip.equals("")) boxBruceleitner.setToolTipText(tip);
+      if (!tip.equals(""))
+      {
+        boxBruceleitner.setToolTipText(tip);
+      }
       uiElement = new Checkbox(id, boxBruceleitner, layoutConstraints);
       boxBruceleitner.addActionListener(new UIElementActionListener(
         context.uiElementEventHandler, uiElement, true, "valueChanged",
@@ -474,7 +492,7 @@ public class UIElementFactory
       catch (Exception e)
       {}
 
-      JList<Object> list = new JList<Object>(new DefaultListModel<Object>());
+      JList<Object> list = new JList<>(new DefaultListModel<>());
 
       list.setVisibleRowCount(lines);
       list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
@@ -650,7 +668,10 @@ public class UIElementFactory
     @Override
     public void actionPerformed(ActionEvent e)
     {
-      if (takeFocus && !uiElement.hasFocus()) uiElement.takeFocus();
+      if (takeFocus && !uiElement.hasFocus())
+      {
+        uiElement.takeFocus();
+      }
       handler.processUiElementEvent(uiElement, eventType, args);
     }
   }
@@ -790,9 +811,15 @@ public class UIElementFactory
       {
         Point location = e.getPoint();
         int index = list.locationToIndex(location);
-        if (index < 0) return;
+        if (index < 0)
+        {
+          return;
+        }
         Rectangle bounds = list.getCellBounds(index, index);
-        if (!bounds.contains(location)) return;
+        if (!bounds.contains(location))
+        {
+          return;
+        }
         action.actionPerformed(null);
       }
     }
@@ -831,7 +858,7 @@ public class UIElementFactory
   {
     if (!supportedActions.contains(action))
     {
-      Logger.error(L.m("Ununterstützte ACTION \"%1\"", action));
+      LOGGER.error(L.m("Ununterstützte ACTION \"%1\"", action));
       return null;
     }
 
@@ -846,7 +873,7 @@ public class UIElementFactory
       }
       catch (NodeNotFoundException x)
       {
-        Logger.error(L.m("ACTION \"switchWindow\" erfordert WINDOW-Attribut"));
+        LOGGER.error(L.m("ACTION \"switchWindow\" erfordert WINDOW-Attribut"), x);
       }
     }
     else if (action.equals("openTemplate") || action.equals("openDocument"))
@@ -855,7 +882,7 @@ public class UIElementFactory
       if (fids.count() > 0)
       {
         Iterator<ConfigThingy> i = fids.iterator();
-        StringBuffer fragId = new StringBuffer();
+        StringBuilder fragId = new StringBuilder();
         fragId.append(i.next().toString());
         while (i.hasNext())
         {
@@ -868,7 +895,7 @@ public class UIElementFactory
       }
       else
       {
-        Logger.error(L.m("ACTION \"%1\" erfordert mindestens ein Attribut FRAG_ID",
+        LOGGER.error(L.m("ACTION \"%1\" erfordert mindestens ein Attribut FRAG_ID",
           action));
       }
     }
@@ -877,14 +904,14 @@ public class UIElementFactory
       ConfigThingy ext = conf.query("EXT");
       if (ext.count() != 1)
       {
-        Logger.error(L.m("ACTION \"%1\" erfordert genau ein Attribut EXT", action));
+        LOGGER.error(L.m("ACTION \"%1\" erfordert genau ein Attribut EXT", action));
       }
       else
       {
         ConfigThingy url = conf.query("URL");
         if (url.count() != 1)
         {
-          Logger.error(L.m("ACTION \"%1\" erfordert genau ein Attribut URL", action));
+          LOGGER.error(L.m("ACTION \"%1\" erfordert genau ein Attribut URL", action));
         }
         else
         {
@@ -899,7 +926,7 @@ public class UIElementFactory
       ConfigThingy ext = conf.query("EXT");
       if (ext.count() != 1)
       {
-        Logger.error(L.m("ACTION \"%1\" erfordert genau ein Attribut EXT", action));
+        LOGGER.error(L.m("ACTION \"%1\" erfordert genau ein Attribut EXT", action));
       }
       else
       {
@@ -913,7 +940,7 @@ public class UIElementFactory
       ConfigThingy ext = conf.query("EXT");
       if (ext.count() != 1)
       {
-        Logger.error(L.m("ACTION \"%1\" erfordert genau ein Attribut EXT", action));
+        LOGGER.error(L.m("ACTION \"%1\" erfordert genau ein Attribut EXT", action));
       }
       else
       {
@@ -933,7 +960,7 @@ public class UIElementFactory
       }
       catch (NodeNotFoundException e)
       {
-        Logger.error(L.m("ACTION \"open\" erfordert die Angabe OPEN \"...\""));
+        LOGGER.error(L.m("ACTION \"open\" erfordert die Angabe OPEN \"...\""), e);
       }
     }
     else if (action.equals("funcDialog"))
@@ -947,7 +974,7 @@ public class UIElementFactory
       }
       catch (NodeNotFoundException x)
       {
-        Logger.error(L.m("ACTION \"funcDialog\" erfordert DIALOG-Attribut"));
+        LOGGER.error(L.m("ACTION \"funcDialog\" erfordert DIALOG-Attribut"), x);
       }
     }
     else

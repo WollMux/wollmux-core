@@ -41,20 +41,15 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import de.muenchen.allg.itd51.wollmux.core.db.ColumnNotFoundException;
-import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
-import de.muenchen.allg.itd51.wollmux.core.db.Datasource;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryPart;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResults;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResultsList;
-import de.muenchen.allg.itd51.wollmux.core.db.TimeoutException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import de.muenchen.allg.itd51.wollmux.core.db.checker.DatasetChecker;
+import de.muenchen.allg.itd51.wollmux.core.db.checker.MatchAllDatasetChecker;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
 import de.muenchen.allg.itd51.wollmux.core.parser.NodeNotFoundException;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
-import de.muenchen.allg.itd51.wollmux.core.db.checker.DatasetChecker;
-import de.muenchen.allg.itd51.wollmux.core.db.checker.MatchAllDatasetChecker;
 
 /**
  * Eine Datenquelle, die eine andere Datenquelle um Spalten ergänzt und einzelne
@@ -79,6 +74,9 @@ import de.muenchen.allg.itd51.wollmux.core.db.checker.MatchAllDatasetChecker;
  */
 public class OverlayDatasource implements Datasource
 {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(OverlayDatasource.class);
+
   private String name;
 
   private String source1Name;
@@ -128,8 +126,7 @@ public class OverlayDatasource implements Datasource
    *          der Kontext relativ zu dem URLs aufgelöst werden sollen (zur Zeit nicht
    *          verwendet).
    */
-  public OverlayDatasource(Map<String, Datasource> nameToDatasource,
-      ConfigThingy sourceDesc, URL context) throws ConfigurationErrorException
+  public OverlayDatasource(Map<String, Datasource> nameToDatasource, ConfigThingy sourceDesc, URL context)
   {
     try
     {
@@ -137,7 +134,7 @@ public class OverlayDatasource implements Datasource
     }
     catch (NodeNotFoundException x)
     {
-      throw new ConfigurationErrorException(L.m("NAME der Datenquelle fehlt"));
+      throw new ConfigurationErrorException(L.m("NAME der Datenquelle fehlt"), x);
     }
 
     String mode;
@@ -148,7 +145,7 @@ public class OverlayDatasource implements Datasource
     catch (NodeNotFoundException x)
     {
       throw new ConfigurationErrorException(L.m(
-        "MODE-Angabe der Datenquelle '%1' fehlt", name));
+          "MODE-Angabe der Datenquelle '%1' fehlt", name), x);
     }
 
     String lcMode = mode.toLowerCase();
@@ -171,7 +168,7 @@ public class OverlayDatasource implements Datasource
     catch (NodeNotFoundException x)
     {
       throw new ConfigurationErrorException(L.m("SOURCE der Datenquelle %1 fehlt",
-        name));
+          name), x);
     }
 
     try
@@ -181,7 +178,7 @@ public class OverlayDatasource implements Datasource
     catch (NodeNotFoundException x)
     {
       throw new ConfigurationErrorException(L.m(
-        "OVERLAY-Angabe der Datenquelle %1 fehlt", name));
+          "OVERLAY-Angabe der Datenquelle %1 fehlt", name), x);
     }
 
     source1 = nameToDatasource.get(source1Name);
@@ -199,10 +196,10 @@ public class OverlayDatasource implements Datasource
           "Fehler bei Initialisierung von Datenquelle \"%1\": Referenzierte Datenquelle \"%2\" nicht (oder fehlerhaft) definiert",
           name, source2Name));
 
-    schema1 = new HashSet<String>(source1.getSchema());
-    schema2 = new HashSet<String>(source2.getSchema());
+    schema1 = new HashSet<>(source1.getSchema());
+    schema2 = new HashSet<>(source2.getSchema());
 
-    schema = new HashSet<String>(schema1);
+    schema = new HashSet<>(schema1);
     schema.addAll(schema2);
 
     ConfigThingy matchesDesc = sourceDesc.query("MATCH");
@@ -214,7 +211,7 @@ public class OverlayDatasource implements Datasource
 
     match1 = new String[numMatches];
     match2 = new String[numMatches];
-    commonMatchColumns = new HashSet<String>();
+    commonMatchColumns = new HashSet<>();
 
     Iterator<ConfigThingy> iter = matchesDesc.iterator();
     for (int i = 0; i < numMatches; ++i)
@@ -306,9 +303,9 @@ public class OverlayDatasource implements Datasource
       throw new TimeoutException();
     }
     long endtime = System.currentTimeMillis() + timeout;
-    List<QueryPart> queryOnly1 = new Vector<QueryPart>();
-    List<QueryPart> queryOnly2 = new Vector<QueryPart>();
-    List<QueryPart> queryBoth = new Vector<QueryPart>();
+    List<QueryPart> queryOnly1 = new ArrayList<>();
+    List<QueryPart> queryOnly2 = new ArrayList<>();
+    List<QueryPart> queryBoth = new ArrayList<>();
     for (QueryPart p : query)
     {
       if (schema1.contains(p.getColumnName()))
@@ -341,7 +338,7 @@ public class OverlayDatasource implements Datasource
       QueryResults results = source1.find(queryOnly1, timeout);
 
       List<QueryPart> restQuery =
-        new Vector<QueryPart>(queryOnly2.size() + queryBoth.size());
+          new ArrayList<>(queryOnly2.size() + queryBoth.size());
       restQuery.addAll(queryBoth);
       restQuery.addAll(queryOnly2);
       DatasetChecker filter = DatasetChecker.makeChecker(restQuery);
@@ -396,7 +393,7 @@ public class OverlayDatasource implements Datasource
       DatasetChecker filter = DatasetChecker.makeChecker(query);
 
       QueryPart qp = getMostRestrictingQueryPart(queryBoth);
-      List<QueryPart> restrictingQuery = new Vector<QueryPart>(1);
+      List<QueryPart> restrictingQuery = new ArrayList<>(1);
       restrictingQuery.add(qp);
 
       QueryResults results1 = source1.find(restrictingQuery, timeout);
@@ -430,16 +427,16 @@ public class OverlayDatasource implements Datasource
        * bestimmen und diejenigen, die die Filterbedingung erfüllen den Ergebnissen
        * wieder hinzufügen.
        */
-      HashSet<String> results1Keys = new HashSet<String>();
+      HashSet<String> results1Keys = new HashSet<>();
       for (Dataset ds : results1)
       {
         results1Keys.add(ds.getKey());
       }
 
       List<Dataset> finalResults =
-        new ArrayList<Dataset>(results1.size() + results2.size());
+        new ArrayList<>(results1.size() + results2.size());
 
-      List<String> dupKeys = new ArrayList<String>();
+      List<String> dupKeys = new ArrayList<>();
       Iterator<Dataset> iter = results2.iterator();
       while (iter.hasNext())
       {
@@ -531,14 +528,14 @@ public class OverlayDatasource implements Datasource
   {
     long endTime = new Date().getTime() + timeout;
 
-    List<Dataset> resultsWithOverlayments = new Vector<Dataset>(results.size());
+    List<Dataset> resultsWithOverlayments = new ArrayList<>(results.size());
 
     Iterator<Dataset> iter = results.iterator();
     while (iter.hasNext())
     {
       Dataset ds = iter.next();
 
-      List<QueryPart> query = new Vector<QueryPart>(match1.length);
+      List<QueryPart> query = new ArrayList<>(match1.length);
       for (int i = 0; i < match1.length; ++i)
       {
         try
@@ -547,7 +544,7 @@ public class OverlayDatasource implements Datasource
         }
         catch (ColumnNotFoundException x)
         {
-          Logger.error(x);
+          LOGGER.error("", x);
         }
       }
 
@@ -590,13 +587,13 @@ public class OverlayDatasource implements Datasource
     long endTime = new Date().getTime() + timeout;
 
     List<ConcatDataset> resultsWithOverlayments =
-      new Vector<ConcatDataset>(results.size());
+        new ArrayList<>(results.size());
 
     Iterator<Dataset> iter = results.iterator();
     while (iter.hasNext())
     {
       Dataset ds = iter.next();
-      List<QueryPart> query = new Vector<QueryPart>(match1.length);
+      List<QueryPart> query = new ArrayList<>(match1.length);
       for (int i = 0; i < match1.length; ++i)
       {
         try
@@ -605,7 +602,7 @@ public class OverlayDatasource implements Datasource
         }
         catch (ColumnNotFoundException x)
         {
-          Logger.error(x);
+          LOGGER.error("", x);
         }
       }
 

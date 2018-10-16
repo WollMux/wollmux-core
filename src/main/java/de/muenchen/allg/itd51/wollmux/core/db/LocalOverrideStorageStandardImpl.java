@@ -2,7 +2,6 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.URL;
@@ -15,23 +14,15 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 
-import de.muenchen.allg.itd51.wollmux.core.db.ColumnNotFoundException;
-import de.muenchen.allg.itd51.wollmux.core.db.DJDataset;
-import de.muenchen.allg.itd51.wollmux.core.db.DJDatasetBase;
-import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
-import de.muenchen.allg.itd51.wollmux.core.db.DatasetNotFoundException;
-import de.muenchen.allg.itd51.wollmux.core.db.Datasource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.muenchen.allg.itd51.wollmux.core.db.DatasourceJoiner.Status;
-import de.muenchen.allg.itd51.wollmux.core.db.LocalOverrideStorage;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResults;
-import de.muenchen.allg.itd51.wollmux.core.db.TimeoutException;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.parser.NodeNotFoundException;
 import de.muenchen.allg.itd51.wollmux.core.parser.SyntaxErrorException;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 
 /**
  * Verwaltet den LOS des DJ.
@@ -40,6 +31,9 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
  */
 public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
 {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(LocalOverrideStorageStandardImpl.class);
+
   /**
    * Präfix, das vor generierte Schlüssel von LOS-only Datensätzen gesetzt wird, um
    * diese eindeutig von anderen Schlüsseln unterscheiden zu können.
@@ -51,7 +45,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
    * gleichem Schlüssel über ihre Position in der Liste identifiziert werden
    * können.
    */
-  private List<LOSDJDataset> data = new LinkedList<LOSDJDataset>();
+  private List<LOSDJDataset> data = new LinkedList<>();
 
   /**
    * Das Schema des LOS. Dies ist null solange es nicht initialisiert wurde. Falls
@@ -91,8 +85,8 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
          * temporären Variablen und kopieren diese nachher in die Felder losSchema
          * und this.data.
          */
-        Set<String> newSchema = new HashSet<String>();
-        List<LOSDJDataset> data = new LinkedList<LOSDJDataset>();
+        Set<String> newSchema = new HashSet<>();
+        List<LOSDJDataset> data = new LinkedList<>();
         Iterator<ConfigThingy> iter = cacheData.get("Schema").iterator();
         while (iter.hasNext())
           newSchema.add(iter.next().toString());
@@ -106,7 +100,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
           ConfigThingy cacheColumns = dsconf.query("Cache");
           if (cacheColumns.count() > 0)
           {
-            dscache = new HashMap<String, String>();
+            dscache = new HashMap<>();
             Iterator<ConfigThingy> iter2 = cacheColumns.getFirstChild().iterator();
             while (iter2.hasNext())
             {
@@ -114,7 +108,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
               String spalte = dsNode.getName();
               if (!newSchema.contains(spalte))
               {
-                Logger.error(L.m(
+                LOGGER.error(L.m(
                   "%1 enthält korrupten Datensatz (Spalte %2 nicht im Schema) => Cache wird ignoriert!",
                   losCache.getPath(), spalte));
                 return;
@@ -125,7 +119,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
           }
           // else LOS-only Datensatz, dscache bleibt null
 
-          Map<String, String> dsoverride = new HashMap<String, String>();
+          Map<String, String> dsoverride = new HashMap<>();
           Iterator<ConfigThingy> iter2 = dsconf.get("Override").iterator();
           while (iter2.hasNext())
           {
@@ -133,7 +127,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
             String spalte = dsNode.getName();
             if (!newSchema.contains(spalte))
             {
-              Logger.error(L.m(
+              LOGGER.error(L.m(
                 "%1 enthält korrupten Datensatz (Spalte %2 nicht im Schema) => Cache wird ignoriert!",
                 losCache.getPath(), spalte));
               return;
@@ -154,25 +148,13 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
         losSchema = newSchema;
         this.data = data;
       }
-      catch (FileNotFoundException e)
+      catch (IOException | SyntaxErrorException | NodeNotFoundException e)
       {
-        Logger.error(e);
-      }
-      catch (IOException e)
-      {
-        Logger.error(e);
-      }
-      catch (SyntaxErrorException e)
-      {
-        Logger.error(e);
-      }
-      catch (NodeNotFoundException e)
-      {
-        Logger.error(e);
+        LOGGER.error("", e);
       }
     }
     else
-      Logger.log(L.m("Cache-Datei %1 kann nicht gelesen werden.",
+      LOGGER.info(L.m("Cache-Datei %1 kann nicht gelesen werden.",
         losCache.getPath()));
 
     int sameKeyIndexInt = 0;
@@ -225,7 +207,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
   @Override
   public DJDataset newDataset()
   {
-    Map<String, String> dsoverride = new HashMap<String, String>();
+    Map<String, String> dsoverride = new HashMap<>();
     Iterator<String> iter = losSchema.iterator();
     while (iter.hasNext())
     {
@@ -247,10 +229,11 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
   public DJDataset copyNonLOSDataset(Dataset ds)
   {
     if (ds instanceof LOSDJDataset)
-      Logger.error(L.m("Diese Funktion darf nicht für LOSDJDatasets aufgerufen werden, da sie immer eine Kopie mit Backing Store erzeugt."));
+      LOGGER
+          .error(L.m("Diese Funktion darf nicht für LOSDJDatasets aufgerufen werden, da sie immer eine Kopie mit Backing Store erzeugt."));
 
-    Map<String, String> dsoverride = new HashMap<String, String>();
-    Map<String, String> dscache = new HashMap<String, String>();
+    Map<String, String> dsoverride = new HashMap<>();
+    Map<String, String> dscache = new HashMap<>();
     Iterator<String> iter = losSchema.iterator();
     while (iter.hasNext())
     {
@@ -262,7 +245,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
       }
       catch (ColumnNotFoundException e)
       {
-        Logger.error(e);
+        LOGGER.error("", e);
       }
     }
     LOSDJDataset newDs =
@@ -333,7 +316,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
      * verschiedenen Rollen verwendet zu werden.
      */
     Map<String, List<LOSDJDataset>> keyToLOSDJDatasetList =
-      new HashMap<String, List<LOSDJDataset>>();
+      new HashMap<>();
 
     Iterator<LOSDJDataset> iter = data.iterator();
     while (iter.hasNext())
@@ -341,7 +324,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
       LOSDJDataset ds = iter.next();
       String key = ds.getKey();
       if (!keyToLOSDJDatasetList.containsKey(key))
-        keyToLOSDJDatasetList.put(key, new Vector<LOSDJDataset>(1));
+        keyToLOSDJDatasetList.put(key, new ArrayList<LOSDJDataset>(1));
       List<LOSDJDataset> djdslist = keyToLOSDJDatasetList.get(key);
       djdslist.add(ds);
     }
@@ -382,7 +365,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
     {
       try
       {
-        Map<String, String> dscache = new HashMap<String, String>();
+        Map<String, String> dscache = new HashMap<>();
 
         Iterator<String> spalte = losSchema.iterator();
         while (spalte.hasNext())
@@ -412,7 +395,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
       }
       catch (Exception x)
       {
-        Logger.error(x);
+        LOGGER.error("", x);
       }
     }
 
@@ -437,7 +420,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
      * wird der Eintrag in der Absenderliste mit dem neuen Eintrag verknüpft,
      * obwohl dieser nichts mit dem alten zu tun hat.
      */
-    List<Dataset> lostDatasets = new ArrayList<Dataset>();
+    List<Dataset> lostDatasets = new ArrayList<>();
     for (List<LOSDJDataset> djDatasetList : keyToLOSDJDatasetList.values())
     {
       for (LOSDJDataset ds : djDatasetList)
@@ -449,7 +432,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
         }
         catch (ColumnNotFoundException x)
         {
-          Logger.error(x);
+          LOGGER.error("", x);
         }
         data.add(ds);
       }
@@ -457,7 +440,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
     
     status.lostDatasets = lostDatasets;
 
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     Iterator<Dataset> iter2 = lostDatasets.iterator();
     while (iter2.hasNext())
     {
@@ -468,7 +451,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
       }
     }
     if (buf.length() > 0)
-      Logger.log(L.m("Die Datensätze mit folgenden Schlüsseln konnten nicht aus der Datenbank aktualisiert werden: ")
+      LOGGER.info(L.m("Die Datensätze mit folgenden Schlüsseln konnten nicht aus der Datenbank aktualisiert werden: ")
         + buf);
 
     selectDataset(selectKey, sameKeyIndex);
@@ -537,16 +520,16 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
   { // TESTED
     if (losSchema == null)
     {
-      losSchema = new HashSet<String>(schema);
+      losSchema = new HashSet<>(schema);
       return;
     }
 
-    Set<String> spaltenDieDazuGekommenSind = new HashSet<String>(schema);
+    Set<String> spaltenDieDazuGekommenSind = new HashSet<>(schema);
     spaltenDieDazuGekommenSind.removeAll(losSchema);
 
     losSchema.addAll(spaltenDieDazuGekommenSind);
 
-    Set<String> spaltenDieWeggefallenSind = new HashSet<String>(losSchema);
+    Set<String> spaltenDieWeggefallenSind = new HashSet<>(losSchema);
     spaltenDieWeggefallenSind.removeAll(schema);
 
     losSchema.removeAll(spaltenDieWeggefallenSind);
@@ -554,7 +537,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
     if (spaltenDieWeggefallenSind.isEmpty()
       && spaltenDieDazuGekommenSind.isEmpty()) return;
 
-    Logger.log(L.m("Das Datenbank-Schema wurde geändert. Der Cache wird angepasst."));
+    LOGGER.info(L.m("Das Datenbank-Schema wurde geändert. Der Cache wird angepasst."));
 
     Iterator<LOSDJDataset> iter = data.iterator();
     while (iter.hasNext())
@@ -664,7 +647,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
     public DJDataset copy()
     {
       LOSDJDataset newDS =
-        new LOSDJDataset(this.myBS, isFromLOS() ? new HashMap<String, String>(
+        new LOSDJDataset(this.myBS, isFromLOS() ? new HashMap<>(
           this.myLOS) : new HashMap<String, String>(), this.schema, this.key);
       LocalOverrideStorageStandardImpl.this.data.add(newDS);
       if (selectedDataset == null) {

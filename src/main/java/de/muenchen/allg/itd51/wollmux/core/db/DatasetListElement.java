@@ -38,12 +38,14 @@ import java.util.regex.Pattern;
 
 import javax.swing.Icon;
 
-import de.muenchen.allg.itd51.wollmux.core.db.ColumnNotFoundException;
-import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DatasetListElement implements Comparable<DatasetListElement>
 {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(DatasetListElement.class);
+
   /**
    * Gibt an, wie die Personen in den Listen angezeigt werden sollen.
    * %{Spalte}-Syntax um entsprechenden Wert des Datensatzes einzufügen, z.B.
@@ -170,7 +172,7 @@ public class DatasetListElement implements Comparable<DatasetListElement>
       }
       catch (ColumnNotFoundException e)
       {
-        Logger.error(e);
+        LOGGER.error("", e);
       }
       str = str.substring(0, m.start()) + wert + str.substring(m.end());
       m = p.matcher(str);

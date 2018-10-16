@@ -46,6 +46,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.container.XNameAccess;
 import com.sun.star.sdbc.XColumnLocate;
@@ -58,18 +61,10 @@ import com.sun.star.sdbcx.XColumnsSupplier;
 import com.sun.star.sdbcx.XKeysSupplier;
 
 import de.muenchen.allg.afid.UNO;
-import de.muenchen.allg.itd51.wollmux.core.db.ColumnNotFoundException;
-import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
-import de.muenchen.allg.itd51.wollmux.core.db.Datasource;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryPart;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResults;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResultsList;
-import de.muenchen.allg.itd51.wollmux.core.db.TimeoutException;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
 import de.muenchen.allg.itd51.wollmux.core.parser.NodeNotFoundException;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 
 /**
  * Stellt eine OOo-Datenquelle als WollMux-Datenquelle zur Verfügung.
@@ -78,6 +73,9 @@ import de.muenchen.allg.itd51.wollmux.core.util.Logger;
  */
 public class OOoDatasource implements Datasource
 {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(OOoDatasource.class);
+
   /**
    * Maximale Zeit in Sekunden, die die Datenquelle für die Verbindungsaufnahme mit
    * der Datenbank brauchen darf.
@@ -198,8 +196,7 @@ public class OOoDatasource implements Datasource
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public OOoDatasource(Map<String, Datasource> nameToDatasource,
-      ConfigThingy sourceDesc, URL context) throws ConfigurationErrorException
+  public OOoDatasource(Map<String, Datasource> nameToDatasource, ConfigThingy sourceDesc, URL context)
   {
     this(nameToDatasource, sourceDesc, context, false);
   }
@@ -232,7 +229,6 @@ public class OOoDatasource implements Datasource
    */
   public OOoDatasource(Map<String, Datasource> nameToDatasource,
       ConfigThingy sourceDesc, URL context, boolean noKey)
-      throws ConfigurationErrorException
   {
     try
     {
@@ -240,7 +236,7 @@ public class OOoDatasource implements Datasource
     }
     catch (NodeNotFoundException x)
     {
-      throw new ConfigurationErrorException(L.m("NAME der Datenquelle fehlt"));
+      throw new ConfigurationErrorException(L.m("NAME der Datenquelle fehlt"), x);
     }
 
     try
@@ -252,7 +248,8 @@ public class OOoDatasource implements Datasource
       throw new ConfigurationErrorException(
         L.m(
           "Datenquelle \"%1\": Name der OOo-Datenquelle muss als SOURCE angegeben werden",
-          datasourceName));
+              datasourceName),
+          x);
     }
 
     try
@@ -264,7 +261,8 @@ public class OOoDatasource implements Datasource
       throw new ConfigurationErrorException(
         L.m(
           "Datenquelle \"%1\": Name der Tabelle/Sicht innerhalb der OOo-Datenquelle muss als TABLE angegeben werden",
-          datasourceName));
+              datasourceName),
+          x);
     }
 
     try
@@ -272,14 +270,18 @@ public class OOoDatasource implements Datasource
       userName = sourceDesc.get("USER").toString();
     }
     catch (NodeNotFoundException x)
-    {}
+    {
+      LOGGER.trace("", x);
+    }
 
     try
     {
       password = sourceDesc.get("PASSWORD").toString();
     }
     catch (NodeNotFoundException x)
-    {}
+    {
+      LOGGER.trace("", x);
+    }
 
     try
     {
@@ -297,9 +299,11 @@ public class OOoDatasource implements Datasource
           "SQL_SYNTAX \"%1\" nicht unterstützt", sqlSyntaxStr));
     }
     catch (NodeNotFoundException x)
-    {}
+    {
+      LOGGER.trace("", x);
+    }
 
-    schema = new HashSet<String>();
+    schema = new HashSet<>();
     ConfigThingy schemaConf = sourceDesc.query("Schema");
     if (schemaConf.count() != 0)
     {
@@ -333,7 +337,7 @@ public class OOoDatasource implements Datasource
     }
     else
     {
-      Logger.debug(L.m(
+      LOGGER.debug(L.m(
         "Schema der Datenquelle %1 nicht angegeben. Versuche, es von der Datenquelle zu erfragen.",
         datasourceName));
       try
@@ -356,9 +360,9 @@ public class OOoDatasource implements Datasource
         }
         catch (Exception x)
         {
-          Logger.debug(L.m(
+          LOGGER.debug(L.m(
             "Tabelle \"%1\" nicht gefunden. Versuche es als Namen einer Query zu nehmen",
-            oooTableName));
+              oooTableName), x);
           try
           {
             XNameAccess queries = UNO.XQueriesSupplier(conn).getQueries();
@@ -444,11 +448,11 @@ public class OOoDatasource implements Datasource
    *           *keine* Exception geworfen, wenn der Schluessel-Abschnitt leer ist.
    *           TESTED
    */
-  private void parseKey(ConfigThingy conf) throws ConfigurationErrorException
+  private void parseKey(ConfigThingy conf)
   {
     conf = conf.iterator().next();
     Iterator<ConfigThingy> iter = conf.iterator();
-    ArrayList<String> columns = new ArrayList<String>();
+    ArrayList<String> columns = new ArrayList<>();
     while (iter.hasNext())
     {
       String column = iter.next().toString();
@@ -586,11 +590,10 @@ public class OOoDatasource implements Datasource
   private QueryResults sqlQuery(String query, long timeout, boolean throwOnTimeout)
       throws TimeoutException
   {
-    Logger.debug("sqlQuery(\"" + query + "\", " + timeout + ", " + throwOnTimeout
-      + ")");
+    LOGGER.debug("sqlQuery(\"{}, {}, {})", query, timeout, throwOnTimeout);
     long endTime = System.currentTimeMillis() + timeout;
 
-    Vector<OOoDataset> datasets = new Vector<OOoDataset>();
+    List<OOoDataset> datasets = new ArrayList<>();
 
     if (System.currentTimeMillis() > endTime)
     {
@@ -656,7 +659,7 @@ public class OOoDatasource implements Datasource
 
       while (results.next())
       {
-        Map<String, String> data = new HashMap<String, String>();
+        Map<String, String> data = new HashMap<>();
         Iterator<Map.Entry<String, Integer>> iter =
           mapColumnNameToIndex.entrySet().iterator();
         while (iter.hasNext())
@@ -714,7 +717,7 @@ public class OOoDatasource implements Datasource
    */
   private Map<String, Integer> getColumnMapping(XResultSet results)
   {
-    Map<String, Integer> mapColumnNameToIndex = new HashMap<String, Integer>();
+    Map<String, Integer> mapColumnNameToIndex = new HashMap<>();
     XColumnLocate loc = UNO.XColumnLocate(results);
     Iterator<String> iter = getSchema().iterator();
     while (iter.hasNext())
@@ -869,188 +872,4 @@ public class OOoDatasource implements Datasource
     }
     return buffy.toString();
   }
-
-  private static void printQueryResults(Set<String> schema, QueryResults res,
-      Vector<String> keys) throws ColumnNotFoundException
-  {
-    keys.clear();
-    Iterator<Dataset> iter;
-    iter = res.iterator();
-    while (iter.hasNext())
-    {
-      Dataset data = iter.next();
-      keys.add(data.getKey());
-      Iterator<String> colIter = schema.iterator();
-      while (colIter.hasNext())
-      {
-        String col = colIter.next();
-        String val = data.get(col);
-        if (val == null)
-          val = "unbelegt";
-        else
-          val = "\"" + val + "\"";
-
-        System.out.print(col + "=" + val + " ");
-      }
-      System.out.println("  (Schlüssel: \"" + data.getKey() + "\")");
-    }
-  }
-
-  /**
-   * Gibt results aus.
-   * 
-   * @param query
-   *          ein String der in die Überschrift der Ausgabe geschrieben wird, damit
-   *          der Benutzer sieht, was er angezeigt bekommt.
-   * @param schema
-   *          bestimmt, welche Spalten angezeigt werden von den Datensätzen aus
-   *          results.
-   * @param results
-   *          die Ergebnisse der Anfrage.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
-   */
-  public static void printResults(String query, Set<String> schema,
-      QueryResults results)
-  {
-    System.out.println("Results for query \"" + query + "\":");
-    Iterator<Dataset> resIter = results.iterator();
-    while (resIter.hasNext())
-    {
-      Dataset result = resIter.next();
-
-      Iterator<String> spiter = schema.iterator();
-      while (spiter.hasNext())
-      {
-        String spalte = spiter.next();
-        String wert = "Spalte " + spalte + " nicht gefunden!";
-        try
-        {
-          wert = result.get(spalte);
-          if (wert == null)
-            wert = "unbelegt";
-          else
-            wert = "\"" + wert + "\"";
-        }
-        catch (ColumnNotFoundException x)
-        {}
-        System.out.print(spalte + "=" + wert + (spiter.hasNext() ? ", " : ""));
-      }
-      System.out.println();
-    }
-    System.out.println();
-  }
-
-  /**
-   * 
-   * @param spaltenName
-   * @param suchString
-   * @return
-   * @throws TimeoutException
-   * @author Matthias Benkmann (D-III-ITD 5.1)
-   */
-  private QueryResults simpleFind(String spaltenName, String suchString)
-      throws TimeoutException
-  {
-    List<QueryPart> query = new Vector<QueryPart>();
-    query.add(new QueryPart(spaltenName, suchString));
-    return find(query, 3000000);
-  }
-
-  /**
-   * 
-   * @param spaltenName1
-   * @param suchString1
-   * @param spaltenName2
-   * @param suchString2
-   * @return
-   * @throws TimeoutException
-   * @author Matthias Benkmann (D-III-ITD 5.1)
-   */
-  private QueryResults simpleFind(String spaltenName1, String suchString1,
-      String spaltenName2, String suchString2) throws TimeoutException
-  {
-    List<QueryPart> query = new Vector<QueryPart>();
-    query.add(new QueryPart(spaltenName1, suchString1));
-    query.add(new QueryPart(spaltenName2, suchString2));
-    return find(query, 3000000);
-  }
-
-  /**
-   * @author Matthias Benkmann (D-III-ITD 5.1)
-   * 
-   */
-  public static void main(String[] args)
-  {
-    try
-    {
-      UNO.init();
-      Logger.init(System.err, Logger.ALL);
-      // Datenquelle(
-      // NAME "test"
-      // TYPE "ooo"
-      // SOURCE "datenbank"
-      // TABLE "UserAnsicht"
-      // Schema( "UserVorname" "UserNachname" "Beschreibung" )
-      // Schluessel("UserVorname" "UserNachname")
-      // # Wenn Schema()-Abschnitt angegeben ist, muss auch ein Schluessel-Abschnitt
-      // angegeben werden.
-      // )
-      ConfigThingy conf = new ConfigThingy("Datenquelle");
-      conf.add("NAME").add("test");
-      conf.add("TYPE").add("ooo");
-      conf.add("SOURCE").add("datenbank");
-      conf.add("TABLE").add("UserAnsicht");
-      ConfigThingy keysConf = conf.add("Schluessel");
-      keysConf.add("UserVorname");
-      keysConf.add("UserNachname");
-
-      OOoDatasource ds = new OOoDatasource(null, conf, null);
-      System.out.println("Name: " + ds.getName());
-      System.out.print("Schema: ");
-      Set<String> schema = ds.getSchema();
-      Iterator<String> iter = schema.iterator();
-      while (iter.hasNext())
-      {
-        System.out.print("\"" + iter.next() + "\" ");
-      }
-      System.out.println();
-      System.out.print("Schlüsselspalten: ");
-      for (int i = 0; i < ds.keyColumns.length; ++i)
-        System.out.print("\"" + ds.keyColumns[i] + "\" ");
-
-      System.out.println("Datensätze:");
-      QueryResults res = ds.getContents(1000000);
-      Vector<String> keys = new Vector<String>();
-      printQueryResults(schema, res, keys);
-
-      keys.remove(0);
-      System.out.println("Rufe Datensätze für folgende Schlüssel ab:");
-      iter = keys.iterator();
-      while (iter.hasNext())
-        System.out.println("    " + iter.next());
-
-      res = ds.getDatasetsByKey(keys, 10000000);
-      printQueryResults(schema, res, keys);
-
-      printResults("Beschreibung = *uTTer", schema, ds.simpleFind("Beschreibung",
-        "*uTTer"));
-      printResults("Beschreibung = *uTTer, UserVorname = Sina", schema,
-        ds.simpleFind("Beschreibung", "*uTTer", "UserVorname", "Sina"));
-      printResults("UserVorname = Hans, UserNachname = Mu%rster#rmann", schema,
-        ds.simpleFind("UserVorname", "Hans", "UserNachname", "Mu%rster#rmann"));
-      printResults("Beschreibung = \\Kind", schema, ds.simpleFind("Beschreibung",
-        "\\Kind"));
-      printResults(
-        "UserVorname = Hans, UserNachname = Mu%er#rmann (sic)  muss leer sein",
-        schema, ds.simpleFind("UserVorname", "Hans", "UserNachname", "Mu%er#rmann"));
-      printResults("UserVorname = *a*", schema, ds.simpleFind("UserVorname", "*a*"));
-
-    }
-    catch (Exception x)
-    {
-      x.printStackTrace();
-    }
-    System.exit(0);
-  }
-
 }

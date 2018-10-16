@@ -35,45 +35,44 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.Vector;
 import java.util.regex.Pattern;
 
-import de.muenchen.allg.itd51.wollmux.core.db.ColumnNotFoundException;
-import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
-import de.muenchen.allg.itd51.wollmux.core.db.Datasource;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
 import de.muenchen.allg.itd51.wollmux.core.parser.NodeNotFoundException;
 import de.muenchen.allg.itd51.wollmux.core.parser.SyntaxErrorException;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
-import de.muenchen.allg.itd51.wollmux.core.util.Logger;
 
 public class ThingyDatasource extends RAMDatasource
 {
-  private static final Pattern SPALTENNAME =
-    Pattern.compile("^[a-zA-Z_][a-zA-Z_0-9]*$");
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ThingyDatasource.class);
+
+  private static final Pattern SPALTENNAME = Pattern.compile("^[a-zA-Z_][a-zA-Z_0-9]*$");
 
   /**
    * Erzeugt eine neue ThingyDatasource.
    * 
    * @param nameToDatasource
-   *          enthält alle bis zum Zeitpunkt der Definition dieser ThingyDatasource
-   *          bereits vollständig instanziierten Datenquellen.
+   *          enthält alle bis zum Zeitpunkt der Definition dieser
+   *          ThingyDatasource bereits vollständig instanziierten Datenquellen.
    * @param sourceDesc
-   *          der "Datenquelle"-Knoten, der die Beschreibung dieser ThingyDatasource
-   *          enthält.
+   *          der "Datenquelle"-Knoten, der die Beschreibung dieser
+   *          ThingyDatasource enthält.
    * @param context
    *          der Kontext relativ zu dem URLs aufgelöst werden sollen.
    */
-  public ThingyDatasource(Map<String, Datasource> nameToDatasource,
-      ConfigThingy sourceDesc, URL context) throws ConfigurationErrorException,
-      IOException
+  public ThingyDatasource(Map<String, Datasource> nameToDatasource, ConfigThingy sourceDesc, URL context) throws IOException
   {
     String name;
     String urlStr;
@@ -81,20 +80,17 @@ public class ThingyDatasource extends RAMDatasource
     try
     {
       name = sourceDesc.get("NAME").toString();
-    }
-    catch (NodeNotFoundException x)
+    } catch (NodeNotFoundException x)
     {
-      throw new ConfigurationErrorException(L.m("NAME der Datenquelle fehlt"));
+      throw new ConfigurationErrorException(L.m("NAME der Datenquelle fehlt"), x);
     }
 
     try
     {
       urlStr = sourceDesc.get("URL").toString();
-    }
-    catch (NodeNotFoundException x)
+    } catch (NodeNotFoundException x)
     {
-      throw new ConfigurationErrorException(L.m("URL der Datenquelle \"%1\" fehlt",
-        name));
+      throw new ConfigurationErrorException(L.m("URL der Datenquelle \"%1\" fehlt", name), x);
     }
 
     try
@@ -106,14 +102,12 @@ public class ThingyDatasource extends RAMDatasource
       try
       {
         schemaDesc = conf.get("Schema");
-      }
-      catch (NodeNotFoundException x)
+      } catch (NodeNotFoundException x)
       {
-        throw new ConfigurationErrorException(L.m(
-          "Fehler in Conf-Datei von Datenquelle %1: Abschnitt 'Schema' fehlt", name));
+        throw new ConfigurationErrorException(L.m("Fehler in Conf-Datei von Datenquelle %1: Abschnitt 'Schema' fehlt", name), x);
       }
 
-      Set<String> schema = new HashSet<String>();
+      Set<String> schema = new HashSet<>();
       String[] schemaOrdered = new String[schemaDesc.count()];
       Iterator<ConfigThingy> iter = schemaDesc.iterator();
       int i = 0;
@@ -122,14 +116,10 @@ public class ThingyDatasource extends RAMDatasource
         String spalte = iter.next().toString();
         if (!SPALTENNAME.matcher(spalte).matches())
           throw new ConfigurationErrorException(
-            L.m(
-              "Fehler in Definition von Datenquelle %1: Spalte \"%2\" entspricht nicht der Syntax eines Bezeichners",
-              name, spalte));
+              L.m("Fehler in Definition von Datenquelle %1: Spalte \"%2\" entspricht nicht der Syntax eines Bezeichners", name, spalte));
         if (schema.contains(spalte))
           throw new ConfigurationErrorException(
-            L.m(
-              "Fehler in Definition von Datenquelle %1: Spalte \"%2\" doppelt aufgeführt im Schema",
-              name, spalte));
+              L.m("Fehler in Definition von Datenquelle %1: Spalte \"%2\" doppelt aufgeführt im Schema", name, spalte));
         schema.add(spalte);
         schemaOrdered[i++] = spalte;
       }
@@ -138,7 +128,8 @@ public class ThingyDatasource extends RAMDatasource
       {
         ConfigThingy keys = sourceDesc.get("Schluessel");
         keyCols = new String[keys.count()];
-        keys.getFirstChild(); // Exception werfen, falls kein Schluessel angegeben
+        keys.getFirstChild(); // Exception werfen, falls kein Schluessel
+                              // angegeben
         iter = keys.iterator();
         i = 0;
         while (iter.hasNext())
@@ -147,31 +138,23 @@ public class ThingyDatasource extends RAMDatasource
           keyCols[i++] = spalte;
           if (!schema.contains(spalte))
             throw new ConfigurationErrorException(
-              L.m(
-                "Fehler in Definition von Datenquelle %1: Schluessel-Spalte \"%2\" ist nicht im Schema aufgeführt",
-                name, spalte));
+                L.m("Fehler in Definition von Datenquelle %1: Schluessel-Spalte \"%2\" ist nicht im Schema aufgeführt", name, spalte));
         }
-      }
-      catch (NodeNotFoundException x)
+      } catch (NodeNotFoundException x)
       {
-        throw new ConfigurationErrorException(
-          L.m(
-            "Fehlende oder fehlerhafte Schluessel(...) Spezifikation für Datenquelle %1",
-            name));
+        throw new ConfigurationErrorException(L.m("Fehlende oder fehlerhafte Schluessel(...) Spezifikation für Datenquelle %1", name), x);
       }
 
       ConfigThingy daten;
       try
       {
         daten = conf.get("Daten");
-      }
-      catch (NodeNotFoundException x)
+      } catch (NodeNotFoundException x)
       {
-        throw new ConfigurationErrorException(L.m(
-          "Fehler in Conf-Datei von Datenquelle %1: Abschnitt 'Daten' fehlt", name));
+        throw new ConfigurationErrorException(L.m("Fehler in Conf-Datei von Datenquelle %1: Abschnitt 'Daten' fehlt", name), x);
       }
 
-      List<Dataset> data = new Vector<Dataset>(daten.count());
+      List<Dataset> data = new ArrayList<>(daten.count());
 
       iter = daten.iterator();
       while (iter.hasNext())
@@ -180,37 +163,29 @@ public class ThingyDatasource extends RAMDatasource
         try
         {
           data.add(createDataset(dsDesc, schema, schemaOrdered, keyCols));
-        }
-        catch (ConfigurationErrorException x)
+        } catch (ConfigurationErrorException x)
         {
-          throw new ConfigurationErrorException(L.m(
-            "Fehler in Conf-Datei von Datenquelle %1: ", name)
-            + x.getMessage());
+          throw new ConfigurationErrorException(L.m("Fehler in Conf-Datei von Datenquelle %1: ", name), x);
         }
       }
 
       init(name, schema, data);
 
-    }
-    catch (MalformedURLException e)
+    } catch (MalformedURLException e)
     {
-      throw new ConfigurationErrorException(L.m(
-        "Fehler in Definition von Datenquelle %1: Fehler in URL \"%2\": ", name,
-        urlStr)
-        + e.getMessage());
-    }
-    catch (SyntaxErrorException e)
+      throw new ConfigurationErrorException(
+          L.m("Fehler in Definition von Datenquelle %1: Fehler in URL \"%2\": ", name, urlStr), e);
+    } catch (SyntaxErrorException e)
     {
-      throw new ConfigurationErrorException(L.m(
-        "Fehler in Conf-Datei von Datenquelle %1: ", name)
-        + e.getMessage());
+      throw new ConfigurationErrorException(L.m("Fehler in Conf-Datei von Datenquelle %1: ", name), e);
     }
   }
 
   /**
-   * Erzeugt ein neues MyDataset aus der Beschreibung dsDesc. Die Methode erkennt
-   * automatisch, ob die Beschreibung in der Form ("Spaltenwert1",
-   * "Spaltenwert2",...) oder der Form (Spalte1 "Wert1" Spalte2 "Wert2" ...) ist.
+   * Erzeugt ein neues MyDataset aus der Beschreibung dsDesc. Die Methode
+   * erkennt automatisch, ob die Beschreibung in der Form ("Spaltenwert1",
+   * "Spaltenwert2",...) oder der Form (Spalte1 "Wert1" Spalte2 "Wert2" ...)
+   * ist.
    * 
    * @param schema
    *          das Datenbankschema
@@ -223,13 +198,12 @@ public class ThingyDatasource extends RAMDatasource
    *           im Falle von Verstössen gegen diverse Regeln.
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  private Dataset createDataset(ConfigThingy dsDesc, Set<String> schema,
-      String[] schemaOrdered, String[] keyCols) throws ConfigurationErrorException
+  private Dataset createDataset(ConfigThingy dsDesc, Set<String> schema, String[] schemaOrdered, String[] keyCols)
   { // TESTED
     if (!dsDesc.getName().isEmpty())
-      throw new ConfigurationErrorException(L.m(
-        "Öffnende Klammer erwartet vor \"%1\"", dsDesc.getName()));
-    if (dsDesc.count() == 0) {
+      throw new ConfigurationErrorException(L.m("Öffnende Klammer erwartet vor \"%1\"", dsDesc.getName()));
+    if (dsDesc.count() == 0)
+    {
       return new MyDataset(schema, keyCols);
     }
     try
@@ -238,34 +212,31 @@ public class ThingyDatasource extends RAMDatasource
         return createDatasetOrdered(dsDesc, schema, schemaOrdered, keyCols);
       else
         return createDatasetUnordered(dsDesc, schema, keyCols);
-    }
-    catch (NodeNotFoundException e)
+    } catch (NodeNotFoundException e)
     {
-      Logger.error(e);
+      LOGGER.error("", e);
     }
     return null;
   }
 
   /**
-   * Erzeugt ein neues MyDataset aus der Beschreibung dsDesc. dsDesc muss in der Form
-   * (Spalte1 "Spaltenwert1" Spalte2 "Spaltenwert2 ...) sein.
+   * Erzeugt ein neues MyDataset aus der Beschreibung dsDesc. dsDesc muss in der
+   * Form (Spalte1 "Spaltenwert1" Spalte2 "Spaltenwert2 ...) sein.
    * 
    * @throws ConfigurationErrorException
    *           bei verstössen gegen diverse Regeln
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  private Dataset createDatasetUnordered(ConfigThingy dsDesc, Set<String> schema,
-      String[] keyCols) throws ConfigurationErrorException
+  private Dataset createDatasetUnordered(ConfigThingy dsDesc, Set<String> schema, String[] keyCols)
   { // TESTED
-    Map<String, String> data = new HashMap<String, String>();
+    Map<String, String> data = new HashMap<>();
     Iterator<ConfigThingy> iter = dsDesc.iterator();
     while (iter.hasNext())
     {
       ConfigThingy spaltenDaten = iter.next();
       String spalte = spaltenDaten.getName();
       if (!schema.contains(spalte))
-        throw new ConfigurationErrorException(L.m(
-          "Datensatz hat Spalte \"%1\", die nicht im Schema aufgeführt ist", spalte));
+        throw new ConfigurationErrorException(L.m("Datensatz hat Spalte \"%1\", die nicht im Schema aufgeführt ist", spalte));
       String wert = spaltenDaten.toString();
       data.put(spalte, wert);
     }
@@ -273,21 +244,19 @@ public class ThingyDatasource extends RAMDatasource
   }
 
   /**
-   * Erzeugt ein neues MyDataset aus der Beschreibung dsDesc. dsDesc muss in der Form
-   * ("Spaltenwert1" "Spaltenwert2 ...) sein.
+   * Erzeugt ein neues MyDataset aus der Beschreibung dsDesc. dsDesc muss in der
+   * Form ("Spaltenwert1" "Spaltenwert2 ...) sein.
    * 
    * @throws ConfigurationErrorException
    *           bei verstössen gegen diverse Regeln
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  private Dataset createDatasetOrdered(ConfigThingy dsDesc, Set<String> schema,
-      String[] schemaOrdered, String[] keyCols) throws ConfigurationErrorException
+  private Dataset createDatasetOrdered(ConfigThingy dsDesc, Set<String> schema, String[] schemaOrdered, String[] keyCols)
   { // TESTED
     if (dsDesc.count() > schemaOrdered.length)
-      throw new ConfigurationErrorException(
-        L.m("Datensatz hat mehr Felder als das Schema"));
+      throw new ConfigurationErrorException(L.m("Datensatz hat mehr Felder als das Schema"));
 
-    Map<String, String> data = new HashMap<String, String>();
+    Map<String, String> data = new HashMap<>();
     int i = 0;
     Iterator<ConfigThingy> iter = dsDesc.iterator();
     while (iter.hasNext())
@@ -313,7 +282,7 @@ public class ThingyDatasource extends RAMDatasource
     public MyDataset(Set<String> schema, String[] keyCols)
     {
       this.schema = schema;
-      data = new HashMap<String, String>();
+      data = new HashMap<>();
       initKey(keyCols);
     }
 
@@ -325,8 +294,8 @@ public class ThingyDatasource extends RAMDatasource
     }
 
     /**
-     * Setzt aus den Werten der Schlüsselspalten separiert durch KEY_SEPARATOR den
-     * Schlüssel zusammen.
+     * Setzt aus den Werten der Schlüsselspalten separiert durch KEY_SEPARATOR
+     * den Schlüssel zusammen.
      * 
      * @param keyCols
      *          die Namen der Schlüsselspalten
@@ -334,14 +303,16 @@ public class ThingyDatasource extends RAMDatasource
      */
     private void initKey(String[] keyCols)
     { // TESTED
-      StringBuffer buffy = new StringBuffer();
+      StringBuilder buffy = new StringBuilder();
       for (int i = 0; i < keyCols.length; ++i)
       {
         String str = data.get(keyCols[i]);
-        if (str != null) {
+        if (str != null)
+        {
           buffy.append(str);
         }
-        if (i + 1 < keyCols.length) {
+        if (i + 1 < keyCols.length)
+        {
           buffy.append(KEY_SEPARATOR);
         }
       }
@@ -352,8 +323,7 @@ public class ThingyDatasource extends RAMDatasource
     public String get(String columnName) throws ColumnNotFoundException
     {
       if (!schema.contains(columnName))
-        throw new ColumnNotFoundException(L.m("Spalte %1 existiert nicht!",
-          columnName));
+        throw new ColumnNotFoundException(L.m("Spalte %1 existiert nicht!", columnName));
       return data.get(columnName);
     }
 

@@ -129,44 +129,14 @@ public class UIElementFactory
   private int textfieldWidth = TEXTFIELD_DEFAULT_WIDTH;
 
   /**
-   * Erzeugt eine Factory, die aus {@link ConfigThingy}s Objekte des Typs
-   * {@link UIElement} erzeugt. Die zu übergebenen Maps dürfen alle null-Werte
-   * enthalten, die den entsprechenden Eigenschaften der erzeugten UIElemente
-   * zugewiesen werden.
-   * 
-   * @param mapTypeToLayoutConstraints
-   *          bildet einen TYPE auf die dazugehörigen layout constraints (d,i, der
-   *          optionale zweite Parameter von
-   *          {@link java.awt.Container#add(java.awt.Component, java.lang.Object)
-   *          java.awt.Container.add()}) ab. Wird von
-   *          {@link UIElement#getLayoutConstraints()} zurückgeliefert.
-   * 
-   * @param mapTypeToLabelType
-   *          bildet einen TYPE auf einen Integer ab, der angibt, ob das UI Element
-   *          ein zusätzliches Label links oder rechts bekommen soll. Mögliche Werte
-   *          sind {@link UIElement#LABEL_LEFT}, {@link UIElement#LABEL_RIGHT} und
-   *          {@link UIElement#LABEL_NONE}. Wird von {@link UIElement#getLabelType()}
-   *          zurückgeliefert.
-   * 
-   * @param mapTypeToLabelLayoutConstraints
-   *          Für UI Elemente, die ein zusätzliches Label links oder rechts bekommen
-   *          sollen (siehe Parameter mapTypeToLabelType) liefert diese Map die
-   *          layout constraints für das Label. Achtung! UI Elemente mit TYPE "label"
-   *          beziehen ihre layout constraints nicht aus dieser Map, sondern wie alle
-   *          anderen UI Elemente auch aus mapTypeToLayoutConstraints.
-   * 
-   * @param supportedActions
-   *          Die Menge (von Strings) der ACTIONs, die akzeptiert werden sollen. Alle
-   *          anderen produzieren eine Fehlermeldung.
-   * 
-   * @param handler
-   *          ist der {@link UIElementEventHandler}, an den die erzeugten UI Elemente
-   *          ihre Ereignisse melden.
+   * Erzeugt eine Factory.
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public UIElementFactory()
-  {}
+  {
+    // nothing to initialize
+  }
 
   /**
    * Setzt die Breite für erzeugte Textfields und Textareas auf anzahlZeichen.
@@ -249,29 +219,27 @@ public class UIElementFactory
     String action = "";
     boolean readonly = false;
     boolean editable = false;
-    Iterator<ConfigThingy> iter = conf.iterator();
-    while (iter.hasNext())
+    for (ConfigThingy node : conf)
     {
-      ConfigThingy node = iter.next();
       String name = node.getName();
       String str = node.toString();
 
-      if (name.equals("LABEL"))
+      if ("LABEL".equals(name))
         label = L.m(str);
-      else if (name.equals("TIP"))
+      else if ("TIP".equals(name))
         tip = L.m(str);
-      else if (name.equals("ID"))
+      else if ("ID".equals(name))
         id = str;
-      else if (name.equals("TYPE"))
+      else if ("TYPE".equals(name))
         type = str;
-      else if (name.equals("HOTKEY"))
+      else if ("HOTKEY".equals(name))
         hotkey = str.length() > 0 ? str.charAt(0) : 0;
-      else if (name.equals("ACTION"))
+      else if ("ACTION".equals(name))
         action = str;
-      else if (name.equals("READONLY"))
-        readonly = str.equals("true");
-      else if (name.equals("EDIT"))
-        editable = str.equals("true");
+      else if ("READONLY".equals(name))
+        readonly = "true".equals(str);
+      else if ("EDIT".equals(name))
+        editable = "true".equals(str);
     }
 
     if (type.length() == 0)
@@ -285,14 +253,14 @@ public class UIElementFactory
 
     Object layoutConstraints = context.getLayoutConstraints(type);
     Object labelLayoutConstraints = context.getLabelLayoutConstraints(type);
-    Integer labelType = context.getLabelType(type);
+    UIElement.LabelPosition labelType = context.getLabelType(type);
 
     UIElement uiElement;
 
-    if (type.equals("button") || type.equals("menuitem"))
+    if ("button".equals(type) || "menuitem".equals(type))
     {
       AbstractButton button;
-      if (type.equals("button"))
+      if ("button".equals(type))
       {
         button = new JButton(label);
         copySpaceBindingToEnter(button);
@@ -301,34 +269,33 @@ public class UIElementFactory
         button = new JMenuItem(label);
 
       button.setMnemonic(hotkey);
-      if (!tip.equals(""))
+      if (!tip.isEmpty())
       {
         button.setToolTipText(tip);
       }
       uiElement = new Button(id, button, layoutConstraints);
 
       ActionListener actionL =
-        getAction(uiElement, action, conf, context.uiElementEventHandler,
-          context.supportedActions);
+          getAction(uiElement, action, conf, context.getUiElementEventHandler(), context.getSupportedActions());
       if (actionL != null)
       {
         button.addActionListener(actionL);
       }
       button.addFocusListener(new UIElementFocusListener(
-        context.uiElementEventHandler, uiElement));
+          context.getUiElementEventHandler(), uiElement));
       return uiElement;
     }
-    else if (type.equals("label"))
+    else if ("label".equals(type))
     {
       uiElement = new Label(id, label, layoutConstraints);
       return uiElement;
     }
-    else if (type.equals("textfield"))
+    else if ("textfield".equals(type))
     {
       JTextField tf = new JTextField(textfieldWidth);
       tf.setEditable(!readonly);
       tf.setFocusable(!readonly);
-      if (!tip.equals(""))
+      if (!tip.isEmpty())
       {
         tf.setToolTipText(tip);
       }
@@ -336,15 +303,14 @@ public class UIElementFactory
         new Textfield(id, tf, layoutConstraints, labelType, label,
           labelLayoutConstraints);
       tf.getDocument().addDocumentListener(
-        new UIElementDocumentListener(context.uiElementEventHandler, uiElement,
+          new UIElementDocumentListener(context.getUiElementEventHandler(), uiElement,
           "valueChanged", new Object[] {}));
-      tf.addFocusListener(new UIElementFocusListener(context.uiElementEventHandler,
+      tf.addFocusListener(new UIElementFocusListener(context.getUiElementEventHandler(),
         uiElement));
       if (action.length() > 0)
       {
         ActionListener actionL =
-          getAction(uiElement, action, conf, context.uiElementEventHandler,
-            context.supportedActions);
+            getAction(uiElement, action, conf, context.getUiElementEventHandler(), context.getSupportedActions());
         if (actionL != null)
         {
           tf.addActionListener(actionL);
@@ -352,7 +318,7 @@ public class UIElementFactory
       }
       return uiElement;
     }
-    else if (type.equals("textarea"))
+    else if ("textarea".equals(type))
     {
       int lines = 3;
       boolean wrap = true;
@@ -361,13 +327,17 @@ public class UIElementFactory
         lines = Integer.parseInt(conf.get("LINES").toString());
       }
       catch (Exception x)
-      {}
+      {
+        LOGGER.trace("", x);
+      }
       try
       {
-        wrap = conf.get("WRAP").toString().equalsIgnoreCase("true");
+        wrap = "true".equalsIgnoreCase(conf.get("WRAP").toString());
       }
       catch (Exception x)
-      {}
+      {
+        LOGGER.trace("", x);
+      }
       JTextArea textarea = new JTextArea(lines, textfieldWidth);
       textarea.setEditable(!readonly);
       textarea.setFocusable(!readonly);
@@ -377,7 +347,7 @@ public class UIElementFactory
         textarea.setWrapStyleWord(true);
       }
       textarea.setFont(new JTextField().getFont());
-      if (!tip.equals(""))
+      if (!tip.isEmpty())
       {
         textarea.setToolTipText(tip);
       }
@@ -408,19 +378,19 @@ public class UIElementFactory
         new Textarea(id, textarea, panel, layoutConstraints, labelType,
           label, labelLayoutConstraints);
       textarea.getDocument().addDocumentListener(
-        new UIElementDocumentListener(context.uiElementEventHandler, uiElement,
+          new UIElementDocumentListener(context.getUiElementEventHandler(), uiElement,
           "valueChanged", new Object[] {}));
       textarea.addFocusListener(new UIElementFocusListener(
-        context.uiElementEventHandler, uiElement));
+          context.getUiElementEventHandler(), uiElement));
       return uiElement;
     }
-    else if (type.equals("combobox"))
+    else if ("combobox".equals(type))
     {
       JComboBox<Object> combo = new JComboBox<>();
       combo.setEnabled(!readonly);
       combo.setFocusable(!readonly);
       combo.setEditable(editable);
-      if (!tip.equals(""))
+      if (!tip.isEmpty())
       {
         combo.setToolTipText(tip);
       }
@@ -446,21 +416,21 @@ public class UIElementFactory
         JTextComponent tc =
           ((JTextComponent) combo.getEditor().getEditorComponent());
         tc.addFocusListener(new UIElementFocusListener(
-          context.uiElementEventHandler, uiElement));
+            context.getUiElementEventHandler(), uiElement));
         tc.getDocument().addDocumentListener(
-          new UIElementDocumentListener(context.uiElementEventHandler, uiElement,
+            new UIElementDocumentListener(context.getUiElementEventHandler(), uiElement,
             "valueChanged", new Object[] {}));
       }
       else
       {
         combo.addItemListener(new UIElementItemListener(
-          context.uiElementEventHandler, uiElement, "valueChanged", new Object[] {}));
+            context.getUiElementEventHandler(), uiElement, "valueChanged", new Object[] {}));
         combo.addFocusListener(new UIElementFocusListener(
-          context.uiElementEventHandler, uiElement));
+            context.getUiElementEventHandler(), uiElement));
       }
       return uiElement;
     }
-    else if (type.equals("checkbox"))
+    else if ("checkbox".equals(type))
     {
       /*
        * ACHTUNG! Diese checkbox hat ihr Label fest integriert auf der rechten Seite
@@ -470,19 +440,19 @@ public class UIElementFactory
       copySpaceBindingToEnter(boxBruceleitner);
       boxBruceleitner.setEnabled(!readonly);
       boxBruceleitner.setFocusable(!readonly);
-      if (!tip.equals(""))
+      if (!tip.isEmpty())
       {
         boxBruceleitner.setToolTipText(tip);
       }
       uiElement = new Checkbox(id, boxBruceleitner, layoutConstraints);
       boxBruceleitner.addActionListener(new UIElementActionListener(
-        context.uiElementEventHandler, uiElement, true, "valueChanged",
+          context.getUiElementEventHandler(), uiElement, true, "valueChanged",
         new Object[] {}));
       boxBruceleitner.addFocusListener(new UIElementFocusListener(
-        context.uiElementEventHandler, uiElement));
+          context.getUiElementEventHandler(), uiElement));
       return uiElement;
     }
-    else if (type.equals("listbox"))
+    else if ("listbox".equals(type))
     {
       int lines = 10;
       try
@@ -490,7 +460,9 @@ public class UIElementFactory
         lines = Integer.parseInt(conf.get("LINES").toString());
       }
       catch (Exception e)
-      {}
+      {
+        LOGGER.trace("", e);
+      }
 
       JList<Object> list = new JList<>(new DefaultListModel<>());
 
@@ -508,27 +480,26 @@ public class UIElementFactory
           label, labelLayoutConstraints);
 
       list.addListSelectionListener(new UIElementListSelectionListener(
-        context.uiElementEventHandler, uiElement, "listSelectionChanged",
+          context.getUiElementEventHandler(), uiElement, "listSelectionChanged",
         new Object[] {}));
 
       ActionListener actionL =
-        getAction(uiElement, action, conf, context.uiElementEventHandler,
-          context.supportedActions);
+          getAction(uiElement, action, conf, context.getUiElementEventHandler(), context.getSupportedActions());
       if (actionL != null)
         list.addMouseListener(new MyActionMouseListener(list, actionL));
       return uiElement;
     }
-    else if (type.equals("h-separator"))
+    else if ("h-separator".equals(type))
     {
       JSeparator wurzelSepp = new JSeparator(SwingConstants.HORIZONTAL);
       return new Separator(id, wurzelSepp, layoutConstraints);
     }
-    else if (type.equals("v-separator"))
+    else if ("v-separator".equals(type))
     {
       JSeparator wurzelSepp = new JSeparator(SwingConstants.VERTICAL);
       return new Separator(id, wurzelSepp, layoutConstraints);
     }
-    else if (type.equals("h-glue"))
+    else if ("h-glue".equals(type))
     {
       int minsize = 0;
       int prefsize = 0;
@@ -538,25 +509,31 @@ public class UIElementFactory
         minsize = Integer.parseInt(conf.get("MINSIZE").toString());
       }
       catch (Exception x)
-      {}
+      {
+        LOGGER.trace("", x);
+      }
       try
       {
         maxsize = Integer.parseInt(conf.get("MAXSIZE").toString());
       }
       catch (Exception x)
-      {}
+      {
+        LOGGER.trace("", x);
+      }
       try
       {
         prefsize = Integer.parseInt(conf.get("PREFSIZE").toString());
       }
       catch (Exception x)
-      {}
+      {
+        LOGGER.trace("", x);
+      }
 
       return new Box(id, new javax.swing.Box.Filler(new Dimension(minsize, 0),
         new Dimension(prefsize, 0), new Dimension(maxsize, Integer.MAX_VALUE)),
         layoutConstraints);
     }
-    else if (type.equals("v-glue"))
+    else if ("v-glue".equals(type))
     {
       int minsize = 0;
       int prefsize = 0;
@@ -566,19 +543,25 @@ public class UIElementFactory
         minsize = Integer.parseInt(conf.get("MINSIZE").toString());
       }
       catch (Exception x)
-      {}
+      {
+        LOGGER.trace("", x);
+      }
       try
       {
         maxsize = Integer.parseInt(conf.get("MAXSIZE").toString());
       }
       catch (Exception x)
-      {}
+      {
+        LOGGER.trace("", x);
+      }
       try
       {
         prefsize = Integer.parseInt(conf.get("PREFSIZE").toString());
       }
       catch (Exception x)
-      {}
+      {
+        LOGGER.trace("", x);
+      }
 
       return new Box(id, new javax.swing.Box.Filler(new Dimension(0, minsize),
         new Dimension(0, prefsize), new Dimension(Integer.MAX_VALUE, maxsize)),
@@ -862,7 +845,7 @@ public class UIElementFactory
       return null;
     }
 
-    if (action.equals("switchWindow"))
+    if ("switchWindow".equals(action))
     {
       try
       {
@@ -876,7 +859,7 @@ public class UIElementFactory
         LOGGER.error(L.m("ACTION \"switchWindow\" erfordert WINDOW-Attribut"), x);
       }
     }
-    else if (action.equals("openTemplate") || action.equals("openDocument"))
+    else if ("openTemplate".equals(action) || "openDocument".equals(action))
     {
       ConfigThingy fids = conf.query("FRAG_ID");
       if (fids.count() > 0)
@@ -899,7 +882,7 @@ public class UIElementFactory
           action));
       }
     }
-    else if (action.equals("openExt"))
+    else if ("openExt".equals(action))
     {
       ConfigThingy ext = conf.query("EXT");
       if (ext.count() != 1)
@@ -921,7 +904,7 @@ public class UIElementFactory
         }
       }
     }
-    else if (action.equals("closeAndOpenExt"))
+    else if ("closeAndOpenExt".equals(action) || "saveTempAndOpenExt".equals(action))
     {
       ConfigThingy ext = conf.query("EXT");
       if (ext.count() != 1)
@@ -935,21 +918,7 @@ public class UIElementFactory
             action, ext.toString() });
       }
     }
-    else if (action.equals("saveTempAndOpenExt"))
-    {
-      ConfigThingy ext = conf.query("EXT");
-      if (ext.count() != 1)
-      {
-        LOGGER.error(L.m("ACTION \"%1\" erfordert genau ein Attribut EXT", action));
-      }
-      else
-      {
-        return new UIElementActionListener(handler, uiElement, false, "action",
-          new Object[] {
-            action, ext.toString() });
-      }
-    }
-    else if (action.equals("open"))
+    else if ("open".equals(action))
     {
       try
       {
@@ -963,7 +932,7 @@ public class UIElementFactory
         LOGGER.error(L.m("ACTION \"open\" erfordert die Angabe OPEN \"...\""), e);
       }
     }
-    else if (action.equals("funcDialog"))
+    else if ("funcDialog".equals(action))
     {
       try
       {

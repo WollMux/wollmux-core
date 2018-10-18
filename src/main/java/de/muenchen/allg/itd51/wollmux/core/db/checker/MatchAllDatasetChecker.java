@@ -28,7 +28,7 @@ import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
  * 
  * @author Matthias Benkmann (D-III-ITD 5.1)
  */
-public class MatchAllDatasetChecker extends DatasetChecker
+public class MatchAllDatasetChecker implements DatasetChecker
 {
   @Override
   public boolean matches(Dataset ds)

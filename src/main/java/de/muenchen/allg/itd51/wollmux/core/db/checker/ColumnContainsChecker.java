@@ -21,6 +21,9 @@
  */
 package de.muenchen.allg.itd51.wollmux.core.db.checker;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
 
 /**
@@ -29,8 +32,11 @@ import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
  * 
  * @author Matthias Benkmann (D-III-ITD 5.1)
  */
-public class ColumnContainsChecker extends DatasetChecker
+public class ColumnContainsChecker implements DatasetChecker
 {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ColumnContainsChecker.class);
+
   private String columnName;
 
   private String compare;
@@ -50,6 +56,7 @@ public class ColumnContainsChecker extends DatasetChecker
     }
     catch (Exception e)
     {
+      LOGGER.trace("", e);
       return false;
     }
   }

@@ -35,10 +35,6 @@ import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Set;
 
-import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResults;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResultsList;
-
 /**
  * Ein Container für Ergebnisse einer Datenbankafrage zusammen mit dem zugehörigen
  * Schema.
@@ -57,7 +53,7 @@ public class QueryResultsWithSchema implements QueryResults
   public QueryResultsWithSchema()
   {
     results = new QueryResultsList(new ArrayList<Dataset>());
-    schema = new HashSet<String>();
+    schema = new HashSet<>();
   }
 
   /**
@@ -92,7 +88,7 @@ public class QueryResultsWithSchema implements QueryResults
 
   public Set<String> getSchema()
   {
-    return new HashSet<String>(schema);
+    return new HashSet<>(schema);
   }
 
 }

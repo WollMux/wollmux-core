@@ -37,6 +37,11 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import java.util.function.Supplier;
+
+import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
+import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
+import de.muenchen.allg.itd51.wollmux.core.parser.NodeNotFoundException;
 
 /**
  * Interface für Datenquellen, die der DJ verwalten kann. ACHTUNG! Die Konstruktoren
@@ -129,4 +134,15 @@ public interface Datasource
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public String getName();
+
+  public default String parseConfig(ConfigThingy source, String key, Supplier<String> errorMessage)
+  {
+    try
+    {
+      return source.get(key).toString();
+    } catch (NodeNotFoundException x)
+    {
+      throw new ConfigurationErrorException(errorMessage.get(), x);
+    }
+  }
 }

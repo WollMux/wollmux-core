@@ -32,9 +32,6 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 
 import java.util.Iterator;
 
-import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResults;
-
 /**
  * Stellt die Vereinigung 2er QueryResults als QueryResults zur Verfügung.
  * @author Matthias Benkmann (D-III-ITD 5.1)
@@ -111,6 +108,7 @@ public class QueryResultsUnion implements QueryResults
     }
 
     @Override
+    @SuppressWarnings("squid:S899")
     public Dataset next()
     {
       this.hasNext(); //weiterschalten auf iter2 falls nötig

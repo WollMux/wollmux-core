@@ -29,16 +29,13 @@
  */
 package de.muenchen.allg.itd51.wollmux.core.db;
 
+import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import de.muenchen.allg.itd51.wollmux.core.db.Query;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryPart;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 
 /**
@@ -61,9 +58,9 @@ public class SearchStrategy
    * entsprechende Ergebnisse aus dieser Map werden von {@link #getTemplate(int)}
    * zurückgeliefert.
    */
-  private SearchStrategy(Map<Integer, List<Query>> mapWordcountToListOfQuerys)
+  private SearchStrategy()
   {
-    this.mapWordcountToListOfQuerys = mapWordcountToListOfQuerys;
+    this.mapWordcountToListOfQuerys = new HashMap<>();
   }
 
   /**
@@ -77,27 +74,20 @@ public class SearchStrategy
    */
   public static SearchStrategy parse(ConfigThingy conf)
   {
-    Map<Integer, List<Query>> mapWordcountToListOfQuerys =
-      new HashMap<Integer, List<Query>>();
+    SearchStrategy strategy = new SearchStrategy();
     conf = conf.query("Suchstrategie");
-    Iterator<ConfigThingy> parentIter = conf.iterator();
-    while (parentIter.hasNext())
+    for (ConfigThingy searchConfig : conf)
     {
-      Iterator<ConfigThingy> iter = parentIter.next().iterator();
-      while (iter.hasNext())
+      for (ConfigThingy queryConf : searchConfig)
       {
-        ConfigThingy queryConf = iter.next();
         String datasource = queryConf.getName();
-        List<QueryPart> listOfQueryParts = new Vector<QueryPart>();
-        Iterator<ConfigThingy> columnIter = queryConf.iterator();
+        List<QueryPart> listOfQueryParts = new ArrayList<>();
         int wordcount = 0;
-        while (columnIter.hasNext())
+        for (ConfigThingy qconf : queryConf)
         {
-          ConfigThingy qconf = columnIter.next();
           String columnName = qconf.getName();
           String searchString = qconf.toString();
-          Matcher m =
-            Pattern.compile("\\$\\{suchanfrage[1-9]\\}").matcher(searchString);
+          Matcher m = Pattern.compile("\\$\\{suchanfrage[1-9]\\}").matcher(searchString);
           while (m.find())
           {
             int wordnum = searchString.charAt(m.end() - 2) - '0';
@@ -108,16 +98,21 @@ public class SearchStrategy
           listOfQueryParts.add(new QueryPart(columnName, searchString));
         }
 
-        Integer wc = Integer.valueOf(wordcount);
-        if (!mapWordcountToListOfQuerys.containsKey(wc))
-          mapWordcountToListOfQuerys.put(wc, new Vector<Query>());
-
-        List<Query> listOfQueries = mapWordcountToListOfQuerys.get(wc);
-        listOfQueries.add(new Query(datasource, listOfQueryParts));
+        strategy.addListOfQueryParts(wordcount, datasource, listOfQueryParts);
       }
     }
 
-    return new SearchStrategy(mapWordcountToListOfQuerys);
+    return strategy;
+  }
+
+  private void addListOfQueryParts(int wordcount, String datasource, List<QueryPart> queryParts)
+  {
+    if (!mapWordcountToListOfQuerys.containsKey(wordcount))
+    {
+      mapWordcountToListOfQuerys.put(wordcount, new ArrayList<Query>());
+    }
+    List<Query> listOfQueries = mapWordcountToListOfQuerys.get(wordcount);
+    listOfQueries.add(new Query(datasource, queryParts));
   }
 
   /**
@@ -132,6 +127,6 @@ public class SearchStrategy
    */
   public List<Query> getTemplate(int wordcount)
   {
-    return mapWordcountToListOfQuerys.get(Integer.valueOf(wordcount));
+    return mapWordcountToListOfQuerys.get(wordcount);
   }
 }

@@ -52,27 +52,30 @@ import de.muenchen.allg.itd51.wollmux.core.functions.Value;
 public interface UIElement extends Value
 {
 
-  /**
-   * Gibt an, dass das UI Element kein zusätzliches Label erhalten soll.
-   */
-  public static final Integer LABEL_NONE = Integer.valueOf(0);
+  public enum LabelPosition
+  {
+    /**
+     * Gibt an, dass das UI Element kein zusätzliches Label erhalten soll.
+     */
+    NONE,
+    /**
+     * Gibt an, dass links neben dem UI Element ein zusätzliches Label stehen
+     * soll.
+     */
+    LEFT,
+    /**
+     * Gibt an, dass rechts neben dem UI Element ein zusätzliches Label stehen
+     * soll.
+     */
+    RIGHT;
+  }
 
   /**
-   * Gibt an, dass links neben dem UI Element ein zusätzliches Label stehen soll.
+   * Liefert die Information, ob das UI Element ein zusätzliches Label links
+   * oder rechts bekommen soll. Mögliche Werte sind {@link #LabelPosition#LEFT},
+   * {@link #LabelPosition#RIGHT} und {@link #LabelPosition#NONE}.
    */
-  public static final Integer LABEL_LEFT = Integer.valueOf(-1);
-
-  /**
-   * Gibt an, dass rechts neben dem UI Element ein zusätzliches Label stehen soll.
-   */
-  public static final Integer LABEL_RIGHT = Integer.valueOf(+1);
-
-  /**
-   * Liefert die Information, ob das UI Element ein zusätzliches Label links oder
-   * rechts bekommen soll. Mögliche Werte sind {@link #LABEL_LEFT},
-   * {@link #LABEL_RIGHT} und {@link #LABEL_NONE}.
-   */
-  public Integer getLabelType();
+  public LabelPosition getLabelType();
 
   /**
    * Ist nur definiert, wenn getLabelType() nicht LABEL_NONE ist und liefert das
@@ -128,6 +131,7 @@ public interface UIElement extends Value
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
+  @Override
   public String getString();
 
   /**
@@ -139,6 +143,7 @@ public interface UIElement extends Value
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
+  @Override
   public boolean getBoolean();
 
   /**

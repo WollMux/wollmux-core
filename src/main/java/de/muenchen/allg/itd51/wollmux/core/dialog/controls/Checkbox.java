@@ -19,26 +19,31 @@ public class Checkbox extends UIElementBase
     this.id = id;
   }
 
+  @Override
   public Component getComponent()
   {
     return box;
   }
 
+  @Override
   public String getString()
   {
     return getBoolean() ? "true" : "false";
   }
 
+  @Override
   public boolean getBoolean()
   {
     return box.isSelected();
   }
 
+  @Override
   public void setString(String str)
   {
-    box.setSelected(str.equalsIgnoreCase("true"));
+    box.setSelected("true".equalsIgnoreCase(str));
   }
 
+  @Override
   public boolean isStatic()
   {
     return false;

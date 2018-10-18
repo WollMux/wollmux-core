@@ -128,25 +128,8 @@ public class OverlayDatasource implements Datasource
    */
   public OverlayDatasource(Map<String, Datasource> nameToDatasource, ConfigThingy sourceDesc, URL context)
   {
-    try
-    {
-      name = sourceDesc.get("NAME").toString();
-    }
-    catch (NodeNotFoundException x)
-    {
-      throw new ConfigurationErrorException(L.m("NAME der Datenquelle fehlt"), x);
-    }
-
-    String mode;
-    try
-    {
-      mode = sourceDesc.get("MODE").toString();
-    }
-    catch (NodeNotFoundException x)
-    {
-      throw new ConfigurationErrorException(L.m(
-          "MODE-Angabe der Datenquelle '%1' fehlt", name), x);
-    }
+    name = parseConfig(sourceDesc, "NAME", () -> L.m("NAME der Datenquelle fehlt"));
+    String mode = parseConfig(sourceDesc, "MODE", () -> L.m("MODE-Angabe der Datenquelle '%1' fehlt", name));
 
     String lcMode = mode.toLowerCase();
     if ("so".equals(lcMode))
@@ -155,31 +138,12 @@ public class OverlayDatasource implements Datasource
       modeSO = false;
     else
       throw new ConfigurationErrorException(
-        L.m(
-          "Fehlerhafte MODE-Angabe bei Datenquelle '%1': MODE \"%2\" ist nicht erlaubt",
-          name, mode));
+          L.m("Fehlerhafte MODE-Angabe bei Datenquelle '%1': MODE \"%2\" ist nicht erlaubt", name, mode));
 
     treatEmptyStringsAsNull = Character.isLowerCase(mode.charAt(1));
 
-    try
-    {
-      source1Name = sourceDesc.get("SOURCE").toString();
-    }
-    catch (NodeNotFoundException x)
-    {
-      throw new ConfigurationErrorException(L.m("SOURCE der Datenquelle %1 fehlt",
-          name), x);
-    }
-
-    try
-    {
-      source2Name = sourceDesc.get("OVERLAY").toString();
-    }
-    catch (NodeNotFoundException x)
-    {
-      throw new ConfigurationErrorException(L.m(
-          "OVERLAY-Angabe der Datenquelle %1 fehlt", name), x);
-    }
+    source1Name = parseConfig(sourceDesc, "SOURCE", () -> L.m("SOURCE der Datenquelle %1 fehlt", name));
+    source2Name = parseConfig(sourceDesc, "OVERLAY", () -> L.m("OVERLAY-Angabe der Datenquelle %1 fehlt", name));
 
     source1 = nameToDatasource.get(source1Name);
     source2 = nameToDatasource.get(source2Name);
@@ -229,15 +193,15 @@ public class OverlayDatasource implements Datasource
         spalte2 = matchDesc.getLastChild().toString();
       }
       catch (NodeNotFoundException x)
-      {}
+      {
+        LOGGER.trace("", x);
+      }
 
       if (!schema1.contains(spalte1))
-        throw new ConfigurationErrorException(L.m(
-          "Spalte \"%1\" ist nicht im Schema", spalte1));
+        throw new ConfigurationErrorException(L.m("Spalte \"%1\" ist nicht im Schema", spalte1));
 
       if (!schema2.contains(spalte2))
-        throw new ConfigurationErrorException(L.m(
-          "Spalte \"%1\" ist nicht im Schema", spalte2));
+        throw new ConfigurationErrorException(L.m("Spalte \"%1\" ist nicht im Schema", spalte2));
 
       match1[i] = spalte1;
       match2[i] = spalte2;
@@ -589,10 +553,8 @@ public class OverlayDatasource implements Datasource
     List<ConcatDataset> resultsWithOverlayments =
         new ArrayList<>(results.size());
 
-    Iterator<Dataset> iter = results.iterator();
-    while (iter.hasNext())
+    for (Dataset ds : results)
     {
-      Dataset ds = iter.next();
       List<QueryPart> query = new ArrayList<>(match1.length);
       for (int i = 0; i < match1.length; ++i)
       {
@@ -612,15 +574,12 @@ public class OverlayDatasource implements Datasource
       }
       QueryResults prependix = source1.find(query, timeout);
 
-      if (prependix.size() > 0)
+      for (Dataset prepend : prependix)
       {
-        Iterator<Dataset> iter2 = prependix.iterator();
-        while (iter2.hasNext())
+        ConcatDataset newDataset = new ConcatDataset(prepend, ds);
+        if (filter.matches(newDataset))
         {
-          ConcatDataset newDataset = new ConcatDataset(iter2.next(), ds);
-          if (filter.matches(newDataset)) {
-            resultsWithOverlayments.add(newDataset);
-          }
+          resultsWithOverlayments.add(newDataset);
         }
       }
     }
@@ -630,9 +589,9 @@ public class OverlayDatasource implements Datasource
 
   private class ConcatDataset implements Dataset
   {
-    private Dataset ds1;
+    private Dataset dataset1;
 
-    private Dataset ds2; // kann null sein!
+    private Dataset dataset2; // kann null sein!
 
     /**
      * ds1 is always from SOURCE and ds2 from OVERLAY.
@@ -641,8 +600,8 @@ public class OverlayDatasource implements Datasource
      */
     public ConcatDataset(Dataset ds1, Dataset ds2)
     {
-      this.ds1 = ds1;
-      this.ds2 = ds2;
+      this.dataset1 = ds1;
+      this.dataset2 = ds2;
     }
 
     @Override
@@ -657,14 +616,14 @@ public class OverlayDatasource implements Datasource
       Set<String> schemaOfPriorityDatasource;
       if (modeSO)
       {
-        ds1 = this.ds1;
-        ds2 = this.ds2;
+        ds1 = this.dataset1;
+        ds2 = this.dataset2;
         schemaOfPriorityDatasource = schema2;
       }
       else
       {
-        ds1 = this.ds2;
-        ds2 = this.ds1;
+        ds1 = this.dataset2;
+        ds2 = this.dataset1;
         schemaOfPriorityDatasource = schema1;
       }
 
@@ -698,7 +657,7 @@ public class OverlayDatasource implements Datasource
     @Override
     public String getKey()
     {
-      return ds1.getKey();
+      return dataset1.getKey();
     }
   }
 

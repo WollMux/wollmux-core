@@ -20,19 +20,19 @@ public class UIElementContext
    * entsprechenden Eigenschaft des erzeugten UIElements zugewiesen, ansonsten
    * null.
    */
-  public Map<String, ?> mapTypeToLayoutConstraints;
+  private Map<String, ?> mapTypeToLayoutConstraints;
 
   /**
    * Bildet einen TYPE auf einen Integer ab, der angibt, ob das UI Element ein
    * zusätzliches Label links oder rechts bekommen soll. Mögliche Werte sind
-   * {@link UIElement#LABEL_LEFT}, {@link UIElement#LABEL_RIGHT} und
-   * {@link UIElement#LABEL_NONE}. Darf null-Werte enthalten. Ist für einen TYPE
-   * kein Mapping angegeben (auch kein null-Wert), so wird erst geschaut, ob ein
-   * Mapping für "default" vorhanden ist. Falls ja, so wird dieses der
-   * entsprechenden Eigenschaft des erzeugten UIElements zugewiesen, ansonsten
-   * null.
+   * {@link UIElement#LabelPosition#LEFT}, {@link UIElement#LabelPosition#RIGHT}
+   * und {@link UIElement#LabelPosition#NONE}. Darf null-Werte enthalten. Ist
+   * für einen TYPE kein Mapping angegeben (auch kein null-Wert), so wird erst
+   * geschaut, ob ein Mapping für "default" vorhanden ist. Falls ja, so wird
+   * dieses der entsprechenden Eigenschaft des erzeugten UIElements zugewiesen,
+   * ansonsten null.
    */
-  public Map<String, Integer> mapTypeToLabelType;
+  private Map<String, UIElement.LabelPosition> mapTypeToLabelType;
 
   /**
    * Für UI Elemente, die ein zusätzliches Label links oder rechts bekommen sollen
@@ -45,34 +45,27 @@ public class UIElementContext
    * der entsprechenden Eigenschaft des erzeugten UIElements zugewiesen, ansonsten
    * null.
    */
-  public Map<String, ?> mapTypeToLabelLayoutConstraints;
+  private Map<String, ?> mapTypeToLabelLayoutConstraints;
 
   /**
    * Die Menge (von Strings) der ACTIONs, die akzeptiert werden sollen. Alle
    * anderen produzieren eine Fehlermeldung.
    */
-  public Set<String> supportedActions;
+  private Set<String> supportedActions;
 
   /**
    * Der {@link UIElementEventHandler}, an den die erzeugten UI Elemente ihre
    * Ereignisse melden.
    */
-  public UIElementEventHandler uiElementEventHandler;
+  private UIElementEventHandler uiElementEventHandler;
 
   /**
    * Enthält diese Map für einen TYPE ein Mapping auf einen anderen TYPE, so wird
    * der andere TYPE verwendet. Dies ist nützlich, um abhängig vom Kontext den TYPE
    * "separator" entweder auf "h-separator" oder "v-separator" abzubilden.
    */
-  public Map<String, String> mapTypeToType;
-  
-  public String getMappedType(String type)
-  {
-    if (mapTypeToType != null && mapTypeToType.containsKey(type))
-      return mapTypeToType.get(type);
-    return type;
-  }
-  
+  private Map<String, String> mapTypeToType;
+
   public Object getLayoutConstraints(String type)
   {
     Object layoutConstraints;
@@ -86,15 +79,24 @@ public class UIElementContext
       layoutConstraints = ((GridBagConstraints) layoutConstraints).clone();
     
     return layoutConstraints;
-
   }
 
-  public Integer getLabelType(String type)
+  public void setMapTypeToLayoutConstraints(Map<String, ?> mapTypeToLayoutConstraints)
+  {
+    this.mapTypeToLayoutConstraints = mapTypeToLayoutConstraints;
+  }
+
+  public UIElement.LabelPosition getLabelType(String type)
   {
     if (mapTypeToLabelType.containsKey(type))
       return mapTypeToLabelType.get(type);
     else
       return mapTypeToLabelType.get(DEFAULT);
+  }
+
+  public void setMapTypeToLabelType(Map<String, UIElement.LabelPosition> mapTypeToLabelType)
+  {
+    this.mapTypeToLabelType = mapTypeToLabelType;
   }
 
   public Object getLabelLayoutConstraints(String type)
@@ -109,5 +111,42 @@ public class UIElementContext
       labelLayoutConstraints = ((GridBagConstraints) labelLayoutConstraints).clone();
     
     return labelLayoutConstraints;
+  }
+
+  public void setMapTypeToLabelLayoutConstraints(Map<String, ?> mapTypeToLabelLayoutConstraints)
+  {
+    this.mapTypeToLabelLayoutConstraints = mapTypeToLabelLayoutConstraints;
+  }
+
+  public Set<String> getSupportedActions()
+  {
+    return supportedActions;
+  }
+
+  public void setSupportedActions(Set<String> supportedActions)
+  {
+    this.supportedActions = supportedActions;
+  }
+
+  public UIElementEventHandler getUiElementEventHandler()
+  {
+    return uiElementEventHandler;
+  }
+
+  public void setUiElementEventHandler(UIElementEventHandler uiElementEventHandler)
+  {
+    this.uiElementEventHandler = uiElementEventHandler;
+  }
+
+  public String getMappedType(String type)
+  {
+    if (mapTypeToType != null && mapTypeToType.containsKey(type))
+      return mapTypeToType.get(type);
+    return type;
+  }
+
+  public void setMapTypeToType(Map<String, String> mapTypeToType)
+  {
+    this.mapTypeToType = mapTypeToType;
   }
 }

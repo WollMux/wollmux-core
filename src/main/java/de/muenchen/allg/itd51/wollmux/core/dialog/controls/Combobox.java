@@ -19,7 +19,8 @@ public class Combobox extends UIElementBase
 
   private JComboBox<?> combo;
 
-  public Combobox(String id, JComboBox<?> combo, Object layoutConstraints, Integer labelType, String label, Object labelLayoutConstraints)
+  public Combobox(String id, JComboBox<?> combo, Object layoutConstraints, UIElement.LabelPosition labelType, String label,
+      Object labelLayoutConstraints)
   {
     this.combo = combo;
     this.layoutConstraints = layoutConstraints;

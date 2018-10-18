@@ -188,6 +188,7 @@ public class OOoDatasource implements Datasource
   /**
    * Passwort für den Login bei der Datenbank.
    */
+  @SuppressWarnings("squid:S2068")
   private String password = "";
 
   /**
@@ -230,40 +231,11 @@ public class OOoDatasource implements Datasource
   public OOoDatasource(Map<String, Datasource> nameToDatasource,
       ConfigThingy sourceDesc, URL context, boolean noKey)
   {
-    try
-    {
-      datasourceName = sourceDesc.get("NAME").toString();
-    }
-    catch (NodeNotFoundException x)
-    {
-      throw new ConfigurationErrorException(L.m("NAME der Datenquelle fehlt"), x);
-    }
-
-    try
-    {
-      oooDatasourceName = sourceDesc.get("SOURCE").toString();
-    }
-    catch (NodeNotFoundException x)
-    {
-      throw new ConfigurationErrorException(
-        L.m(
-          "Datenquelle \"%1\": Name der OOo-Datenquelle muss als SOURCE angegeben werden",
-              datasourceName),
-          x);
-    }
-
-    try
-    {
-      oooTableName = sourceDesc.get("TABLE").toString();
-    }
-    catch (NodeNotFoundException x)
-    {
-      throw new ConfigurationErrorException(
-        L.m(
-          "Datenquelle \"%1\": Name der Tabelle/Sicht innerhalb der OOo-Datenquelle muss als TABLE angegeben werden",
-              datasourceName),
-          x);
-    }
+    datasourceName = parseConfig(sourceDesc, "NAME", () -> L.m("NAME der Datenquelle fehlt"));
+    oooDatasourceName = parseConfig(sourceDesc, "SOURCE", () -> L.m(
+        "Datenquelle \"%1\": Name der OOo-Datenquelle muss als SOURCE angegeben werden", datasourceName));
+    oooTableName = parseConfig(sourceDesc, "TABLE", () -> L
+        .m("Datenquelle \"%1\": Name der Tabelle/Sicht innerhalb der OOo-Datenquelle muss als TABLE angegeben werden", datasourceName));
 
     try
     {
@@ -396,9 +368,10 @@ public class OOoDatasource implements Datasource
         {
           ConfigThingy schluesselConf = sourceDesc.query("Schluessel");
           if (schluesselConf.count() != 0)
-            parseKey(schluesselConf); // Test ob kein Schluessel vorhanden siehe
-          // weiter unten
-          else
+          {
+            // Test ob kein Schluessel vorhanden siehe weiter unten
+            parseKey(schluesselConf);
+          } else
           { // Schlüssel von Datenbank abfragen.
             try
             {
@@ -700,7 +673,9 @@ public class OOoDatasource implements Datasource
           conn.close();
         }
         catch (Exception e)
-        {}
+        {
+          LOGGER.trace("", e);
+        }
       }
     }
 
@@ -729,7 +704,9 @@ public class OOoDatasource implements Datasource
         idx = loc.findColumn(column);
       }
       catch (Exception x)
-      {}
+      {
+        LOGGER.trace("", x);
+      }
       mapColumnNameToIndex.put(column, Integer.valueOf(idx));
     }
     return mapColumnNameToIndex;
@@ -851,11 +828,10 @@ public class OOoDatasource implements Datasource
       return key;
     }
 
-  }
-
-  private static String encode(String str)
-  {
-    return str.replaceAll("%", "%%").replace("#", "%r");
+    private String encode(String str)
+    {
+      return str.replaceAll("%", "%%").replace("#", "%r");
+    }
   }
 
   private static String decode(String str)

@@ -35,13 +35,12 @@ package de.muenchen.allg.itd51.wollmux.core.dialog;
 
 import java.awt.Color;
 import java.awt.event.ActionEvent;
+import java.awt.event.FocusAdapter;
 import java.awt.event.FocusEvent;
-import java.awt.event.FocusListener;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -49,14 +48,15 @@ import javax.swing.AbstractAction;
 import javax.swing.Action;
 import javax.swing.InputMap;
 import javax.swing.KeyStroke;
-import javax.swing.event.CaretEvent;
-import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Highlighter;
 import javax.swing.text.JTextComponent;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
@@ -69,32 +69,34 @@ import de.muenchen.allg.itd51.wollmux.core.util.L;
  */
 public class TextComponentTags
 {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(TextComponentTags.class);
+
   /**
    * Syntax für {@link #getContent(int)}: CAT(... VALUE "&lt;tagname>" ... VALUE
    * "&lt;tagname"> ...)
    */
-  final public static int CAT_VALUE_SYNTAX = 0;
+  public static final int CAT_VALUE_SYNTAX = 0;
 
-/**
+  /**
    * Präfix, mit dem Tags in der Anzeige der Zuordnung angezeigt werden. Die
    * Zuordnung beginnt mit einem zero width space (nicht sichtbar, aber zur
    * Unterscheidung des Präfix von den Benutzereingaben) und dem "<"-Zeichen.
    */
-  private final static String TAG_PREFIX = "" + Character.toChars(0x200B)[0] + "<";
+  private static final String TAG_PREFIX = "" + Character.toChars(0x200B)[0] + "<";
 
   /**
    * Suffix, mit dem Tags in der Anzeige der Zuordnung angezeigt werden. Die
    * Zuordnung beginnt mit einem zero width space (nicht sichtbar, aber zur
    * Unterscheidung des Präfix von den Benutzereingaben) und dem ">"-Zeichen.
    */
-  private final static String TAG_SUFFIX = "" + Character.toChars(0x200B)[0] + ">";
+  private static final String TAG_SUFFIX = "" + Character.toChars(0x200B)[0] + ">";
 
   /**
-   * Beschreibt einen regulären Ausdruck, mit dem nach Tags im Text gesucht werden
-   * kann. Ein Match liefert in Gruppe 1 den Text des Tags.
+   * Beschreibt einen regulären Ausdruck, mit dem nach Tags im Text gesucht
+   * werden kann. Ein Match liefert in Gruppe 1 den Text des Tags.
    */
-  private final static Pattern TAG_PATTERN =
-    Pattern.compile("(" + TAG_PREFIX + "(.*?)" + TAG_SUFFIX + ")");
+  private static final Pattern TAG_PATTERN = Pattern.compile("(" + TAG_PREFIX + "(.*?)" + TAG_SUFFIX + ")");
 
   /**
    * Farbe, mit dem der Hintergund eines Textfeldes im Dialog "Felder anpassen"
@@ -108,8 +110,14 @@ public class TextComponentTags
   private JTextComponent compo;
 
   /**
-   * Erzeugt den Wrapper und nimmt die notwendigen Änderungen am Standardverhalten
-   * der JTextComponent component vor.
+   * Enthält das tag das beim Erzeugen des Extra-Highlights zurückgeliefert
+   * wurde und das Highlight-Objekt auszeichnet.
+   */
+  private Object extraHighlightTag = null;
+
+  /**
+   * Erzeugt den Wrapper und nimmt die notwendigen Änderungen am
+   * Standardverhalten der JTextComponent component vor.
    */
   public TextComponentTags(JTextComponent component)
   {
@@ -121,13 +129,13 @@ public class TextComponentTags
   }
 
   /**
-   * Fügt an der aktuellen Cursorposition ein neues Tag tag ein, das anschließend mit
-   * der Darstellung &quot;&lt;tag&gt;&quot; angezeigt wird und bezüglich der
-   * Editierung wie ein atomares Element behandelt wird.
+   * Fügt an der aktuellen Cursorposition ein neues Tag tag ein, das
+   * anschließend mit der Darstellung &quot;&lt;tag&gt;&quot; angezeigt wird und
+   * bezüglich der Editierung wie ein atomares Element behandelt wird.
    * 
    * @param tag
-   *          Der Name des tags, das in dieser JTextComponent an der Cursorposition
-   *          eingefügt und angezeigt werden soll.
+   *          Der Name des tags, das in dieser JTextComponent an der
+   *          Cursorposition eingefügt und angezeigt werden soll.
    * 
    * @author Christoph Lutz (D-III-ITD-5.1)
    */
@@ -155,15 +163,15 @@ public class TextComponentTags
   }
 
   /**
-   * Liefert eine Liste von {@link ContentElement}-Objekten, die den aktuellen Inhalt
-   * der JTextComponent repräsentiert und dabei enthaltenen Text und evtl. enthaltene
-   * Tags als eigene Objekte kapselt.
+   * Liefert eine Liste von {@link ContentElement}-Objekten, die den aktuellen
+   * Inhalt der JTextComponent repräsentiert und dabei enthaltenen Text und
+   * evtl. enthaltene Tags als eigene Objekte kapselt.
    * 
    * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public List<ContentElement> getContent()
   {
-    List<ContentElement> list = new ArrayList<ContentElement>();
+    List<ContentElement> list = new ArrayList<>();
     String t = compo.getText();
     Matcher m = TAG_PATTERN.matcher(t);
     int lastEndPos = 0;
@@ -173,17 +181,23 @@ public class TextComponentTags
       startPos = m.start();
       String tag = m.group(2);
       list.add(new ContentElement(t.substring(lastEndPos, startPos), false));
-      if (tag.length() > 0) list.add(new ContentElement(tag, true));
+      if (tag.length() > 0)
+      {
+        list.add(new ContentElement(tag, true));
+      }
       lastEndPos = m.end();
     }
     String text = t.substring(lastEndPos);
-    if (text.length() > 0) list.add(new ContentElement(text, false));
+    if (text.length() > 0)
+    {
+      list.add(new ContentElement(text, false));
+    }
     return list;
   }
 
   /**
-   * Liefert den Inhalt der Textkomponente in der durch syntaxType spezifizierten
-   * Syntax.
+   * Liefert den Inhalt der Textkomponente in der durch syntaxType
+   * spezifizierten Syntax.
    * 
    * @see #CAT_VALUE_SYNTAX
    * @throws IllegalArgumentException
@@ -194,16 +208,14 @@ public class TextComponentTags
   public ConfigThingy getContent(int syntaxType)
   {
     if (syntaxType != CAT_VALUE_SYNTAX)
-      throw new IllegalArgumentException(L.m("Unbekannter syntaxType: %1", ""
-        + syntaxType));
+      throw new IllegalArgumentException(L.m("Unbekannter syntaxType: %1", "" + syntaxType));
 
     ConfigThingy conf = new ConfigThingy("CAT");
     List<ContentElement> content = getContent();
     if (content.isEmpty())
     {
       conf.add("");
-    }
-    else
+    } else
     {
       Iterator<ContentElement> iter = content.iterator();
       while (iter.hasNext())
@@ -220,14 +232,14 @@ public class TextComponentTags
   }
 
   /**
-   * Liefert den Inhalt der TextComponentTag als String mit aufgelösten Tags, wobei
-   * an Stelle jedes Tags der entsprechende Inhalt eingesetzt wird, der in
-   * mapTagToValue unter dem Schlüssel des Tagnamens gefunden wird oder der String
-   * "<tagname>", wenn das Tag nicht aufgelöst werden kann.
+   * Liefert den Inhalt der TextComponentTag als String mit aufgelösten Tags,
+   * wobei an Stelle jedes Tags der entsprechende Inhalt eingesetzt wird, der in
+   * mapTagToValue unter dem Schlüssel des Tagnamens gefunden wird oder der
+   * String "<tagname>", wenn das Tag nicht aufgelöst werden kann.
    * 
    * @param mapTagToValue
-   *          Map mit Schlüssel-/Wertpaaren, die die entsprechenden Werte für die
-   *          Tags enthält.
+   *          Map mit Schlüssel-/Wertpaaren, die die entsprechenden Werte für
+   *          die Tags enthält.
    * @return Inhalt der TextComponentTag als String mit aufgelösten Tags (soweit
    *         möglich).
    * 
@@ -235,7 +247,7 @@ public class TextComponentTags
    */
   public String getContent(Map<String, String> mapTagToValue)
   {
-    StringBuffer buf = new StringBuffer();
+    StringBuilder buf = new StringBuilder();
     for (ContentElement el : getContent())
     {
       if (el.isTag())
@@ -246,8 +258,7 @@ public class TextComponentTags
           buf.append(mapTagToValue.get(key));
         else
           buf.append("<" + key + ">");
-      }
-      else
+      } else
         buf.append(el.toString());
     }
     return buf.toString();
@@ -264,10 +275,9 @@ public class TextComponentTags
   public void setContent(int syntaxType, ConfigThingy conf)
   {
     if (syntaxType != CAT_VALUE_SYNTAX)
-      throw new IllegalArgumentException(L.m("Unbekannter syntaxType: %1", ""
-        + syntaxType));
+      throw new IllegalArgumentException(L.m("Unbekannter syntaxType: %1", "" + syntaxType));
 
-    if (!conf.getName().equals("CAT"))
+    if (!"CAT".equals(conf.getName()))
       throw new IllegalArgumentException(L.m("Oberster Knoten muss \"CAT\" sein"));
 
     StringBuilder buffy = new StringBuilder();
@@ -275,14 +285,13 @@ public class TextComponentTags
     while (iter.hasNext())
     {
       ConfigThingy subConf = iter.next();
-      if (subConf.getName().equals("VALUE") && subConf.count() == 1)
+      if ("VALUE".equals(subConf.getName()) && subConf.count() == 1)
       {
         // ACHTUNG! Änderungen hier müssen auch in insertTag() gemacht werden
         buffy.append(TAG_PREFIX);
         buffy.append(subConf.toString());
         buffy.append(TAG_SUFFIX);
-      }
-      else
+      } else
       {
         buffy.append(subConf.toString());
       }
@@ -298,10 +307,9 @@ public class TextComponentTags
    * 
    * @author Matthias Benkmann (D-III-ITD D.10) TESTED
    */
-  public static List<Action> makeInsertFieldActions(List<String> fieldNames,
-      final TextComponentTags text)
+  public static List<Action> makeInsertFieldActions(List<String> fieldNames, final TextComponentTags text)
   {
-    List<Action> actions = new Vector<Action>();
+    List<Action> actions = new ArrayList<>();
     Iterator<String> iter = fieldNames.iterator();
     while (iter.hasNext())
     {
@@ -310,6 +318,7 @@ public class TextComponentTags
       {
         private static final long serialVersionUID = -9123184290299840565L;
 
+        @Override
         public void actionPerformed(ActionEvent e)
         {
           text.insertTag(name);
@@ -321,12 +330,12 @@ public class TextComponentTags
   }
 
   /**
-   * Kann überschrieben werden um eine Logik zu hinterlegen, die berechnet, ob das
-   * Feld einen gültigen Inhalt besitzt. Ist der Inhalt nicht gültig, dann wird das
-   * Feld mit einem roten Hintergrund hinterlegt.
+   * Kann überschrieben werden um eine Logik zu hinterlegen, die berechnet, ob
+   * das Feld einen gültigen Inhalt besitzt. Ist der Inhalt nicht gültig, dann
+   * wird das Feld mit einem roten Hintergrund hinterlegt.
    * 
-   * @return true, wenn der Inhalt gültig ist und false, wenn der Inhalt nicht gültig
-   *         ist.
+   * @return true, wenn der Inhalt gültig ist und false, wenn der Inhalt nicht
+   *         gültig ist.
    * 
    * @author Christoph Lutz (D-III-ITD-5.1)
    */
@@ -336,9 +345,9 @@ public class TextComponentTags
   }
 
   /**
-   * Beschreibt ein Element des Inhalts dieser JTextComponent und kann entweder ein
-   * eingefügtes Tag oder ein normaler String sein. Auskunft über den Typ des
-   * Elements erteilt die Methode isTag(), auf den String-Wert kann über die
+   * Beschreibt ein Element des Inhalts dieser JTextComponent und kann entweder
+   * ein eingefügtes Tag oder ein normaler String sein. Auskunft über den Typ
+   * des Elements erteilt die Methode isTag(), auf den String-Wert kann über die
    * toString()-Methode zugegriffen werden.
    * 
    * @author Christoph Lutz (D-III-ITD-5.1)
@@ -355,6 +364,7 @@ public class TextComponentTags
       this.isTag = isTag;
     }
 
+    @Override
     public String toString()
     {
       return value;
@@ -373,40 +383,33 @@ public class TextComponentTags
   }
 
   /**
-   * Immer wenn der Cursor mit der Maus in einen Bereich innerhalb eines Tags gesetzt
-   * wird, sorgt der hier registrierte caret Listener dafür, dass der Bereich auf das
-   * gesamte Tag ausgedehnt wird.
+   * Immer wenn der Cursor mit der Maus in einen Bereich innerhalb eines Tags
+   * gesetzt wird, sorgt der hier registrierte caret Listener dafür, dass der
+   * Bereich auf das gesamte Tag ausgedehnt wird.
    * 
    * @author Christoph Lutz (D-III-ITD-5.1)
    */
   private void changeCaretHandling()
   {
-    compo.addCaretListener(new CaretListener()
-    {
-      public void caretUpdate(CaretEvent e)
-      {
-        extraHighlightOff();
-        int dot = compo.getCaret().getDot();
-        int mark = compo.getCaret().getMark();
+    compo.addCaretListener(event -> {
+      extraHighlightOff();
+      int dot = compo.getCaret().getDot();
+      int mark = compo.getCaret().getMark();
 
-        for (Iterator<TagPos> iter = getTagPosIterator(); iter.hasNext();)
+      for (TagPos fp : getTagPos())
+      {
+        if (dot > fp.start && dot < fp.end)
         {
-          TextComponentTags.TagPos fp = iter.next();
-          if (dot > fp.start && dot < fp.end)
+          if (dot < mark)
           {
-            if (dot < mark)
-            {
-              caretMoveDot(fp.start);
-            }
-            else if (dot > mark)
-            {
-              caretMoveDot(fp.end);
-            }
-            else
-            {
-              caretSetDot(fp.end);
-              extraHighlight(fp.start, fp.end);
-            }
+            caretMoveDot(fp.start);
+          } else if (dot > mark)
+          {
+            caretMoveDot(fp.end);
+          } else
+          {
+            caretSetDot(fp.end);
+            extraHighlight(fp.start, fp.end);
           }
         }
       }
@@ -421,197 +424,58 @@ public class TextComponentTags
    */
   private void changeFocusLostHandling()
   {
-    compo.addFocusListener(new FocusListener()
+    compo.addFocusListener(new FocusAdapter()
     {
+      @Override
       public void focusLost(FocusEvent e)
       {
         extraHighlightOff();
       }
-
-      public void focusGained(FocusEvent e)
-      {}
     });
   }
 
   /**
-   * Implementiert die Aktionen für die Tastendrücke Cursor-links, Cursor-rechts,
-   * Delete und Backspace neu und berücksichtigt dabei die atomaren Tags.
+   * Implementiert die Aktionen für die Tastendrücke Cursor-links,
+   * Cursor-rechts, Delete und Backspace neu und berücksichtigt dabei die
+   * atomaren Tags.
    * 
    * @author Christoph Lutz (D-III-ITD-5.1)
    */
   private void changeInputMap()
   {
+    String goLeftKeyStroke = "goLeft";
+    String goRightKeyStroke = "goRight";
+    String expandLeftKeyStroke = "expandLeft";
+    String expandRightKeyStroke = "expandRight";
+    String deleteLeftKeyStroke = "deleteLeft";
+    String deleteRightKeyStroke = "deleteRight";
     InputMap m = compo.getInputMap();
-    m.put(KeyStroke.getKeyStroke("LEFT"), "goLeft");
-    m.put(KeyStroke.getKeyStroke("RIGHT"), "goRight");
-    m.put(KeyStroke.getKeyStroke("shift LEFT"), "expandLeft");
-    m.put(KeyStroke.getKeyStroke("shift RIGHT"), "expandRight");
-    m.put(KeyStroke.getKeyStroke("DELETE"), "deleteRight");
-    m.put(KeyStroke.getKeyStroke("BACK_SPACE"), "deleteLeft");
+    m.put(KeyStroke.getKeyStroke("LEFT"), goLeftKeyStroke);
+    m.put(KeyStroke.getKeyStroke("RIGHT"), goRightKeyStroke);
+    m.put(KeyStroke.getKeyStroke("shift LEFT"), expandLeftKeyStroke);
+    m.put(KeyStroke.getKeyStroke("shift RIGHT"), expandRightKeyStroke);
+    m.put(KeyStroke.getKeyStroke("DELETE"), deleteRightKeyStroke);
+    m.put(KeyStroke.getKeyStroke("BACK_SPACE"), deleteLeftKeyStroke);
 
-    compo.getActionMap().put("goLeft", new AbstractAction("goLeft")
-    {
-      private static final long serialVersionUID = 2098288193497911628L;
+    compo.getActionMap().put(goLeftKeyStroke, new GoAction(goLeftKeyStroke, true));
 
-      public void actionPerformed(ActionEvent evt)
-      {
-        extraHighlightOff();
-        int dot = compo.getCaret().getDot();
+    compo.getActionMap().put(goRightKeyStroke, new GoAction(goRightKeyStroke, false));
 
-        // evtl. vorhandenes Tag überspringen
-        for (Iterator<TagPos> iter = getTagPosIterator(); iter.hasNext();)
-        {
-          TextComponentTags.TagPos fp = iter.next();
-          if (dot == fp.end)
-          {
-            caretSetDot(fp.start);
-            extraHighlight(fp.start, fp.end);
-            return;
-          }
-        }
+    compo.getActionMap().put(expandLeftKeyStroke, new ExpandAction(expandLeftKeyStroke, true));
 
-        caretSetDot(dot - 1);
-      }
-    });
+    compo.getActionMap().put(expandRightKeyStroke, new ExpandAction(expandRightKeyStroke, false));
 
-    compo.getActionMap().put("goRight", new AbstractAction("goRight")
-    {
-      private static final long serialVersionUID = 2098288193497911628L;
+    compo.getActionMap().put(deleteRightKeyStroke, new DeleteAction(deleteLeftKeyStroke, true));
 
-      public void actionPerformed(ActionEvent evt)
-      {
-        extraHighlightOff();
-        int dot = compo.getCaret().getDot();
-
-        // evtl. vorhandenes Tag überspringen
-        for (Iterator<TagPos> iter = getTagPosIterator(); iter.hasNext();)
-        {
-          TextComponentTags.TagPos fp = iter.next();
-          if (dot == fp.start)
-          {
-            caretSetDot(fp.end);
-            extraHighlight(fp.start, fp.end);
-            return;
-          }
-        }
-
-        caretSetDot(dot + 1);
-      }
-    });
-
-    compo.getActionMap().put("expandLeft", new AbstractAction("expandLeft")
-    {
-      private static final long serialVersionUID = 2098288193497911628L;
-
-      public void actionPerformed(ActionEvent evt)
-      {
-        extraHighlightOff();
-        int dot = compo.getCaret().getDot();
-
-        // evtl. vorhandenes Tag überspringen
-        for (Iterator<TagPos> iter = getTagPosIterator(); iter.hasNext();)
-        {
-          TextComponentTags.TagPos fp = iter.next();
-          if (dot == fp.end)
-          {
-            caretMoveDot(fp.start);
-            return;
-          }
-        }
-
-        caretMoveDot(dot - 1);
-      }
-    });
-
-    compo.getActionMap().put("expandRight", new AbstractAction("expandRight")
-    {
-      private static final long serialVersionUID = 2098288193497911628L;
-
-      public void actionPerformed(ActionEvent evt)
-      {
-        extraHighlightOff();
-        int dot = compo.getCaret().getDot();
-
-        // evtl. vorhandenes Tag überspringen
-        for (Iterator<TagPos> iter = getTagPosIterator(); iter.hasNext();)
-        {
-          TextComponentTags.TagPos fp = iter.next();
-          if (dot == fp.start)
-          {
-            caretMoveDot(fp.end);
-            return;
-          }
-        }
-
-        caretMoveDot(dot + 1);
-      }
-    });
-
-    compo.getActionMap().put("deleteRight", new AbstractAction("deleteRight")
-    {
-      private static final long serialVersionUID = 2098288193497911628L;
-
-      public void actionPerformed(ActionEvent evt)
-      {
-        extraHighlightOff();
-        int dot = compo.getCaret().getDot();
-        int mark = compo.getCaret().getMark();
-
-        // evtl. vorhandene Selektion löschen
-        if (dot != mark)
-        {
-          deleteAPartOfTheText(dot, mark);
-          return;
-        }
-
-        // Endposition des zu löschenden Bereichs bestimmen
-        int pos2 = dot + 1;
-        for (Iterator<TagPos> iter = getTagPosIterator(); iter.hasNext();)
-        {
-          TextComponentTags.TagPos fp = iter.next();
-          if (dot == fp.start) pos2 = fp.end;
-        }
-
-        deleteAPartOfTheText(dot, pos2);
-      }
-
-    });
-
-    compo.getActionMap().put("deleteLeft", new AbstractAction("deleteLeft")
-    {
-      private static final long serialVersionUID = 2098288193497911628L;
-
-      public void actionPerformed(ActionEvent evt)
-      {
-        extraHighlightOff();
-        int dot = compo.getCaret().getDot();
-        int mark = compo.getCaret().getMark();
-
-        // evtl. vorhandene Selektion löschen
-        if (dot != mark)
-        {
-          deleteAPartOfTheText(dot, mark);
-          return;
-        }
-
-        // Anfangsposition des zu löschenden Bereichs bestimmen
-        int pos2 = dot - 1;
-        for (Iterator<TagPos> iter = getTagPosIterator(); iter.hasNext();)
-        {
-          TextComponentTags.TagPos fp = iter.next();
-          if (dot == fp.end) pos2 = fp.start;
-        }
-
-        deleteAPartOfTheText(dot, pos2);
-      }
-    });
+    compo.getActionMap().put(deleteLeftKeyStroke, new DeleteAction(deleteRightKeyStroke, false));
 
   }
 
   /**
-   * Der hier registrierte DocumentListener sorgt dafür, dass nach jeder Textänderung
-   * geprüft wird, ob der Inhalt der JTextComponent noch gültig ist und im Fehlerfall
-   * mit der Hintergrundfarbe invalidEntryBGColor eingefärbt wird.
+   * Der hier registrierte DocumentListener sorgt dafür, dass nach jeder
+   * Textänderung geprüft wird, ob der Inhalt der JTextComponent noch gültig ist
+   * und im Fehlerfall mit der Hintergrundfarbe invalidEntryBGColor eingefärbt
+   * wird.
    * 
    * @author Christoph Lutz (D-III-ITD-5.1)
    */
@@ -621,16 +485,19 @@ public class TextComponentTags
     {
       private Color oldColor = null;
 
+      @Override
       public void changedUpdate(DocumentEvent e)
       {
         update();
       }
 
+      @Override
       public void removeUpdate(DocumentEvent e)
       {
         update();
       }
 
+      @Override
       public void insertUpdate(DocumentEvent e)
       {
         update();
@@ -640,11 +507,16 @@ public class TextComponentTags
       {
         if (isContentValid())
         {
-          if (oldColor != null) compo.setBackground(oldColor);
-        }
-        else
+          if (oldColor != null)
+          {
+            compo.setBackground(oldColor);
+          }
+        } else
         {
-          if (oldColor == null) oldColor = compo.getBackground();
+          if (oldColor == null)
+          {
+            oldColor = compo.getBackground();
+          }
           compo.setBackground(invalidEntryBGColor);
         }
       }
@@ -652,47 +524,31 @@ public class TextComponentTags
   }
 
   /**
-   * Löscht einen Teil des aktuellen Texts zwischen den zwei Positionen pos1 und
-   * pos2. pos1 kann größer, kleiner oder gleich pos2 sein.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
-   */
-  private void deleteAPartOfTheText(int pos1, int pos2)
-  {
-    // sicherstellen dass pos1 <= pos2
-    if (pos1 > pos2)
-    {
-      int tmp = pos2;
-      pos2 = pos1;
-      pos1 = tmp;
-    }
-    String t = compo.getText();
-    String part1 = (pos1 > 0) ? t.substring(0, pos1) : "";
-    String part2 = (pos2 < t.length()) ? t.substring(pos2) : "";
-    compo.setText(part1 + part2);
-    compo.getCaret().setDot(pos1);
-  }
-
-  /**
-   * Macht das selbe wie getCaret().setDot(pos), aber nur wenn pos >= 0 und pos <=
-   * getText().length() gilt.
+   * Macht das selbe wie getCaret().setDot(pos), aber nur wenn pos >= 0 und pos
+   * <= getText().length() gilt.
    * 
    * @author Christoph Lutz (D-III-ITD-5.1)
    */
   private void caretSetDot(int pos)
   {
-    if (pos >= 0 && pos <= compo.getText().length()) compo.getCaret().setDot(pos);
+    if (pos >= 0 && pos <= compo.getText().length())
+    {
+      compo.getCaret().setDot(pos);
+    }
   }
 
   /**
-   * Macht das selbe wie getCaret().setDot(pos), aber nur wenn pos >= 0 und pos <=
-   * getText().length() gilt.
+   * Macht das selbe wie getCaret().setDot(pos), aber nur wenn pos >= 0 und pos
+   * <= getText().length() gilt.
    * 
    * @author Christoph Lutz (D-III-ITD-5.1)
    */
   private void caretMoveDot(int pos)
   {
-    if (pos >= 0 && pos <= compo.getText().length()) compo.getCaret().moveDot(pos);
+    if (pos >= 0 && pos <= compo.getText().length())
+    {
+      compo.getCaret().moveDot(pos);
+    }
   }
 
   /**
@@ -718,27 +574,21 @@ public class TextComponentTags
   }
 
   /**
-   * Liefert einen Iterator von TagPos-Elementen, die beschreiben an welcher Position
-   * im aktuellen Text Tags gefunden werden.
+   * Liefert einen Iterator von TagPos-Elementen, die beschreiben an welcher
+   * Position im aktuellen Text Tags gefunden werden.
    * 
    * @author Christoph Lutz (D-III-ITD-5.1)
    */
-  private Iterator<TagPos> getTagPosIterator()
+  private List<TagPos> getTagPos()
   {
-    List<TagPos> results = new ArrayList<TagPos>();
+    List<TagPos> results = new ArrayList<>();
     Matcher m = TAG_PATTERN.matcher(compo.getText());
     while (m.find())
     {
       results.add(new TagPos(m.start(1), m.end(1), m.group(2)));
     }
-    return results.iterator();
+    return results;
   }
-
-  /**
-   * Enthält das tag das beim Erzeugen des Extra-Highlights zurückgeliefert wurde und
-   * das Highlight-Objekt auszeichnet.
-   */
-  private Object extraHighlightTag = null;
 
   /**
    * Deaktiviert die Anzeige des Extra-Highlights
@@ -770,15 +620,180 @@ public class TextComponentTags
     {
       if (extraHighlightTag == null)
       {
-        Highlighter.HighlightPainter hp =
-          new DefaultHighlighter.DefaultHighlightPainter(new Color(0xddddff));
+        Highlighter.HighlightPainter hp = new DefaultHighlighter.DefaultHighlightPainter(new Color(0xddddff));
         extraHighlightTag = hl.addHighlight(pos1, pos2, hp);
-      }
-      else
+      } else
         hl.changeHighlight(extraHighlightTag, pos1, pos2);
+    } catch (BadLocationException e1)
+    {
+      LOGGER.trace("", e1);
     }
-    catch (BadLocationException e1)
-    {}
   }
 
+  private class GoAction extends AbstractAction
+  {
+
+    private static final long serialVersionUID = 2098288193497911628L;
+
+    boolean isGoLeft;
+
+    public GoAction(String name, boolean isGoLeft)
+    {
+      super(name);
+      this.isGoLeft = isGoLeft;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent evt)
+    {
+      extraHighlightOff();
+      int dot = compo.getCaret().getDot();
+
+      // evtl. vorhandenes Tag überspringen
+      for (TagPos fp : getTagPos())
+      {
+        int end = fp.end;
+        int start = fp.start;
+        if (!isGoLeft)
+        {
+          end = fp.start;
+          start = fp.end;
+        }
+        if (dot == end)
+        {
+          caretSetDot(start);
+          extraHighlight(fp.start, fp.end);
+          return;
+        }
+      }
+
+      if (isGoLeft)
+      {
+        caretSetDot(dot - 1);
+      } else
+      {
+        caretSetDot(dot + 1);
+      }
+    }
+  }
+
+  private class ExpandAction extends AbstractAction
+  {
+
+    private static final long serialVersionUID = -947661984555078391L;
+
+    boolean isExpandLeft;
+
+    public ExpandAction(String name, boolean isExpandLeft)
+    {
+      super(name);
+      this.isExpandLeft = isExpandLeft;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent evt)
+    {
+      extraHighlightOff();
+      int dot = compo.getCaret().getDot();
+
+      // evtl. vorhandenes Tag überspringen
+      for (TagPos fp : getTagPos())
+      {
+        int end = fp.end;
+        int start = fp.start;
+        if (!isExpandLeft)
+        {
+          end = fp.start;
+          start = fp.end;
+        }
+        if (dot == end)
+        {
+          caretMoveDot(start);
+          return;
+        }
+      }
+
+      if (isExpandLeft)
+      {
+        caretSetDot(dot - 1);
+      } else
+      {
+        caretSetDot(dot + 1);
+      }
+    }
+  }
+
+  private class DeleteAction extends AbstractAction
+  {
+
+    private static final long serialVersionUID = 6955626055766864569L;
+
+    boolean isDeleteLeft;
+
+    public DeleteAction(String name, boolean isDeleteLeft)
+    {
+      super(name);
+      this.isDeleteLeft = isDeleteLeft;
+    }
+
+    @Override
+    public void actionPerformed(ActionEvent evt)
+    {
+      extraHighlightOff();
+      int dot = compo.getCaret().getDot();
+      int mark = compo.getCaret().getMark();
+
+      // evtl. vorhandene Selektion löschen
+      if (dot != mark)
+      {
+        deleteAPartOfTheText(dot, mark);
+        return;
+      }
+
+      // Endposition des zu löschenden Bereichs bestimmen
+      int pos2 = dot - 1;
+      if (!isDeleteLeft)
+      {
+        pos2 = dot + 1;
+      }
+      for (TagPos fp : getTagPos())
+      {
+        int end = fp.end;
+        int start = fp.start;
+        if (!isDeleteLeft)
+        {
+          end = fp.start;
+          start = fp.end;
+        }
+        if (dot == end)
+        {
+          pos2 = start;
+        }
+      }
+
+      deleteAPartOfTheText(dot, pos2);
+    }
+
+    /**
+     * Löscht einen Teil des aktuellen Texts zwischen den zwei Positionen pos1
+     * und pos2. pos1 kann größer, kleiner oder gleich pos2 sein.
+     * 
+     * @author Christoph Lutz (D-III-ITD-5.1)
+     */
+    private void deleteAPartOfTheText(int pos1, int pos2)
+    {
+      // sicherstellen dass pos1 <= pos2
+      if (pos1 > pos2)
+      {
+        int tmp = pos2;
+        pos2 = pos1;
+        pos1 = tmp;
+      }
+      String t = compo.getText();
+      String part1 = (pos1 > 0) ? t.substring(0, pos1) : "";
+      String part2 = (pos2 < t.length()) ? t.substring(pos2) : "";
+      compo.setText(part1 + part2);
+      compo.getCaret().setDot(pos1);
+    }
+  }
 }

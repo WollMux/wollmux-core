@@ -35,8 +35,6 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import de.muenchen.allg.itd51.wollmux.core.db.ColumnNotFoundException;
-import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
 
 /**
@@ -66,7 +64,7 @@ public class SimpleDataset implements Dataset
       throws ColumnNotFoundException
   {
     key = ds.getKey();
-    data = new HashMap<String, String>();
+    data = new HashMap<>();
     for (String spalte : schema)
     {
       data.put(spalte, ds.get(spalte));

@@ -35,8 +35,6 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Vector;
 
-import de.muenchen.allg.itd51.wollmux.core.db.QueryPart;
-
 /**
  * Speichert den Namen einer Datenquelle sowie eine Suchanfrage darauf.
  *
@@ -82,7 +80,7 @@ public class Query implements Iterable<QueryPart>
   /**
    * Liefert die Liste der QueryParts die diese Suchanfrage definieren.
    */
-  public List<QueryPart> getQueryParts() {return new Vector<QueryPart>(listOfQueryParts);}
+  public List<QueryPart> getQueryParts() {return new Vector<>(listOfQueryParts);}
   
   public int numberOfQueryParts() { return listOfQueryParts.size();}
 }

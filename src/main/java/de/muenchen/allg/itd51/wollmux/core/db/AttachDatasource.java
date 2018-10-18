@@ -260,10 +260,8 @@ public class AttachDatasource implements Datasource
     List<QueryPart> query1 = new ArrayList<>(query.size() / 2);
     List<QueryPart> query2 = new ArrayList<>(query.size() / 2);
     List<QueryPart> query2WithPrefix = new ArrayList<>(query.size() / 2);
-    Iterator<QueryPart> iter = query.iterator();
-    while (iter.hasNext())
+    for (QueryPart p : query)
     {
-      QueryPart p = iter.next();
       if (p.getColumnName().startsWith(source2Prefix))
       {
         query2.add(new QueryPart(p.getColumnName().substring(source2Prefix.length()), p.getSearchString()));
@@ -317,11 +315,8 @@ public class AttachDatasource implements Datasource
 
     List<Dataset> resultsWithAttachments = new ArrayList<>(results.size());
 
-    Iterator<Dataset> iter = results.iterator();
-    while (iter.hasNext())
+    for (Dataset ds : results)
     {
-      Dataset ds = iter.next();
-
       List<QueryPart> query = new ArrayList<>(match1.length);
       for (int i = 0; i < match1.length; ++i)
       {
@@ -352,10 +347,9 @@ public class AttachDatasource implements Datasource
         }
       } else
       {
-        Iterator<Dataset> appendixIter = appendix.iterator();
-        while (appendixIter.hasNext())
+        for (Dataset appenixElement : appendix)
         {
-          newDataset = new ConcatDataset(ds, appendixIter.next());
+          newDataset = new ConcatDataset(ds, appenixElement);
           if (filter.matches(newDataset))
           {
             resultsWithAttachments.add(newDataset);

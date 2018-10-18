@@ -46,12 +46,19 @@ import java.awt.LayoutManager;
 public class VerticalFlowLayout implements LayoutManager
 {
 
+  @Override
   public void addLayoutComponent(String name, Component comp)
-  {}
+  {
+    // nothing to do
+  }
 
+  @Override
   public void removeLayoutComponent(Component comp)
-  {}
+  {
+    // nothing to do
+  }
 
+  @Override
   public void layoutContainer(Container parent)
   {
     synchronized (parent.getTreeLock())
@@ -88,12 +95,16 @@ public class VerticalFlowLayout implements LayoutManager
           columnWidth = 0;
           height = 0;
           firstInColumn = true;
+        } else
+        {
+          firstInColumn = false;
         }
 
-        firstInColumn = false;
-
         compo.setLocation(x, y);
-        if (pref.width > columnWidth) columnWidth = pref.width;
+        if (pref.width > columnWidth)
+        {
+          columnWidth = pref.width;
+        }
         height += pref.height;
         y += pref.height;
       }
@@ -101,6 +112,7 @@ public class VerticalFlowLayout implements LayoutManager
     }
   }
 
+  @Override
   public Dimension minimumLayoutSize(Container parent)
   {
     synchronized (parent.getTreeLock())
@@ -145,25 +157,36 @@ public class VerticalFlowLayout implements LayoutManager
         if (!firstInColumn && (columnHeight + pref.height > maxheight))
         {
           containerWidth += columnWidth;
-          if (containerHeight < columnHeight) containerHeight = columnHeight;
+          if (containerHeight < columnHeight)
+          {
+            containerHeight = columnHeight;
+          }
           columnWidth = 0;
           columnHeight = 0;
           firstInColumn = true;
+        } else
+        {
+          firstInColumn = false;
         }
 
-        firstInColumn = false;
-
-        if (pref.width > columnWidth) columnWidth = pref.width;
+        if (pref.width > columnWidth)
+        {
+          columnWidth = pref.width;
+        }
         columnHeight += pref.height;
       }
 
       containerWidth += columnWidth;
-      if (containerHeight < columnHeight) containerHeight = columnHeight;
+      if (containerHeight < columnHeight)
+      {
+        containerHeight = columnHeight;
+      }
       return new Dimension(containerWidth + insets.left + insets.right,
         containerHeight + insets.top + insets.bottom);
     }
   }
 
+  @Override
   public Dimension preferredLayoutSize(Container parent)
   {
     return minimumLayoutSize(parent);

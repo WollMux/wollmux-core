@@ -6,22 +6,13 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import de.muenchen.allg.itd51.wollmux.core.db.ColumnNotFoundException;
-import de.muenchen.allg.itd51.wollmux.core.db.DJDataset;
-import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
-import de.muenchen.allg.itd51.wollmux.core.db.DatasetNotFoundException;
-import de.muenchen.allg.itd51.wollmux.core.db.Datasource;
-import de.muenchen.allg.itd51.wollmux.core.db.DatasourceJoiner;
 import de.muenchen.allg.itd51.wollmux.core.db.DatasourceJoiner.Status;
-import de.muenchen.allg.itd51.wollmux.core.db.LocalOverrideStorage;
-import de.muenchen.allg.itd51.wollmux.core.db.NoBackingStoreException;
-import de.muenchen.allg.itd51.wollmux.core.db.TimeoutException;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 
 public class LocalOverrideStorageDummyImpl implements LocalOverrideStorage
 {
   DJDataset dummyDataset;
-  Set<String> schema = new HashSet<String>();
+  Set<String> schema = new HashSet<>();
 
   public LocalOverrideStorageDummyImpl()
   {
@@ -87,7 +78,9 @@ public class LocalOverrideStorageDummyImpl implements LocalOverrideStorage
       @Override
       public void discardLocalOverride(String columnName)
           throws ColumnNotFoundException, NoBackingStoreException
-      {}
+      {
+        // nothing to do
+      }
 
       @Override
       public DJDataset copy()
@@ -99,7 +92,9 @@ public class LocalOverrideStorageDummyImpl implements LocalOverrideStorage
 
   @Override
   public void selectDataset(String selectKey, int sameKeyIndex)
-  {}
+  {
+    // nothing to do
+  }
 
   @Override
   public DJDataset newDataset()
@@ -129,7 +124,7 @@ public class LocalOverrideStorageDummyImpl implements LocalOverrideStorage
   public List<Dataset> refreshFromDatabase(Datasource database, long timeout, Status status)
       throws TimeoutException
   {
-    return new ArrayList<Dataset>();
+    return new ArrayList<>();
   }
 
   @Override
@@ -143,7 +138,9 @@ public class LocalOverrideStorageDummyImpl implements LocalOverrideStorage
 
   @Override
   public void dumpData(ConfigThingy conf)
-  {}
+  {
+    // nothing to do
+  }
 
   @Override
   public void setSchema(Set<String> schema)
@@ -158,9 +155,9 @@ public class LocalOverrideStorageDummyImpl implements LocalOverrideStorage
   }
 
   @Override
-  public Iterator<? extends Dataset> iterator()
+  public Iterator<Dataset> iterator()
   {
-    List<Dataset> list = new ArrayList<Dataset>();
+    List<Dataset> list = new ArrayList<>();
     list.add(dummyDataset);
     return list.iterator();
   }

@@ -1,18 +1,12 @@
 package de.muenchen.allg.itd51.wollmux.core.db;
 
-import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import de.muenchen.allg.itd51.wollmux.core.db.DJDataset;
-import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
-import de.muenchen.allg.itd51.wollmux.core.db.DatasetNotFoundException;
-import de.muenchen.allg.itd51.wollmux.core.db.Datasource;
 import de.muenchen.allg.itd51.wollmux.core.db.DatasourceJoiner.Status;
-import de.muenchen.allg.itd51.wollmux.core.db.TimeoutException;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 
-public interface LocalOverrideStorage
+public interface LocalOverrideStorage extends Iterable<Dataset>
 {
 
   /**
@@ -28,7 +22,7 @@ public interface LocalOverrideStorage
    *          entsprechenden Schlüssel ausgewählt.
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public abstract void selectDataset(String selectKey, int sameKeyIndex);
+  public void selectDataset(String selectKey, int sameKeyIndex);
 
   /**
    * Erzeugt einen neuen Datensatz, der nicht mit Hintergrundspeicher verknüpft
@@ -36,14 +30,14 @@ public interface LocalOverrideStorage
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public abstract DJDataset newDataset();
+  public DJDataset newDataset();
 
   /**
    * Erzeugt eine Kopie im LOS vom Datensatz ds, der nicht aus dem LOS kommen darf.
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public abstract DJDataset copyNonLOSDataset(Dataset ds);
+  public DJDataset copyNonLOSDataset(Dataset ds);
 
   /**
    * Liefert den momentan im LOS selektierten Datensatz zurück.
@@ -52,7 +46,7 @@ public interface LocalOverrideStorage
    *           falls der LOS leer ist (sonst ist immer ein Datensatz selektiert).
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public abstract DJDataset getSelectedDataset() throws DatasetNotFoundException;
+  public DJDataset getSelectedDataset() throws DatasetNotFoundException;
 
   /**
    * Liefert die Anzahl der Datensätze im LOS, die den selben Schlüssel haben wie
@@ -63,8 +57,7 @@ public interface LocalOverrideStorage
    *           selektiert).
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public abstract int getSelectedDatasetSameKeyIndex()
-      throws DatasetNotFoundException;
+  public int getSelectedDatasetSameKeyIndex() throws DatasetNotFoundException;
 
   /**
    * Läd für die Datensätze des LOS aktuelle Daten aus der Datenbank database.
@@ -76,7 +69,7 @@ public interface LocalOverrideStorage
    * @throws TimeoutException
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public abstract List<Dataset> refreshFromDatabase(Datasource database, long timeout, Status status) throws TimeoutException;
+  public List<Dataset> refreshFromDatabase(Datasource database, long timeout, Status status) throws TimeoutException;
 
   /**
    * Liefert null, falls bislang kein Schema vorhanden (weil das Laden der
@@ -84,14 +77,14 @@ public interface LocalOverrideStorage
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public abstract Set<String> getSchema(); // TESTED
+  public Set<String> getSchema(); // TESTED
 
   /**
    * Fügt conf die Beschreibung der Datensätze im LOS als Kinder hinzu.
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public abstract void dumpData(ConfigThingy conf);
+  public void dumpData(ConfigThingy conf);
 
   /**
    * Ändert das Datenbankschema. Spalten des alten Schemas, die im neuen nicht mehr
@@ -100,27 +93,20 @@ public interface LocalOverrideStorage
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public abstract void setSchema(Set<String> schema);
+  public void setSchema(Set<String> schema);
 
   /**
    * Liefert die Anzahl der Datensätze im LOS.
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public abstract int size();
-
-  /**
-   * Iterator über alle Datensätze im LOS.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
-   */
-  public abstract Iterator<? extends Dataset> iterator();
+  public int size();
 
   /**
    * true, falls der LOS leer ist.
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public abstract boolean isEmpty();
+  public boolean isEmpty();
 
 }

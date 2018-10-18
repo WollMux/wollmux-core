@@ -21,16 +21,22 @@
  */
 package de.muenchen.allg.itd51.wollmux.core.db.checker;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
 
 /**
- * Ein DatasetChecker, der überprüft ob der Wert einer gegebenen Spalte mit einem
- * bestimmten Suffix (CASE-INSENSITIVE) endet.
+ * Ein DatasetChecker, der überprüft ob der Wert einer gegebenen Spalte mit
+ * einem bestimmten Suffix (CASE-INSENSITIVE) endet.
  * 
  * @author Matthias Benkmann (D-III-ITD 5.1)
  */
-public class ColumnSuffixChecker extends DatasetChecker
+public class ColumnSuffixChecker implements DatasetChecker
 {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ColumnSuffixChecker.class);
+
   private String columnName;
 
   private String compare;
@@ -47,9 +53,9 @@ public class ColumnSuffixChecker extends DatasetChecker
     try
     {
       return ds.get(columnName).toLowerCase().endsWith(compare);
-    }
-    catch (Exception e)
+    } catch (Exception e)
     {
+      LOGGER.trace("", e);
       return false;
     }
   }

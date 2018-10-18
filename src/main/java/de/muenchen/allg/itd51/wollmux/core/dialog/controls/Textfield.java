@@ -7,12 +7,12 @@ import javax.swing.JTextField;
 
 public class Textfield extends UIElementBase
 {
-  private JTextField textfield;
+  private JTextField tf;
 
   public Textfield(String id, JTextField tf, Object layoutConstraints,
-      Integer labelType, String label, Object labelLayoutConstraints)
+      UIElement.LabelPosition labelType, String label, Object labelLayoutConstraints)
   {
-    this.textfield = tf;
+    this.tf = tf;
     this.layoutConstraints = layoutConstraints;
     this.labelLayoutConstraints = labelLayoutConstraints;
     this.label = new JLabel(label);
@@ -20,26 +20,31 @@ public class Textfield extends UIElementBase
     this.id = id;
   }
 
+  @Override
   public Component getComponent()
   {
-    return textfield;
+    return tf;
   }
 
+  @Override
   public String getString()
   {
-    return textfield.getText();
+    return tf.getText();
   }
 
+  @Override
   public boolean getBoolean()
   {
-    return !getString().equals("");
+    return !getString().isEmpty();
   }
 
+  @Override
   public void setString(String str)
   {
-    textfield.setText(str);
+    tf.setText(str);
   }
 
+  @Override
   public boolean isStatic()
   {
     return false;

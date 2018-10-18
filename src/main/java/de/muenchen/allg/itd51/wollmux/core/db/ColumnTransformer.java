@@ -36,15 +36,14 @@ import java.util.Iterator;
 import java.util.Map;
 import java.util.Set;
 
-import de.muenchen.allg.itd51.wollmux.core.db.ColumnNotFoundException;
-import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResults;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.muenchen.allg.itd51.wollmux.core.dialog.DialogLibrary;
 import de.muenchen.allg.itd51.wollmux.core.functions.Function;
 import de.muenchen.allg.itd51.wollmux.core.functions.FunctionLibrary;
 import de.muenchen.allg.itd51.wollmux.core.functions.Values;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
-import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
 
 /**
  * Nimmt ein Dataset und stellt mit Hilfe von WollMux-Funktionen aus dessen Spalten
@@ -54,15 +53,18 @@ import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
  */
 public class ColumnTransformer
 {
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(ColumnTransformer.class);
+
   /**
    * Die Namen aller Pseudospalten, die für diesen ColumnTransformer definiert sind.
    */
-  private Set<String> schema = new HashSet<String>();
+  private Set<String> schema = new HashSet<>();
 
   /**
    * Bildet den Namen einer Pseudospalte auf die zugehörige Funktion ab.
    */
-  private Map<String, Function> columnTranslations = new HashMap<String, Function>();
+  private Map<String, Function> columnTranslations = new HashMap<>();
 
   /**
    * Initialisiert einen ColumnTransformer mit allen Abschnitten, die
@@ -91,7 +93,6 @@ public class ColumnTransformer
    * 
    */
   public ColumnTransformer(Map<String, Function> trafos)
-      throws ConfigurationErrorException
   {
     addTrafos(trafos);
   }
@@ -138,7 +139,7 @@ public class ColumnTransformer
    */
   public Set<String> getSchema()
   {
-    return new HashSet<String>(schema);
+    return new HashSet<>(schema);
   }
 
   /**
@@ -217,6 +218,7 @@ public class ColumnTransformer
       }
       catch (ColumnNotFoundException x)
       {
+        LOGGER.trace("", x);
         return false;
       }
       return true;
@@ -231,7 +233,9 @@ public class ColumnTransformer
         str = ds.get(id);
       }
       catch (ColumnNotFoundException x)
-      {}
+      {
+        LOGGER.trace("", x);
+      }
 
       return str == null ? "" : str;
     }
@@ -284,30 +288,30 @@ public class ColumnTransformer
 
     private class Iter implements Iterator<Dataset>
     {
-      private Iterator<Dataset> iter;
+      private Iterator<Dataset> iterator;
 
       public Iter()
       {
-        iter = qres.iterator();
+        iterator = qres.iterator();
       }
 
       @Override
       public boolean hasNext()
       {
-        return iter.hasNext();
+        return iterator.hasNext();
       }
 
       @Override
       public Dataset next()
       {
-        Dataset ds = iter.next();
+        Dataset ds = iterator.next();
         return new TransformedDataset(ds);
       }
 
       @Override
       public void remove()
       {
-        iter.remove();
+        iterator.remove();
       }
 
     }

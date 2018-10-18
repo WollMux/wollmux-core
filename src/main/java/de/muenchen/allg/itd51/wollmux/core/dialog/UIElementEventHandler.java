@@ -68,9 +68,6 @@ public interface UIElementEventHandler
    *          String "lost", falls der Focus verloren wurde, oder "gained", falls das
    *          Element den Focus bekommen hat.</dd>
    *          </dl>
-   *          <dt>funcDialogSelect</dt>
-   *          <dd>TODO: Doku</dd>
-   *          </dl>
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */

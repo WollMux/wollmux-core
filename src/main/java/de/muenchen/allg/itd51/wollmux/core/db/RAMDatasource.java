@@ -33,6 +33,7 @@
  */
 package de.muenchen.allg.itd51.wollmux.core.db;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -40,12 +41,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
-import de.muenchen.allg.itd51.wollmux.core.db.Datasource;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryPart;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResults;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResultsList;
-import de.muenchen.allg.itd51.wollmux.core.db.TimeoutException;
 import de.muenchen.allg.itd51.wollmux.core.db.checker.DatasetChecker;
 
 /**
@@ -111,14 +106,14 @@ public class RAMDatasource implements Datasource
   @Override
   public Set<String> getSchema()
   { // TESTED
-    return new HashSet<String>(schema);
+    return new HashSet<>(schema);
   }
 
   @Override
   public QueryResults getDatasetsByKey(Collection<String> keys, long timeout)
       throws TimeoutException
   { // TESTED
-    Vector<Dataset> res = new Vector<Dataset>();
+    List<Dataset> res = new ArrayList<>();
     Iterator<Dataset> iter = data.iterator();
     while (iter.hasNext())
     {
@@ -145,7 +140,7 @@ public class RAMDatasource implements Datasource
     }
     DatasetChecker checker = DatasetChecker.makeChecker(query);
 
-    List<Dataset> results = new Vector<Dataset>();
+    List<Dataset> results = new ArrayList<>();
 
     Iterator<Dataset> iter = data.iterator();
     while (iter.hasNext())
@@ -161,7 +156,7 @@ public class RAMDatasource implements Datasource
   @Override
   public QueryResults getContents(long timeout) throws TimeoutException
   {
-    return new QueryResultsList(new Vector<Dataset>(data));
+    return new QueryResultsList(new Vector<>(data));
   }
 
   /*

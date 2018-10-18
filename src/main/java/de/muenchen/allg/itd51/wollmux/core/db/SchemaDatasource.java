@@ -33,6 +33,7 @@
 package de.muenchen.allg.itd51.wollmux.core.db;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -43,13 +44,9 @@ import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
-import de.muenchen.allg.itd51.wollmux.core.db.ColumnNotFoundException;
-import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
-import de.muenchen.allg.itd51.wollmux.core.db.Datasource;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryPart;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResults;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResultsList;
-import de.muenchen.allg.itd51.wollmux.core.db.TimeoutException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
 import de.muenchen.allg.itd51.wollmux.core.parser.NodeNotFoundException;
@@ -63,8 +60,10 @@ import de.muenchen.allg.itd51.wollmux.core.util.L;
  */
 public class SchemaDatasource implements Datasource
 {
-  private static final Pattern SPALTENNAME =
-    Pattern.compile("^[a-zA-Z_][a-zA-Z_0-9]*$");
+
+  private static final Logger LOGGER = LoggerFactory.getLogger(SchemaDatasource.class);
+
+  private static final Pattern SPALTENNAME = Pattern.compile("^[a-zA-Z_][a-zA-Z_0-9]*$");
 
   private static final String EMPTY_COLUMN = "";
 
@@ -92,26 +91,10 @@ public class SchemaDatasource implements Datasource
    *          verwendet).
    */
   public SchemaDatasource(Map<String, Datasource> nameToDatasource,
-      ConfigThingy sourceDesc, URL context) throws ConfigurationErrorException
+      ConfigThingy sourceDesc, URL context)
   {
-    try
-    {
-      name = sourceDesc.get("NAME").toString();
-    }
-    catch (NodeNotFoundException x)
-    {
-      throw new ConfigurationErrorException(L.m("NAME der Datenquelle fehlt"));
-    }
-
-    try
-    {
-      sourceName = sourceDesc.get("SOURCE").toString();
-    }
-    catch (NodeNotFoundException x)
-    {
-      throw new ConfigurationErrorException(L.m("SOURCE der Datenquelle %1 fehlt",
-        name));
-    }
+    name = parseConfig(sourceDesc, "NAME", () -> L.m("NAME der Datenquelle fehlt"));
+    sourceName = parseConfig(sourceDesc, "SOURCE", () -> L.m("SOURCE der Datenquelle %1 fehlt", name));
 
     source = nameToDatasource.get(sourceName);
 
@@ -121,77 +104,12 @@ public class SchemaDatasource implements Datasource
           "Fehler bei Initialisierung von Datenquelle \"%1\": Referenzierte Datenquelle \"%2\" nicht (oder fehlerhaft) definiert",
           name, sourceName));
 
-    schema = new HashSet<String>(source.getSchema());
-    mapNewToOld = new HashMap<String, String>();
+    schema = new HashSet<>(source.getSchema());
+    mapNewToOld = new HashMap<>();
 
-    List<String> columnsToDrop = new Vector<String>();
-
-    ConfigThingy drops = sourceDesc.query("DROP");
-    Iterator<ConfigThingy> iter = drops.iterator();
-    while (iter.hasNext())
-    {
-      Iterator<ConfigThingy> iter2 = iter.next().iterator();
-      while (iter2.hasNext())
-      {
-        String spalte = iter2.next().toString();
-        if (!schema.contains(spalte))
-          throw new ConfigurationErrorException(L.m(
-            "Spalte \"%1\" ist nicht im Schema", spalte));
-        columnsToDrop.add(spalte);
-      }
-    }
-
-    List<String> columnsToAdd = new Vector<String>();
-
-    ConfigThingy adds = sourceDesc.query("ADD");
-    iter = adds.iterator();
-    while (iter.hasNext())
-    {
-      Iterator<ConfigThingy> iter2 = iter.next().iterator();
-      while (iter2.hasNext())
-      {
-        String spalte = iter2.next().toString();
-        if (!SPALTENNAME.matcher(spalte).matches())
-          throw new ConfigurationErrorException(L.m(
-            "\"%1\" ist kein erlaubter Spaltenname", spalte));
-        columnsToAdd.add(spalte);
-        columnsToDrop.remove(spalte);
-      }
-    }
-
-    ConfigThingy renamesDesc = sourceDesc.query("RENAME");
-
-    iter = renamesDesc.iterator();
-    while (iter.hasNext())
-    {
-      ConfigThingy renameDesc = iter.next();
-      if (renameDesc.count() != 2)
-        throw new ConfigurationErrorException(L.m(
-          "Fehlerhafte RENAME Angabe in Datenquelle \"%1\"", name));
-
-      String spalte1 = "";
-      String spalte2 = "";
-      try
-      {
-        spalte1 = renameDesc.getFirstChild().toString();
-        spalte2 = renameDesc.getLastChild().toString();
-      }
-      catch (NodeNotFoundException x)
-      {}
-
-      if (!schema.contains(spalte1))
-        throw new ConfigurationErrorException(L.m(
-          "Spalte \"%1\" ist nicht im Schema", spalte1));
-
-      if (!SPALTENNAME.matcher(spalte2).matches())
-        throw new ConfigurationErrorException(L.m(
-          "\"%2\" ist kein erlaubter Spaltenname", spalte2));
-
-      mapNewToOld.put(spalte2, spalte1);
-      columnsToDrop.add(spalte1);
-      columnsToDrop.remove(spalte2);
-      columnsToAdd.add(spalte2);
-    }
+    List<String> columnsToDrop = dropColumns(sourceDesc.query("DROP"));
+    List<String> columnsToAdd = addColumns(sourceDesc.query("ADD"), columnsToDrop);
+    renameColumn(sourceDesc.query("RENAME"), columnsToDrop, columnsToAdd);
 
     /**
      * Für alle hinzugefügten Spalten, die weder in der Originaldatenbank existieren
@@ -207,7 +125,76 @@ public class SchemaDatasource implements Datasource
 
     schema.removeAll(columnsToDrop);
     schema.addAll(columnsToAdd);
+  }
 
+  private void renameColumn(ConfigThingy renamesDesc, List<String> columnsToDrop, List<String> columnsToAdd)
+  {
+    for (ConfigThingy renameDesc : renamesDesc)
+    {
+      if (renameDesc.count() != 2)
+        throw new ConfigurationErrorException(L.m(
+          "Fehlerhafte RENAME Angabe in Datenquelle \"%1\"", name));
+
+      String spalte1 = "";
+      String spalte2 = "";
+      try
+      {
+        spalte1 = renameDesc.getFirstChild().toString();
+        spalte2 = renameDesc.getLastChild().toString();
+      }
+      catch (NodeNotFoundException x)
+      {
+        LOGGER.trace("", x);
+      }
+
+      if (!schema.contains(spalte1))
+        throw new ConfigurationErrorException(L.m(
+          "Spalte \"%1\" ist nicht im Schema", spalte1));
+
+      if (!SPALTENNAME.matcher(spalte2).matches())
+        throw new ConfigurationErrorException(L.m(
+          "\"%2\" ist kein erlaubter Spaltenname", spalte2));
+
+      mapNewToOld.put(spalte2, spalte1);
+      columnsToDrop.add(spalte1);
+      columnsToDrop.remove(spalte2);
+      columnsToAdd.add(spalte2);
+    }
+  }
+
+  private List<String> addColumns(ConfigThingy adds, List<String> columnsToDrop)
+  {
+    List<String> columnsToAdd = new ArrayList<>();
+    for (ConfigThingy add : adds)
+    {
+      for (ConfigThingy addColumn : add)
+      {
+        String spalte = addColumn.toString();
+        if (!SPALTENNAME.matcher(spalte).matches())
+          throw new ConfigurationErrorException(L.m(
+            "\"%1\" ist kein erlaubter Spaltenname", spalte));
+        columnsToAdd.add(spalte);
+        columnsToDrop.remove(spalte);
+      }
+    }
+    return columnsToAdd;
+  }
+
+  private List<String> dropColumns(ConfigThingy drops)
+  {
+    List<String> columnsToDrop = new ArrayList<>();
+    for (ConfigThingy drop : drops)
+    {
+      for (ConfigThingy dropColumn : drop)
+      {
+        String spalte = dropColumn.toString();
+        if (!schema.contains(spalte))
+          throw new ConfigurationErrorException(L.m(
+            "Spalte \"%1\" ist nicht im Schema", spalte));
+        columnsToDrop.add(spalte);
+      }
+    }
+    return columnsToDrop;
   }
 
   @Override
@@ -233,7 +220,7 @@ public class SchemaDatasource implements Datasource
   public QueryResults find(List<QueryPart> query, long timeout)
       throws TimeoutException
   {
-    List<QueryPart> translatedQuery = new Vector<QueryPart>(query.size());
+    List<QueryPart> translatedQuery = new ArrayList<>(query.size());
     Iterator<QueryPart> iter = query.iterator();
     while (iter.hasNext())
     {
@@ -264,7 +251,7 @@ public class SchemaDatasource implements Datasource
 
   private QueryResults wrapDatasets(QueryResults res)
   {
-    List<RenameDataset> wrappedRes = new Vector<RenameDataset>(res.size());
+    List<RenameDataset> wrappedRes = new ArrayList<>(res.size());
     Iterator<Dataset> iter = res.iterator();
     while (iter.hasNext())
       wrappedRes.add(new RenameDataset(iter.next()));

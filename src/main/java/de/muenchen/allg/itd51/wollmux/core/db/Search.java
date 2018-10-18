@@ -31,9 +31,10 @@
 package de.muenchen.allg.itd51.wollmux.core.db;
 
 import java.util.ArrayList;
-import java.util.Comparator;
+import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.stream.Stream;
 
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 
@@ -45,6 +46,11 @@ import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
  */
 public class Search
 {
+
+  private Search()
+  {
+    // hide implizite public constructor
+  }
 
   /**
    * Führt die übergebene Suchanfrage gemäß der übergebenen Suchstrategie aus und
@@ -113,18 +119,12 @@ public class Search
    */
   private static QueryResults mergeListOfQueryResultsList(List<QueryResults> listOfQueryResultsList)
   {
-    QueryResultsSet results = new QueryResultsSet(new Comparator<Dataset>()
-    {
-
-      @Override
-      public int compare(Dataset o1, Dataset o2)
+    QueryResultsSet results = new QueryResultsSet((o1, o2) -> {
+      if (o1.getClass() == o2.getClass() && o1.getKey() == o2.getKey())
       {
-        if (o1.getClass() == o2.getClass() && o1.getKey() == o2.getKey())
-        {
-          return 0;
-        }
-        return 1;
+        return 0;
       }
+      return 1;
     });
 
     if (listOfQueryResultsList.size() == 1)
@@ -157,70 +157,54 @@ public class Search
   {
     List<Query> queryList = new ArrayList<>();
 
-    /*
-     * Kommata durch Space ersetzen (d.h. "Benkmann,Matthias" -> "Benkmann Matthias")
-     */
+    // Kommata durch Space ersetzen (d.h. "Benkmann,Matthias" -> "Benkmann
+    // Matthias")
     queryString = queryString.replaceAll(",", " ");
 
-    /*
-     * Suchstring zerlegen.
-     */
-    String[] queryArray = queryString.trim().split("\\p{Space}+");
+    // Suchstring zerlegen.
+    Stream<String> queryStream = Arrays.stream(queryString.trim().split("\\p{Space}+"));
+    // Formatieren und leere Wörter entfernen
+    String[] queryArray = queryStream.map(Search::formatQuery).filter(query -> query.length() != 0).toArray(String[]::new);
 
-    /*
-     * Benutzerseitig wir nur ein einzelnes Sternchen am Ende eines Wortes
-     * akzeptiert. Deswegen entferne alle anderen Sternchen. Ein Punkt am Ende eines
-     * Wortes wird als Abkürzung interpretiert und durch Sternchen ersetzt. Ausserdem
-     * entferne leere Wörter und berechne neue Arraylänge.
-     */
     int count = queryArray.length;
-    for (int i = 0; i < queryArray.length && queryArray[i] != null; ++i)
-    {
-      boolean suffixStar =
-        queryArray[i].endsWith("*") || queryArray[i].endsWith(".");
-      if (queryArray[i].endsWith("."))
-        queryArray[i] = queryArray[i].substring(0, queryArray[i].length() - 1);
 
-      queryArray[i] = queryArray[i].replaceAll("\\*", "");
-      if (queryArray[i].length() == 0)
-      {
-        for (int j = i + 1; j < queryArray.length; ++j)
-          queryArray[j - 1] = queryArray[j];
-
-        --count;
-        --i;
-        queryArray[queryArray.length - 1] = null;
-      }
-      else
-      {
-        if (suffixStar) {
-          queryArray[i] = queryArray[i] + "*";
-        }
-      }
-    }
-
-    /*
-     * Passende Suchstrategie finden; falls nötig dazu Wörter am Ende weglassen.
-     */
+    // Passende Suchstrategie finden; falls nötig dazu Wörter am Ende weglassen.
     while (count >= 0 && searchStrategy.getTemplate(count) == null)
       --count;
 
-    /*
-     * keine Suchstrategie gefunden
-     */
+    // keine Suchstrategie gefunden
     if (count < 0) {
       return queryList;
     }
 
     List<Query> templateList = searchStrategy.getTemplate(count);
-    Iterator<Query> iter = templateList.iterator();
-    while (iter.hasNext())
+    for (Query template : templateList)
     {
-      Query template = iter.next();
       queryList.add(resolveTemplate(template, queryArray, count));
     }
 
     return queryList;
+  }
+
+  /**
+   * Benutzerseitig wir nur ein einzelnes Sternchen am Ende eines Wortes
+   * akzeptiert. Deswegen entferne alle anderen Sternchen. Ein Punkt am Ende
+   * eines Wortes wird als Abkürzung interpretiert und durch Sternchen ersetzt.
+   */
+  private static String formatQuery(String query)
+  {
+    boolean suffixStar = query.endsWith("*") || query.endsWith(".");
+    String modifiedQuery = query;
+    if (query.endsWith("."))
+    {
+      modifiedQuery = query.substring(0, query.length() - 1);
+    }
+    modifiedQuery = modifiedQuery.replaceAll("\\*", "");
+    if (suffixStar && query.length() != 0)
+    {
+      modifiedQuery += "*";
+    }
+    return modifiedQuery;
   }
 
   /**

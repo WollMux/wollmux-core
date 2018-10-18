@@ -32,9 +32,9 @@
 */
 package de.muenchen.allg.itd51.wollmux.core.db;
 
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Vector;
 
 /**
  * Eine einfache Klasse um eine Liste als QueryResults zur
@@ -57,7 +57,7 @@ public class QueryResultsList implements QueryResults
    */
   public QueryResultsList(Iterator<? extends Dataset> iter, int count)
   {
-    List<Dataset> d = new Vector<Dataset>(count);
+    List<Dataset> d = new ArrayList<>(count);
     while(iter.hasNext()) {
       d.add(iter.next());
     }

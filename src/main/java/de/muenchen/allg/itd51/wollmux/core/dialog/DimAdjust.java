@@ -41,6 +41,10 @@ import javax.swing.JComponent;
  */
 public class DimAdjust
 {
+  private DimAdjust()
+  {
+    // hide default public constructor
+  }
 
   /**
    * Setzt die maximale Breite von compo auf unendlich und liefert compo zurück.

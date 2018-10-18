@@ -37,10 +37,6 @@ import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 
-import de.muenchen.allg.itd51.wollmux.core.db.ColumnNotFoundException;
-import de.muenchen.allg.itd51.wollmux.core.db.DJDataset;
-import de.muenchen.allg.itd51.wollmux.core.db.DJDatasetBase;
-
 /**
  * Implementierung von DJDataset zu Testzwecken. Eine zentrale Eigenschaft von
  * TestDJDataset ist, dass es für Spalten, für die kein Wert gesetzt ist den
@@ -121,13 +117,15 @@ public class TestDJDataset extends DJDatasetBase
   @Override
   public DJDataset copy()
   {
-    return new TestDJDataset(hasBackingStore() ? new HashMap<String, String>(myBS)
+    return new TestDJDataset(hasBackingStore() ? new HashMap<>(myBS)
                                               : null, schema, true, fallback);
   }
 
   @Override
   public void remove()
-  {}
+  {
+    // nothing to do
+  }
 
   @Override
   public boolean isSelectedDataset()

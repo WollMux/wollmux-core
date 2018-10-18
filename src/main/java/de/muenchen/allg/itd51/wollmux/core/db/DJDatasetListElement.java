@@ -34,10 +34,9 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 
 import javax.swing.Icon;
 
-import de.muenchen.allg.itd51.wollmux.core.db.DJDataset;
-
 public class DJDatasetListElement extends DatasetListElement
 {
+
   /**
    * Enthält das DJDataset-Element.
    */

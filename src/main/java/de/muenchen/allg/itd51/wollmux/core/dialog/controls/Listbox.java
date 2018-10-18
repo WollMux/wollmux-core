@@ -1,13 +1,13 @@
 package de.muenchen.allg.itd51.wollmux.core.dialog.controls;
 
 import java.awt.Component;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
-import java.util.Vector;
 
 import javax.swing.DefaultListModel;
 import javax.swing.JLabel;
@@ -21,7 +21,7 @@ public class Listbox extends UIElementBase
   private JList<Object> list;
 
   public Listbox(String id, JScrollPane scrollPane, JList<Object> list,
-      Object layoutConstraints, Integer labelType, String label,
+      Object layoutConstraints, UIElement.LabelPosition labelType, String label,
       Object labelLayoutConstraints)
   {
     this.scrollPane = scrollPane;
@@ -33,41 +33,51 @@ public class Listbox extends UIElementBase
     this.id = id;
   }
 
+  @Override
   public Component getComponent()
   {
     return scrollPane;
   }
 
+  @Override
   public String getString()
   {
-    StringBuffer buffy = new StringBuffer();
+    StringBuilder buffy = new StringBuilder();
     for (Object o : list.getSelectedValuesList())
     {
-      if (buffy.length() > 0) buffy.append('\n');
+      if (buffy.length() > 0)
+      {
+        buffy.append('\n');
+      }
       buffy.append(o.toString());
     }
     return buffy.toString();
   }
 
+  @Override
   public boolean getBoolean()
   {
-    return !getString().equals("");
+    return !getString().isEmpty();
   }
 
+  @Override
   public void setString(String str)
   {
-    Set<String> vals = new HashSet<String>();
+    Set<String> vals = new HashSet<>();
     String[] split = str.split("\n");
     for (int i = 0; i < split.length; ++i)
       vals.add(split[i]);
 
-    Vector<Integer> indices = new Vector<Integer>(split.length);
+    List<Integer> indices = new ArrayList<>(split.length);
     DefaultListModel<?> model = (DefaultListModel<?>) list.getModel();
     Enumeration<?> enu = model.elements();
     int index = 0;
     while (enu.hasMoreElements())
     {
-      if (vals.contains(enu.nextElement())) indices.add(Integer.valueOf(index));
+      if (vals.contains(enu.nextElement()))
+      {
+        indices.add(Integer.valueOf(index));
+      }
       ++index;
     }
 
@@ -122,7 +132,7 @@ public class Listbox extends UIElementBase
     int i = 0;
     while (iter.hasNext())
     {
-      int index = ((Number) iter.next()).intValue();
+      int index = iter.next().intValue();
       selected[i++] = index;
     }
 
@@ -136,6 +146,7 @@ public class Listbox extends UIElementBase
     list.setSelectedIndices(selected);
   }
 
+  @Override
   public boolean isStatic()
   {
     return false;

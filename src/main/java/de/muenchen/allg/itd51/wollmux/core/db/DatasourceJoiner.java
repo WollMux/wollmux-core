@@ -125,7 +125,7 @@ public class DatasourceJoiner
    * Hintergrunddatenbank verknüpft sind, deren Schlüssel jedoch darin nicht mehr
    * gefunden wurde und deshalb nicht aktualisiert werden konnte.
    */
-  public List<Dataset> lostDatasets = new ArrayList<>(0);
+  protected List<Dataset> lostDatasets = new ArrayList<>(0);
 
   public static final long DATASOURCE_TIMEOUT = 10000;
   
@@ -244,6 +244,11 @@ public class DatasourceJoiner
   public List<Dataset> getLostDatasets()
   {
     return lostDatasets;
+  }
+
+  public void setLostDatasets(List<Dataset> lostDatasets)
+  {
+    this.lostDatasets = lostDatasets;
   }
 
   /**

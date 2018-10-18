@@ -41,15 +41,8 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Vector;
 
-import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
-import de.muenchen.allg.itd51.wollmux.core.db.Datasource;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryPart;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResults;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResultsList;
-import de.muenchen.allg.itd51.wollmux.core.db.TimeoutException;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
-import de.muenchen.allg.itd51.wollmux.core.parser.NodeNotFoundException;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
 
 /**
@@ -85,36 +78,11 @@ public class UnionDatasource implements Datasource
    *          verwendet).
    */
   public UnionDatasource(Map<String, Datasource> nameToDatasource,
-      ConfigThingy sourceDesc, URL context) throws ConfigurationErrorException
+      ConfigThingy sourceDesc, URL context)
   {
-    try
-    {
-      name = sourceDesc.get("NAME").toString();
-    }
-    catch (NodeNotFoundException x)
-    {
-      throw new ConfigurationErrorException(L.m("NAME der Datenquelle fehlt"));
-    }
-
-    try
-    {
-      source1Name = sourceDesc.get("SOURCE1").toString();
-    }
-    catch (NodeNotFoundException x)
-    {
-      throw new ConfigurationErrorException(L.m(
-        "SOURCE1 der Datenquelle \"%1\" fehlt", name));
-    }
-
-    try
-    {
-      source2Name = sourceDesc.get("SOURCE2").toString();
-    }
-    catch (NodeNotFoundException x)
-    {
-      throw new ConfigurationErrorException(L.m(
-        "SOURCE2 der Datenquelle \"%1\" fehlt", name));
-    }
+    name = parseConfig(sourceDesc, "NAME", () -> L.m("NAME der Datenquelle fehlt"));
+    source1Name = parseConfig(sourceDesc, "SOURCE1", () -> L.m("SOURCE1 der Datenquelle \"%1\" fehlt", name));
+    source2Name = parseConfig(sourceDesc, "SOURCE2", () -> L.m("SOURCE2 der Datenquelle \"%1\" fehlt", name));
 
     source1 = nameToDatasource.get(source1Name);
     source2 = nameToDatasource.get(source2Name);
@@ -143,11 +111,11 @@ public class UnionDatasource implements Datasource
     Set<String> schema2 = source2.getSchema();
     if (!schema1.containsAll(schema2) || !schema2.containsAll(schema1))
     {
-      Set<String> difference1 = new HashSet<String>(schema1);
+      Set<String> difference1 = new HashSet<>(schema1);
       difference1.removeAll(schema2);
-      Set<String> difference2 = new HashSet<String>(schema2);
+      Set<String> difference2 = new HashSet<>(schema2);
       difference2.removeAll(schema1);
-      StringBuffer buf1 = new StringBuffer();
+      StringBuilder buf1 = new StringBuilder();
       Iterator<String> iter = difference1.iterator();
       while (iter.hasNext())
       {
@@ -156,7 +124,7 @@ public class UnionDatasource implements Datasource
           buf1.append(", ");
         }
       }
-      StringBuffer buf2 = new StringBuffer();
+      StringBuilder buf2 = new StringBuilder();
       iter = difference2.iterator();
       while (iter.hasNext())
       {
@@ -171,7 +139,7 @@ public class UnionDatasource implements Datasource
           source1Name, buf2, source2Name, buf1));
     }
 
-    schema = new HashSet<String>(schema1);
+    schema = new HashSet<>(schema1);
   }
 
   @Override

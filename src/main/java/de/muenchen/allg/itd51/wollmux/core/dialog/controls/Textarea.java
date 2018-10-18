@@ -8,15 +8,15 @@ import javax.swing.JTextArea;
 
 public class Textarea extends UIElementBase
 {
-  private JTextArea textarea;
+  private JTextArea jTextarea;
 
   private Component textAreaComponent;
 
   public Textarea(String id, JTextArea textarea, Component textAreaComponent,
-      Object layoutConstraints, Integer labelType, String label,
+      Object layoutConstraints, UIElement.LabelPosition labelType, String label,
       Object labelLayoutConstraints)
   {
-    this.textarea = textarea;
+    this.jTextarea = textarea;
     this.textAreaComponent = textAreaComponent;
     this.layoutConstraints = layoutConstraints;
     this.labelLayoutConstraints = labelLayoutConstraints;
@@ -25,6 +25,7 @@ public class Textarea extends UIElementBase
     this.id = id;
   }
 
+  @Override
   public Component getComponent()
   {
     return textAreaComponent;
@@ -39,29 +40,34 @@ public class Textarea extends UIElementBase
    */
   public JTextArea getTextArea()
   {
-    return textarea;
+    return jTextarea;
   }
 
+  @Override
   public String getString()
   {
-    return textarea.getText();
+    return jTextarea.getText();
   }
 
+  @Override
   public boolean getBoolean()
   {
-    return !getString().equals("");
+    return !getString().isEmpty();
   }
 
+  @Override
   public void setString(String str)
   {
-    textarea.setText(str);
+    jTextarea.setText(str);
   }
 
+  @Override
   public void setBackground(Color bg)
   {
-    textarea.setBackground(bg);
+    jTextarea.setBackground(bg);
   }
 
+  @Override
   public boolean isStatic()
   {
     return false;

@@ -74,46 +74,22 @@ public class ThingyDatasource extends RAMDatasource
    */
   public ThingyDatasource(Map<String, Datasource> nameToDatasource, ConfigThingy sourceDesc, URL context) throws IOException
   {
-    String name;
-    String urlStr;
-    String[] keyCols;
-    try
-    {
-      name = sourceDesc.get("NAME").toString();
-    } catch (NodeNotFoundException x)
-    {
-      throw new ConfigurationErrorException(L.m("NAME der Datenquelle fehlt"), x);
-    }
-
-    try
-    {
-      urlStr = sourceDesc.get("URL").toString();
-    } catch (NodeNotFoundException x)
-    {
-      throw new ConfigurationErrorException(L.m("URL der Datenquelle \"%1\" fehlt", name), x);
-    }
+    String name = parseConfig(sourceDesc, "NAME", () -> L.m("NAME der Datenquelle fehlt"));
+    String urlStr = parseConfig(sourceDesc, "URL", () -> L.m("URL der Datenquelle \"%1\" fehlt", name));
 
     try
     {
       URL url = new URL(context, ConfigThingy.urlEncode(urlStr));
       ConfigThingy conf = new ConfigThingy(name, url);
 
-      ConfigThingy schemaDesc;
-      try
-      {
-        schemaDesc = conf.get("Schema");
-      } catch (NodeNotFoundException x)
-      {
-        throw new ConfigurationErrorException(L.m("Fehler in Conf-Datei von Datenquelle %1: Abschnitt 'Schema' fehlt", name), x);
-      }
+      ConfigThingy schemaDesc = conf.get("Schema");
 
       Set<String> schema = new HashSet<>();
       String[] schemaOrdered = new String[schemaDesc.count()];
-      Iterator<ConfigThingy> iter = schemaDesc.iterator();
       int i = 0;
-      while (iter.hasNext())
+      for (ConfigThingy spalteConfig : schemaDesc)
       {
-        String spalte = iter.next().toString();
+        String spalte = spalteConfig.toString();
         if (!SPALTENNAME.matcher(spalte).matches())
           throw new ConfigurationErrorException(
               L.m("Fehler in Definition von Datenquelle %1: Spalte \"%2\" entspricht nicht der Syntax eines Bezeichners", name, spalte));
@@ -124,61 +100,65 @@ public class ThingyDatasource extends RAMDatasource
         schemaOrdered[i++] = spalte;
       }
 
-      try
-      {
-        ConfigThingy keys = sourceDesc.get("Schluessel");
-        keyCols = new String[keys.count()];
-        keys.getFirstChild(); // Exception werfen, falls kein Schluessel
-                              // angegeben
-        iter = keys.iterator();
-        i = 0;
-        while (iter.hasNext())
-        {
-          String spalte = iter.next().toString();
-          keyCols[i++] = spalte;
-          if (!schema.contains(spalte))
-            throw new ConfigurationErrorException(
-                L.m("Fehler in Definition von Datenquelle %1: Schluessel-Spalte \"%2\" ist nicht im Schema aufgeführt", name, spalte));
-        }
-      } catch (NodeNotFoundException x)
-      {
-        throw new ConfigurationErrorException(L.m("Fehlende oder fehlerhafte Schluessel(...) Spezifikation für Datenquelle %1", name), x);
-      }
-
-      ConfigThingy daten;
-      try
-      {
-        daten = conf.get("Daten");
-      } catch (NodeNotFoundException x)
-      {
-        throw new ConfigurationErrorException(L.m("Fehler in Conf-Datei von Datenquelle %1: Abschnitt 'Daten' fehlt", name), x);
-      }
-
-      List<Dataset> data = new ArrayList<>(daten.count());
-
-      iter = daten.iterator();
-      while (iter.hasNext())
-      {
-        ConfigThingy dsDesc = iter.next();
-        try
-        {
-          data.add(createDataset(dsDesc, schema, schemaOrdered, keyCols));
-        } catch (ConfigurationErrorException x)
-        {
-          throw new ConfigurationErrorException(L.m("Fehler in Conf-Datei von Datenquelle %1: ", name), x);
-        }
-      }
+      String[] keyCols = parseKeys(sourceDesc, name, schema);
+      List<Dataset> data = parseData(conf, name, schema, schemaOrdered, keyCols);
 
       init(name, schema, data);
 
+    } catch (NodeNotFoundException x)
+    {
+      throw new ConfigurationErrorException(L.m("Fehler in Conf-Datei von Datenquelle %1: Abschnitt 'Schema' fehlt", name), x);
     } catch (MalformedURLException e)
     {
-      throw new ConfigurationErrorException(
-          L.m("Fehler in Definition von Datenquelle %1: Fehler in URL \"%2\": ", name, urlStr), e);
+      throw new ConfigurationErrorException(L.m("Fehler in Definition von Datenquelle %1: Fehler in URL \"%2\": ", name, urlStr), e);
     } catch (SyntaxErrorException e)
     {
       throw new ConfigurationErrorException(L.m("Fehler in Conf-Datei von Datenquelle %1: ", name), e);
     }
+  }
+
+  private List<Dataset> parseData(ConfigThingy dataDesc, String name, Set<String> schema, String[] schemaOrdered, String[] keyCols)
+  {
+    List<Dataset> data = new ArrayList<>();
+    try
+    {
+      ConfigThingy daten = dataDesc.get("Daten");
+
+      for (ConfigThingy dsDesc : daten)
+      {
+        data.add(createDataset(dsDesc, schema, schemaOrdered, keyCols));
+      }
+    } catch (ConfigurationErrorException x)
+    {
+      throw new ConfigurationErrorException(L.m("Fehler in Conf-Datei von Datenquelle %1: ", name), x);
+    } catch (NodeNotFoundException x)
+    {
+      throw new ConfigurationErrorException(L.m("Fehler in Conf-Datei von Datenquelle %1: Abschnitt 'Daten' fehlt", name), x);
+    }
+    return data;
+  }
+
+  private String[] parseKeys(ConfigThingy sourceDesc, String name, Set<String> schema)
+  {
+    List<String> keyCols = new ArrayList<>();
+    try
+    {
+      ConfigThingy keys = sourceDesc.get("Schluessel");
+      // Exception werfen, falls kein Schluessel angegeben
+      keys.getFirstChild();
+      for (ConfigThingy key : keys)
+      {
+        String spalte = key.toString();
+        keyCols.add(spalte);
+        if (!schema.contains(spalte))
+          throw new ConfigurationErrorException(
+              L.m("Fehler in Definition von Datenquelle %1: Schluessel-Spalte \"%2\" ist nicht im Schema aufgeführt", name, spalte));
+      }
+    } catch (NodeNotFoundException x)
+    {
+      throw new ConfigurationErrorException(L.m("Fehlende oder fehlerhafte Schluessel(...) Spezifikation für Datenquelle %1", name), x);
+    }
+    return keyCols.toArray(new String[keyCols.size()]);
   }
 
   /**

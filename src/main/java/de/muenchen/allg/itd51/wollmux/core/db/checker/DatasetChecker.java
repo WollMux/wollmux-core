@@ -33,7 +33,7 @@ import de.muenchen.allg.itd51.wollmux.core.db.QueryPart;
  * 
  * @author Matthias Benkmann (D-III-ITD 5.1)
  */
-public abstract class DatasetChecker
+public interface DatasetChecker
 {
   /**
    * Erzeugt einen DatasetChecker, der die Abfrage query auf der Spalte columnName
@@ -95,7 +95,7 @@ public abstract class DatasetChecker
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public abstract boolean matches(Dataset ds);
+  public boolean matches(Dataset ds);
 
   /**
    * Liefert einen DatasetChecker zurück, der die Bedingung von this und zusätzlich
@@ -105,7 +105,7 @@ public abstract class DatasetChecker
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public DatasetChecker and(DatasetChecker check2)
+  public default DatasetChecker and(DatasetChecker check2)
   {
     return new AndDatasetChecker(this, check2);
   }
@@ -118,7 +118,7 @@ public abstract class DatasetChecker
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public DatasetChecker or(DatasetChecker check2)
+  public default DatasetChecker or(DatasetChecker check2)
   {
     return new OrDatasetChecker(this, check2);
   }

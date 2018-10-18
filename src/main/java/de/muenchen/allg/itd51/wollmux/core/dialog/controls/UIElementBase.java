@@ -15,7 +15,7 @@ import de.muenchen.allg.itd51.wollmux.core.functions.Function;
  */
 public abstract class UIElementBase implements UIElement
 {
-  protected Integer labelType = LABEL_NONE;
+  protected UIElement.LabelPosition labelType = UIElement.LabelPosition.NONE;
 
   protected JLabel label = null;
 
@@ -29,51 +29,61 @@ public abstract class UIElementBase implements UIElement
 
   protected Object addData = null;
 
+  @Override
   public void setBackground(Color bg)
   {
     this.getComponent().setBackground(bg);
   }
   
+  @Override
   public void setEnabled(boolean enabled)
   {
     this.getComponent().setEnabled(enabled);
   }
 
-  public Integer getLabelType()
+  @Override
+  public UIElement.LabelPosition getLabelType()
   {
     return labelType;
   }
 
+  @Override
   public Component getLabel()
   {
     return label;
   }
 
-  public abstract Component getComponent();
-
+  @Override
   public Object getLayoutConstraints()
   {
     return layoutConstraints;
   }
 
+  @Override
   public Object getLabelLayoutConstraints()
   {
     return labelLayoutConstraints;
   }
 
+  @Override
   public Object getAdditionalData()
   {
     return addData;
   }
 
+  @Override
   public void setAdditionalData(Object o)
   {
     addData = o;
   }
 
+  @Override
   public void setVisible(boolean vis)
   {
-    if (getLabel() != null) getLabel().setVisible(vis);
+    if (getLabel() != null)
+    {
+      getLabel().setVisible(vis);
+    }
     getComponent().setVisible(vis);
     /*
      * einige Komponenten (z.B. JTextField) tun dies nicht richtig siehe
@@ -82,23 +92,24 @@ public abstract class UIElementBase implements UIElement
     ((JComponent) getComponent().getParent()).revalidate();
   }
 
-  public abstract String getString();
-
-  public abstract boolean getBoolean();
-
+  @Override
   public String getId()
   {
     return id;
   }
 
+  @Override
   public void setString(String str)
-  {};
+  {
+  }
 
+  @Override
   public boolean hasFocus()
   {
     return getComponent().isFocusOwner();
   }
 
+  @Override
   public void takeFocus()
   {
     getComponent().requestFocusInWindow();

@@ -267,7 +267,10 @@ public final class FormFieldFactory
         }
 
         String name = bookmark.getName();
-        if(!name.equals(bookmarkName)) continue;
+        if (!name.equals(bookmarkName))
+        {
+          continue;
+        }
 
         if (isStart)
         {
@@ -309,11 +312,10 @@ public final class FormFieldFactory
 
         switch (textfieldType)
         {
-          case 0:
-            handleInputField(textField, lastInsertFormValueStart,
-              mapBookmarkNameToFormField, doc);
-            break;
-          case 1:
+        case 0:
+          handleInputField(textField, lastInsertFormValueStart, mapBookmarkNameToFormField, doc);
+          break;
+        case 1:
             handleDropdown(textField, lastInsertFormValueStart,
               mapBookmarkNameToFormField, doc);
             break;
@@ -506,12 +508,12 @@ public final class FormFieldFactory
    * @author Christoph Lutz (D-III-ITD-D101)
    */
   public enum FormFieldType {
-    InputFormField,
-    DynamicInputFormField,
-    DropdownFormField,
-    CheckBoxFormField,
-    DatabaseFormField,
-    InputUserFormField
+    INPUT_FORM_FIELD,
+    DYNAMIC_INPUT_FORM_FIELD,
+    DROPDOWN_FORM_FIELD,
+    CHECKBOX_FORM_FIELD,
+    DATABASE_FORM_FIELD,
+    INPUT_USER_FORM_FIELD
   }
 
   private abstract static class BasicFormField implements FormField
@@ -738,7 +740,7 @@ public final class FormFieldFactory
     @Override
     public FormFieldType getType()
     {
-      return FormFieldType.InputFormField;
+      return FormFieldType.INPUT_FORM_FIELD;
     }
 
     @Override
@@ -872,7 +874,7 @@ public final class FormFieldFactory
     @Override
     public FormFieldType getType()
     {
-      return FormFieldType.DynamicInputFormField;
+      return FormFieldType.DYNAMIC_INPUT_FORM_FIELD;
     }
   }
 
@@ -981,7 +983,7 @@ public final class FormFieldFactory
     @Override
     public FormFieldType getType()
     {
-      return FormFieldType.DropdownFormField;
+      return FormFieldType.DROPDOWN_FORM_FIELD;
     }
   }
 
@@ -1051,7 +1053,7 @@ public final class FormFieldFactory
     @Override
     public FormFieldType getType()
     {
-      return FormFieldType.CheckBoxFormField;
+      return FormFieldType.CHECKBOX_FORM_FIELD;
     }
   }
 
@@ -1181,7 +1183,7 @@ public final class FormFieldFactory
     @Override
     public FormFieldType getType()
     {
-      return FormFieldType.DatabaseFormField;
+      return FormFieldType.DATABASE_FORM_FIELD;
     }
 
     @Override
@@ -1326,7 +1328,7 @@ public final class FormFieldFactory
     @Override
     public FormFieldType getType()
     {
-      return FormFieldType.InputUserFormField;
+      return FormFieldType.INPUT_USER_FORM_FIELD;
     }
 
     @Override

@@ -932,7 +932,7 @@ public abstract class DocumentCommand
       }
       catch (NodeNotFoundException e)
       {
-        // MODE ist optional;
+        // MODE ist optional
       }
 
       styles = new HashSet<>();
@@ -959,7 +959,7 @@ public abstract class DocumentCommand
       }
       catch (NodeNotFoundException e)
       {
-        // STYLES ist optional;
+        // STYLES ist optional
       }
 
     }

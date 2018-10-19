@@ -13,7 +13,7 @@ import de.muenchen.allg.afid.UNO;
 import de.muenchen.allg.itd51.wollmux.core.document.Bookmark;
 import de.muenchen.allg.itd51.wollmux.core.document.DocumentTreeVisitor;
 
-public class CheckboxNode extends Node implements FormControl
+public class CheckboxNode implements FormControl, Node
 {
   private static final Logger LOGGER = LoggerFactory
       .getLogger(CheckboxNode.class);

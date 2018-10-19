@@ -1,7 +1,7 @@
 package de.muenchen.allg.itd51.wollmux.core.document.nodes;
 
+import java.util.Collections;
 import java.util.Iterator;
-import java.util.Vector;
 
 import de.muenchen.allg.itd51.wollmux.core.document.DocumentTreeVisitor;
 
@@ -10,16 +10,15 @@ import de.muenchen.allg.itd51.wollmux.core.document.DocumentTreeVisitor;
  *
  * @author Matthias Benkmann (D-III-ITD 5.1)
  */
-public abstract class Node
+public interface Node extends Iterable<Node>
 {
-  protected Node() {}
-
   /**
    * Liefert einen Iterator über alle Kindknoten.
    */
-  public Iterator<Node> iterator()
+  @Override
+  public default Iterator<Node> iterator()
   {
-    return (new Vector<Node>(0)).iterator();
+    return Collections.emptyIterator();
   }
 
   /**
@@ -30,7 +29,7 @@ public abstract class Node
    * @return false falls die entsprechende Methode von visit zurückliefert, dass
    *         keine weiteren Knoten mehr besucht werden sollen.
    */
-  public boolean visit(DocumentTreeVisitor visit)
+  public default boolean visit(DocumentTreeVisitor visit)
   {
     return true;
   }

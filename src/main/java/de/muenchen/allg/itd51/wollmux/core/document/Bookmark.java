@@ -295,7 +295,7 @@ public class Bookmark
       return name;
     }
 
-    LOGGER.debug("Rename \"" + name + "\" --> \"" + newName + "\"");
+    LOGGER.debug("Rename \"{}\" --> \"{}\"", name, newName);
 
     // Falls bookmark <newName> bereits existiert, <newName>N verwenden (N ist
     // eine natürliche Zahl)
@@ -478,13 +478,6 @@ public class Bookmark
         }
       }
 
-      /*
-       * Zu entfernenden Content löschen.
-       */
-      /*
-       * Iterator iter = victims.iterator(); XText text = range.getText(); while
-       * (iter.hasNext()) { text.removeTextContent(UNO.XTextContent(iter.next())); }
-       */
       range.setString("");
 
       UNO.XTextContent(bookmark).getAnchor().getText().removeTextContent(

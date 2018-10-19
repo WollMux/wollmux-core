@@ -1,6 +1,7 @@
 package de.muenchen.allg.itd51.wollmux.core.document;
 
-import java.util.HashMap;
+import java.util.EnumMap;
+import java.util.Map;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -78,8 +79,7 @@ public class RDFBasedPersistentDataContainer implements
    * Dient zum Cachen von bereits erzeugten URI-Objekten für verschiedene dataIDs,
    * damit diese Objekte nicht mehrfach erzeugt werden müssen.
    */
-  private final HashMap<DataID, XURI> mapDataIdToURI =
-    new HashMap<>();
+  private final Map<DataID, XURI> mapDataIdToURI = new EnumMap<>(DataID.class);
 
   /**
    * Erzeugt einen neuen persistenten Datenspeicher im Dokument doc.
@@ -162,14 +162,7 @@ public class RDFBasedPersistentDataContainer implements
    */
   private XURI getDataIdURI(DataID dataId)
   {
-    XURI uri = mapDataIdToURI.get(dataId);
-    if (uri == null)
-    {
-      uri =
-        URI.create(UNO.defaultContext, WM_METADATA_XMLNS + dataId.getDescriptor());
-      mapDataIdToURI.put(dataId, uri);
-    }
-    return uri;
+    return mapDataIdToURI.computeIfAbsent(dataId, key -> URI.create(UNO.defaultContext, WM_METADATA_XMLNS + key.getDescriptor()));
   }
 
   /*

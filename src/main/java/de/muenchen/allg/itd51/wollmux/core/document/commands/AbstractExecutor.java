@@ -177,11 +177,13 @@ public abstract class AbstractExecutor implements DocumentCommand.Executor
   public static void insertErrorField(DocumentCommand cmd, XTextDocument doc, java.lang.Exception e)
   {
     String msg = L.m("Fehler in Dokumentkommando '%1'", cmd.getBookmarkName());
+    String property = msg + ":\n\n";
 
     // Meldung auch auf dem Logger ausgeben
     if (e != null)
     {
       LOGGER.error(msg, e);
+      property += e.getMessage();
     }
     else
     {
@@ -215,7 +217,7 @@ public abstract class AbstractExecutor implements DocumentCommand.Executor
       XTextContent note =
         UNO.XTextContent(UNO.XMultiServiceFactory(doc).createInstance(
           "com.sun.star.text.TextField.Annotation"));
-      UNO.setProperty(note, "Content", msg + ":\n\n" + e.getMessage());
+      UNO.setProperty(note, "Content", property);
       c.getText().insertTextContent(c, note, false);
     }
     catch (java.lang.Exception x)

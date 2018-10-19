@@ -1,6 +1,13 @@
 package de.muenchen.allg.itd51.wollmux.core.util;
 
+import java.util.Optional;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import com.sun.star.container.NoSuchElementException;
 import com.sun.star.container.XNameAccess;
+import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.lang.XMultiServiceFactory;
 
 import de.muenchen.allg.afid.UNO;
@@ -9,6 +16,8 @@ import de.muenchen.allg.afid.UnoProps;
 public class Utils
 {
 
+  private static final Logger LOGGER = LoggerFactory.getLogger(Utils.class);
+
   /**
    * Enthält die Version des eingesetzten OpenOffice.org, die mit
    * {@link Utils#getOOoVersion()} abgefragt werden kann.
@@ -16,42 +25,40 @@ public class Utils
   private static String oooVersion = null;
 
   private Utils()
-  {}
+  {
+  }
 
   /**
    * Diese Methode liefert die Versionsnummer von OpenOffice.org aus dem
    * Konfigurationsknoten /org.openoffice.Setup/Product/oooSetupVersionAboutBox
-   * konkateniert mit /org.openoffice.Setup/Product/oooSetupExtension zurück oder
-   * null, falls bei der Bestimmung der Versionsnummer Fehler auftraten.
+   * konkateniert mit /org.openoffice.Setup/Product/oooSetupExtension zurück
+   * oder null, falls bei der Bestimmung der Versionsnummer Fehler auftraten.
    */
   public static String getOOoVersion()
   {
     if (oooVersion == null)
     {
-      XMultiServiceFactory cfgProvider =
-        UNO.XMultiServiceFactory(UNO.createUNOService("com.sun.star.configuration.ConfigurationProvider"));
+      XMultiServiceFactory cfgProvider = UNO.XMultiServiceFactory(UNO.createUNOService("com.sun.star.configuration.ConfigurationProvider"));
       if (cfgProvider != null)
       {
-        XNameAccess cfgAccess = null;
+        Optional<XNameAccess> cfgAccess;
         try
         {
-          cfgAccess =
-            UNO.XNameAccess(cfgProvider.createInstanceWithArguments(
-              "com.sun.star.configuration.ConfigurationAccess", new UnoProps(
-                "nodepath", "/org.openoffice.Setup/Product").getProps()));
-        }
-        catch (Exception e)
-        {}
-        if (cfgAccess != null)
+          cfgAccess = Optional
+              .ofNullable(UNO.XNameAccess(cfgProvider.createInstanceWithArguments("com.sun.star.configuration.ConfigurationAccess",
+                  new UnoProps("nodepath", "/org.openoffice.Setup/Product").getProps())));
+          cfgAccess.ifPresent(access -> {
+            try
+            {
+              oooVersion = "" + access.getByName("ooSetupVersionAboutBox") + access.getByName("ooSetupExtension");
+            } catch (NoSuchElementException | WrappedTargetException e)
+            {
+              LOGGER.trace("", e);
+            }
+          });
+        } catch (Exception e)
         {
-          try
-          {
-            oooVersion =
-              "" + cfgAccess.getByName("ooSetupVersionAboutBox")
-                + cfgAccess.getByName("ooSetupExtension");
-          }
-          catch (Exception e)
-          {}
+          LOGGER.trace("", e);
         }
       }
     }

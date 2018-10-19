@@ -2,7 +2,7 @@ package de.muenchen.allg.itd51.wollmux.core.document.nodes;
 
 import de.muenchen.allg.itd51.wollmux.core.document.Bookmark;
 
-public class BookmarkNode extends Node
+public class BookmarkNode implements Node
 {
   private boolean isStart;
 

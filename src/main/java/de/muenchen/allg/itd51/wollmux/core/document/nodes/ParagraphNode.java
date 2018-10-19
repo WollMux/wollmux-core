@@ -16,8 +16,8 @@ public class ParagraphNode extends ContainerNode
   }
 
   @Override
-  public int getType()
+  public Container.Type getType()
   {
-    return PARAGRAPH_TYPE;
+    return Container.Type.PARAGRAPH;
   }
 }

@@ -10,7 +10,7 @@ import de.muenchen.allg.itd51.wollmux.core.document.DocumentTreeVisitor;
  * 
  * @author Matthias Benkmann (D-III-ITD 5.1)
  */
-public class ContainerNode extends Node implements Container
+public class ContainerNode implements Container, Node
 {
   private Collection<Node> children;
 
@@ -33,9 +33,9 @@ public class ContainerNode extends Node implements Container
   }
 
   @Override
-  public int getType()
+  public Container.Type getType()
   {
-    return CONTAINER_TYPE;
+    return Container.Type.CONTAINER;
   }
 
   @Override

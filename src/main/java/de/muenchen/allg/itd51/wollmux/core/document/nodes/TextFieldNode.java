@@ -3,7 +3,7 @@ package de.muenchen.allg.itd51.wollmux.core.document.nodes;
 import com.sun.star.text.XDependentTextField;
 import com.sun.star.text.XTextDocument;
 
-public class TextFieldNode extends Node
+public class TextFieldNode implements Node
 {
   protected XDependentTextField textfield;
 

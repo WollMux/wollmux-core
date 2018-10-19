@@ -17,9 +17,9 @@ import de.muenchen.allg.itd51.wollmux.core.document.nodes.FormControl;
  *
  * @author Matthias Benkmann (D-III-ITD 5.1)
  */
-public abstract class DocumentTreeVisitor
+public interface DocumentTreeVisitor
 {
-  public void visit(XTextDocument doc)
+  public default void visit(XTextDocument doc)
   {
     DocumentTree tree = new DocumentTree(doc);
     tree.getRoot().visit(this);
@@ -31,7 +31,7 @@ public abstract class DocumentTreeVisitor
    *
    * @return false, wenn keine weiteren Knoten besucht werden sollen.
    */
-  public boolean insertionBookmark(InsertionBookmark bookmark)
+  public default boolean insertionBookmark(InsertionBookmark bookmark)
   {
     return true;
   }
@@ -41,7 +41,7 @@ public abstract class DocumentTreeVisitor
    *
    * @return false, wenn keine weiteren Knoten besucht werden sollen.
    */
-  public boolean formControl(FormControl control)
+  public default boolean formControl(FormControl control)
   {
     return true;
   }
@@ -56,7 +56,7 @@ public abstract class DocumentTreeVisitor
    *          mit count == 1.
    * @return false, wenn keine weiteren Knoten besucht werden sollen.
    */
-  public boolean container(Container container, int count)
+  public default boolean container(Container container, int count)
   {
     return true;
   }
@@ -66,7 +66,7 @@ public abstract class DocumentTreeVisitor
    *
    * @return false, wenn keine weiteren Knoten besucht werden sollen.
    */
-  public boolean textRange(TextRange textRange)
+  public default boolean textRange(TextRange textRange)
   {
     return true;
   }

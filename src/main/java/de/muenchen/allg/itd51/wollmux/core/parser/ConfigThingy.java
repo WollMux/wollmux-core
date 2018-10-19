@@ -75,7 +75,6 @@
 package de.muenchen.allg.itd51.wollmux.core.parser;
 
 import java.io.BufferedReader;
-import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.Reader;
@@ -1273,8 +1272,7 @@ public class ConfigThingy implements Iterable<ConfigThingy>
           replen = 2;
           repstr = quoteStr;
         }
-        else
-        // if (idx >= 0 && (idx2 < 0 || idx2 >= idx)) // %-Escape
+        else // %-Escape
         {
           if (idx + 1 >= buffy.length()) {
             break;
@@ -1627,7 +1625,6 @@ public class ConfigThingy implements Iterable<ConfigThingy>
             // der Parser im Fall von 2er Paaren wie KEY STRING nicht in
             // der Lage ist über Kommentare hinwegzulesen. Anstatt ihm das
             // Einzubauen ist es einfacher, Kommentare einfach wegzuschmeissen.
-            // tokens.add(new LineCommentToken(line,url,lineNo,pos+1));
           }
           else
           {
@@ -1674,99 +1671,5 @@ public class ConfigThingy implements Iterable<ConfigThingy>
       buf.append(treeDump(child, childPrefix + ch + "  "));
     }
     return buf.toString();
-  }
-
-  /**
-   * Testet die Funktionsweise von ConfigThingy
-   *
-   * @param args
-   *          url [ get1 get2 ... ], dabei ist url die URL einer zu lesenden
-   *          Config-Datei. Das Programm gibt den sich daraus ergebenden
-   *          ConfigThingy-Baum aus. Optional können noch weitere Argumente übergeben
-   *          werden, die einen get-Pfad angeben
-   *          (configthingy.get(get1).get(get2)...) dessen Ergebnis ausgegeben wird.
-   * @throws SyntaxErrorException
-   */
-  public static void main(String[] args) throws IOException, SyntaxErrorException
-  {
-    if (args.length < 1)
-    {
-      System.out.println("USAGE: <url> [ <get1> <get2> ... ]");
-      System.exit(0);
-    }
-
-    File cwd = new File(System.getProperty("user.dir"));
-
-    args[0] = args[0].replaceAll("\\\\", "/");
-    ConfigThingy conf =
-      new ConfigThingy(args[0], new URL(cwd.toURI().toURL(), args[0]));
-
-    System.out.println("Dies ist die stringRepresentation(): \n\n"
-      + conf.stringRepresentation());
-    System.out.println("Dies ist die stringRepresentation() unicodifiziert: \n\n"
-      + conf.stringRepresentation(false, '"', true));
-
-    System.out.println("Dies ist der Ergebnisbaum: \n\n" + treeDump(conf, ""));
-
-    if (args.length > 1)
-    {
-      System.out.println("\n\n");
-
-      ConfigThingy byChild = null;
-
-      String getstr = "";
-      String getbychildstr = "";
-      for (int i = 1; i < args.length; ++i)
-      {
-        if (i + 1 == args.length)
-        {
-          try
-          {
-            byChild = conf.getByChild(args[i]);
-          }
-          catch (NodeNotFoundException x)
-          {}
-          getbychildstr = getstr + ".getByChild(\"" + args[i] + "\")";
-        }
-        getstr = getstr + ".get(\"" + args[i] + "\")";
-        try
-        {
-          conf = conf.get(args[i]);
-        }
-        catch (NodeNotFoundException x)
-        {
-          conf = null;
-        }
-        if (conf == null) {
-          break;
-        }
-      }
-
-      if (conf == null)
-      {
-        System.out.println(getstr + " == null!");
-      }
-      else
-      {
-        System.out.println("Dies ist der Teilbaum für " + getstr + ": \n\n");
-        System.out.println(treeDump(conf, ""));
-        System.out.println("\n\nDies ist der toString() Wert des Teilbaums:\n"
-          + "\"" + conf.toString() + "\"");
-      }
-
-      System.out.print("\n\n");
-
-      if (byChild == null)
-      {
-        System.out.println(getbychildstr + " == null!");
-      }
-      else
-      {
-        System.out.println("Dies ist der Teilbaum für " + getbychildstr + ": \n\n");
-        System.out.println(treeDump(byChild, ""));
-        System.out.println("\n\nDies ist der toString() Wert des Teilbaums:\n"
-          + "\"" + byChild.toString() + "\"");
-      }
-    }
   }
 }

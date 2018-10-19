@@ -77,7 +77,7 @@ public class Token
       return false;
     }
     if ((content == null && other.content != null)
-        || !content.equals(other.content))
+        || (content != null && !content.equals(other.content)))
     {
       return false;
     }

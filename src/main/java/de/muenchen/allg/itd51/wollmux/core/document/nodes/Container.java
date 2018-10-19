@@ -7,19 +7,22 @@ package de.muenchen.allg.itd51.wollmux.core.document.nodes;
  */
 public interface Container
 {
-  /**
-   * Rückgabewert für {@link #getType()} falls die Art des Containers nicht
-   * näher bestimmt ist.
-   */
-  public static final int CONTAINER_TYPE = 0;
+  public enum Type
+  {
+    /**
+     * Rückgabewert für {@link #getType()} falls die Art des Containers nicht
+     * näher bestimmt ist.
+     */
+    CONTAINER,
 
-  /**
-   * Rückgabewert für {@link #getType()} falls der Container ein Absatz ist.
-   */
-  public static final int PARAGRAPH_TYPE = 1;
+    /**
+     * Rückgabewert für {@link #getType()} falls der Container ein Absatz ist.
+     */
+    PARAGRAPH;
+  }
 
   /**
    * Liefert die Art des Knotens, z,B, {@link #PARAGRAPH_TYPE}.
    */
-  public int getType();
+  public Type getType();
 }

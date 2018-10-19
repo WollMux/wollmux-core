@@ -198,7 +198,7 @@ public class TextRangeRelation
     if (a != null) {
       compare = UNO.XTextRangeCompare(a.getText());
     }
-    if (compare != null && a != null && b != null)
+    if (compare != null && b != null)
     {
       try
       {

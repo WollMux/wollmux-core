@@ -55,8 +55,7 @@ public interface Dialog
    *           wenn der Dialog mit fehlerhaften Daten initialisiert wurde (und der
    *           Fehler erst bei der Instanziierung diagnostiziert werden konnte).
    */
-  public Dialog instanceFor(Map<Object, Object> context)
-      throws ConfigurationErrorException;
+  public Dialog instanceFor(Map<Object, Object> context);
 
   /**
    * Liefert den durch id identifizierten Wert des Dialogs. Falls der Dialog noch
@@ -108,6 +107,5 @@ public interface Dialog
    *           wenn der Dialog mit fehlerhaften Daten initialisiert wurde (und der
    *           Fehler erst bei der Anzeige diagnostiziert werden konnte).
    */
-  public void show(ActionListener dialogEndListener, FunctionLibrary funcLib,
-      DialogLibrary dialogLib) throws ConfigurationErrorException;
+  public void show(ActionListener dialogEndListener, FunctionLibrary funcLib, DialogLibrary dialogLib);
 }

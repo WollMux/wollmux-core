@@ -442,14 +442,14 @@ public class DocumentCommands implements Iterable<DocumentCommand>
     }
 
     LOGGER.trace("addNewDocumentCommands statistics (number of elements, overalltime to add):");
-    LOGGER.trace("- SetGroups:     " + counters[1] + ", " + times[1] + " ms");
-    LOGGER.trace("- SetJumpMark:   " + counters[2] + ", " + times[2] + " ms");
-    LOGGER.trace("- NotInOriginal: " + counters[3] + ", " + times[3] + " ms");
-    LOGGER.trace("- OriginalOnly:  " + counters[4] + ", " + times[4] + " ms");
-    LOGGER.trace("- DraftOnly:     " + counters[5] + ", " + times[5] + " ms");
-    LOGGER.trace("- AllVersions:   " + counters[6] + ", " + times[6] + " ms");
-    LOGGER.trace("- CopyOnly:      " + counters[7] + ", " + times[7] + " ms");
-    LOGGER.trace("- Others:        " + counters[0] + ", " + times[0] + " ms");
+    LOGGER.trace("- SetGroups:     {}, {} ms", counters[1], times[1]);
+    LOGGER.trace("- SetJumpMark:   {}, {} ms", counters[2], times[2]);
+    LOGGER.trace("- NotInOriginal: {}, {} ms", counters[3], times[3]);
+    LOGGER.trace("- OriginalOnly:  {}, {} ms", counters[4], times[4]);
+    LOGGER.trace("- DraftOnly:     {}, {} ms", counters[5], times[5]);
+    LOGGER.trace("- AllVersions:   {}, {} ms", counters[6], times[6]);
+    LOGGER.trace("- CopyOnly:      {}, {} ms", counters[7], times[7]);
+    LOGGER.trace("- Others:        {}, {} ms", counters[0], times[0]);
   }
 
   /**

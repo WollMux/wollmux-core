@@ -5,7 +5,7 @@ import com.sun.star.text.XTextRange;
 import de.muenchen.allg.itd51.wollmux.core.document.DocumentTreeVisitor;
 import de.muenchen.allg.itd51.wollmux.core.document.TextRange;
 
-public class TextRangeNode extends Node implements TextRange
+public class TextRangeNode implements TextRange, Node
 {
   protected XTextRange range;
 

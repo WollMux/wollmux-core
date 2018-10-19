@@ -111,9 +111,7 @@ public class VisibleTextFragmentList
 
     for (Map.Entry<String, String> ent : variables.entrySet())
     {
-      String key = ent.getKey();
-      String value = ent.getValue();
-      LOGGER.trace("  " + key + "=\"" + value + "\"");
+      LOGGER.trace("  {}=\"{}\"", ent.getKey(), ent.getValue());
     }
 
     // Matcher zum Finden der Variablen ersetzen:
@@ -133,7 +131,6 @@ public class VisibleTextFragmentList
         string =
           string.substring(0, m.start()) + variables.get(key)
             + string.substring(m.end());
-        // string = m.replaceFirst((String) variables.get(key));
         LOGGER.trace(L.m("  Ersetzen der Variable %1 --> %2", m.group(0), string));
         // Nach jeder Ersetzung wieder von vorne anfangen.
         m = var.matcher(string);

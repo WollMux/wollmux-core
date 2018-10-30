@@ -63,5 +63,26 @@ pipeline {
         }
       }
     }
+    stage('Artifactory Deploy') {
+      when {
+        branch "master"
+      }
+      steps {
+        withMaven(
+          maven: 'mvn',
+          mavenLocalRepo: '.repo',
+          mavenSettingsConfig: 'org.jenkinsci.plugins.configfiles.maven.MavenSettingsConfig1441715654272',
+          publisherStrategy: 'EXPLICIT') {
+          script {
+			      def server = Artifactory.server('-122848432@1441782548261')
+			      def rtMaven = Artifactory.newMavenBuild()
+			      rtMaven.resolver server: server, releaseRepo: 'libs-release', snapshotRepo: 'libs-snapshot'
+			      rtMaven.deployer server: server, releaseRepo: 'libs-release-local', snapshotRepo: 'libs-snapshot-local'
+			      def buildInfo = rtMaven.run pom: 'pom.xml', goals: 'install'
+			      server.publishBuildInfo buildInfo
+          }
+        }
+      }
+    }
   }
 }

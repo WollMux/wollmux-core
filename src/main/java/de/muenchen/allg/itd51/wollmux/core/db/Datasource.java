@@ -137,12 +137,6 @@ public interface Datasource
 
   public default String parseConfig(ConfigThingy source, String key, Supplier<String> errorMessage)
   {
-    try
-    {
-      return source.get(key).toString();
-    } catch (NodeNotFoundException x)
-    {
-      throw new ConfigurationErrorException(errorMessage.get(), x);
-    }
+    return source.get(key, ConfigurationErrorException.class, errorMessage.get()).toString();
   }
 }

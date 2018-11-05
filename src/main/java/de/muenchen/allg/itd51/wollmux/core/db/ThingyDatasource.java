@@ -91,29 +91,44 @@ public class ThingyDatasource extends RAMDatasource
       {
         String spalte = spalteConfig.toString();
         if (!SPALTENNAME.matcher(spalte).matches())
-          throw new ConfigurationErrorException(
-              L.m("Fehler in Definition von Datenquelle %1: Spalte \"%2\" entspricht nicht der Syntax eines Bezeichners", name, spalte));
+        {
+          throw new ConfigurationErrorException(L.m(
+              "Fehler in Definition von Datenquelle %1: Spalte \"%2\" entspricht nicht der Syntax eines Bezeichners",
+              name, spalte));
+        }
         if (schema.contains(spalte))
-          throw new ConfigurationErrorException(
-              L.m("Fehler in Definition von Datenquelle %1: Spalte \"%2\" doppelt aufgeführt im Schema", name, spalte));
+        {
+          throw new ConfigurationErrorException(L.m(
+              "Fehler in Definition von Datenquelle %1: Spalte \"%2\" doppelt aufgeführt im Schema",
+              name, spalte));
+        }
         schema.add(spalte);
         schemaOrdered[i++] = spalte;
       }
 
       String[] keyCols = parseKeys(sourceDesc, name, schema);
-      List<Dataset> data = parseData(conf, name, schema, schemaOrdered, keyCols);
+      List<Dataset> data = parseData(conf, name, schema, schemaOrdered,
+          keyCols);
 
       init(name, schema, data);
-
-    } catch (NodeNotFoundException x)
+    }
+    catch (NodeNotFoundException x)
     {
-      throw new ConfigurationErrorException(L.m("Fehler in Conf-Datei von Datenquelle %1: Abschnitt 'Schema' fehlt", name), x);
-    } catch (MalformedURLException e)
+      throw new ConfigurationErrorException(L.m(
+          "Fehler in Conf-Datei von Datenquelle %1: Abschnitt 'Schema' fehlt",
+          name), x);
+    }
+    catch (MalformedURLException e)
     {
-      throw new ConfigurationErrorException(L.m("Fehler in Definition von Datenquelle %1: Fehler in URL \"%2\": ", name, urlStr), e);
-    } catch (SyntaxErrorException e)
+      throw new ConfigurationErrorException(
+          L.m("Fehler in Definition von Datenquelle %1: Fehler in URL \"%2\": ",
+              name, urlStr),
+          e);
+    }
+    catch (SyntaxErrorException e)
     {
-      throw new ConfigurationErrorException(L.m("Fehler in Conf-Datei von Datenquelle %1: ", name), e);
+      throw new ConfigurationErrorException(
+          L.m("Fehler in Conf-Datei von Datenquelle %1: ", name), e);
     }
   }
 
@@ -128,13 +143,16 @@ public class ThingyDatasource extends RAMDatasource
       {
         data.add(createDataset(dsDesc, schema, schemaOrdered, keyCols));
       }
-    } catch (ConfigurationErrorException x)
+    }
+    catch (ConfigurationErrorException x)
     {
       throw new ConfigurationErrorException(L.m("Fehler in Conf-Datei von Datenquelle %1: ", name), x);
-    } catch (NodeNotFoundException x)
+    }
+    catch (NodeNotFoundException x)
     {
       throw new ConfigurationErrorException(L.m("Fehler in Conf-Datei von Datenquelle %1: Abschnitt 'Daten' fehlt", name), x);
     }
+
     return data;
   }
 
@@ -151,8 +169,10 @@ public class ThingyDatasource extends RAMDatasource
         String spalte = key.toString();
         keyCols.add(spalte);
         if (!schema.contains(spalte))
+        {
           throw new ConfigurationErrorException(
               L.m("Fehler in Definition von Datenquelle %1: Schluessel-Spalte \"%2\" ist nicht im Schema aufgeführt", name, spalte));
+        }
       }
     } catch (NodeNotFoundException x)
     {

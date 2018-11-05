@@ -277,25 +277,8 @@ public class LDAPDatasource implements Datasource
           throw new ConfigurationErrorException(L.m(
             "Illegaler Attributsbezeichner: \"%1\"", attributeName));
 
-        try
-        {
-          columnObjectClass = spalteDesc.get("OBJECT_CLASS").toString();
-        }
-        catch (NodeNotFoundException x)
-        {
-          LOGGER.trace("", x);
-          // do nothing... (Angabe von OBJECT_CLASS optional)
-        }
-
-        try
-        {
-          lineSeparator = spalteDesc.get("LINE_SEPARATOR").toString();
-        }
-        catch (NodeNotFoundException x)
-        {
-          LOGGER.trace("", x);
-          // do nothing... (Angabe von LINE_SEPARATOR optional)
-        }
+        columnObjectClass = spalteDesc.getString("OBJECT_CLASS");
+        lineSeparator = spalteDesc.getString("LINE_SEPARATOR");
 
         ColumnDefinition columnAttr =
           new ColumnDefinition(spalte, relativePath, attributeName);
@@ -327,8 +310,10 @@ public class LDAPDatasource implements Datasource
     Iterator<ConfigThingy> keyIterator = keySpalten.iterator();
 
     if (!keyIterator.hasNext())
+    {
       throw new ConfigurationErrorException(errorMessage()
         + L.m("Keine Schluesselspalten angegeben."));
+    }
 
     boolean onlyRelative = true; // true, falls kein Attributpfad der Form 0:*
     boolean onlyAbsolute = true; // true, falls nur Attributspfade der Form 0:*
@@ -360,12 +345,17 @@ public class LDAPDatasource implements Datasource
     }
 
     if (onlyAbsolute)
+    {
       keyStatus = ABSOLUTE_ONLY;
+    }
     else if (onlyRelative)
+    {
       keyStatus = RELATIVE_ONLY;
+    }
     else
+    {
       keyStatus = ABSOLUTE_AND_RELATIVE;
-
+    }
   }
 
   /** Setzt die timeout-Properties. */
@@ -770,17 +760,14 @@ public class LDAPDatasource implements Datasource
          * gemischt enthalten sein können.
          */
         List<RelativePath> negativeSubtreePaths = new ArrayList<>();
-        for (int n = 0; n < paths.paths.size(); n++) // TOD0 Iterator verwenden
+        for (Name currentName : paths.paths)
         {
-          Name currentName = paths.paths.get(n);
           RelativePath newNegativePath =
             new RelativePath(paths.relative, currentName);
           negativeSubtreePaths.add(newNegativePath);
         }
         negativeSubtreePathLists.add(negativeSubtreePaths);
-
       }
-
     }
 
     /*
@@ -803,14 +790,14 @@ public class LDAPDatasource implements Datasource
 
     if (!positiveSubtreePathLists.isEmpty())
     /*
-     * TOD0 if nach aussen ziehen (evtl. gleich auf Iterator übergehen, siehe todo
+     * TODO if nach aussen ziehen (evtl. gleich auf Iterator übergehen, siehe todo
      * weiter unten), damit mergedPositiveSubtreePathLists nicht mit null
      * initialisiert werden muss und damit beweisbar ist, dass es initialisiert ist
      */
     {
       RelativePaths currentSubtreePaths = positiveSubtreePathLists.get(0);
       /*
-       * TOD0: Hier wird eine Liste von zufälligem Level rausgepickt (entsprechend
+       * TODO: Hier wird eine Liste von zufälligem Level rausgepickt (entsprechend
        * sortierung von attributeMap.keySet(), Wo ist die oben angesprochene
        * Sortierung?
        */
@@ -1041,18 +1028,14 @@ public class LDAPDatasource implements Datasource
 
       }
 
-      Iterator<String> subtreeIterator = positiveSubtreeStrings.iterator();
-
       // allgemeine Suche
 
-      while (subtreeIterator.hasNext())
+      for (String subTree : positiveSubtreeStrings)
       {
-
         if (System.currentTimeMillis() > endTime) {
           throw new TimeoutException();
         }
 
-        String subTree = subtreeIterator.next();
         String comma = ",";
         if (subTree.isEmpty()) {
           comma = "";
@@ -1073,19 +1056,16 @@ public class LDAPDatasource implements Datasource
     }
     else
     { // Breitensuche ausgehend von den Knoten der mergedNegativeSubtreePaths
-      for (int n = 0; n < mergedNegativeSubtreePaths.size(); n++) // TOD0 Iterator
-      // verwenden
+      for (RelativePath currentRelativePath : mergedNegativeSubtreePaths)
       {
 
         if (System.currentTimeMillis() > endTime) {
           throw new TimeoutException();
         }
 
-        RelativePath currentRelativePath = mergedNegativeSubtreePaths.get(n);
         int depth = -currentRelativePath.relative;
         // ACHTUNG: depth kann 0 sein. Siehe Kommentar bei Bildung des Schnitts aus
-        // negativen
-        // und positiven Pfaden.
+        // negativen und positiven Pfaden.
 
         Name currentName = currentRelativePath.name;
         String currentPath = currentName.toString();
@@ -1097,8 +1077,6 @@ public class LDAPDatasource implements Datasource
 
     }
 
-    Iterator<SearchResult> currentResultsIterator = currentResultList.iterator();
-
     List<Dataset> results = new ArrayList<>();
 
     // generate Datasets from SearchResults
@@ -1107,15 +1085,13 @@ public class LDAPDatasource implements Datasource
 
     try
     {
-
-      while (currentResultsIterator.hasNext())
+      for (SearchResult currentResult : currentResultList)
       {
 
         if (System.currentTimeMillis() > endTime) {
           throw new TimeoutException();
         }
 
-        SearchResult currentResult = currentResultsIterator.next();
         Dataset ds = getDataset(currentResult, endTime);
         results.add(ds);
       }
@@ -1544,14 +1520,12 @@ public class LDAPDatasource implements Datasource
 
       List<String> nextSeeds = new ArrayList<>();
 
-      for (int m = 0; m < seeds.size(); m++) // TOD0 Iterator verwenden
+      for (String searchPath : seeds)
       {
 
         if (System.currentTimeMillis() > endTime) {
           throw new TimeoutException();
         }
-
-        String searchPath = seeds.get(m);
 
         comma = ",";
         if (searchPath.isEmpty()) {
@@ -1586,14 +1560,12 @@ public class LDAPDatasource implements Datasource
 
     List<SearchResult> result = new ArrayList<>();
 
-    for (int n = 0; n < seeds.size(); n++) // TOD0 Iterator verwenden
+    for (String currentPath : seeds)
     {
 
       if (System.currentTimeMillis() > endTime) {
         throw new TimeoutException();
       }
-
-      String currentPath = seeds.get(n);
 
       comma = ",";
       if (currentPath.isEmpty()) {

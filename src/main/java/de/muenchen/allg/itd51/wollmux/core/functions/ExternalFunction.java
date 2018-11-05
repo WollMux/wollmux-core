@@ -36,19 +36,18 @@ package de.muenchen.allg.itd51.wollmux.core.functions;
 import java.lang.reflect.Method;
 import java.lang.reflect.Modifier;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.sun.star.script.provider.ScriptFrameworkErrorException;
 import com.sun.star.script.provider.XScript;
 import com.sun.star.uno.AnyConverter;
 
 import de.muenchen.allg.afid.UNO;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
-import de.muenchen.allg.itd51.wollmux.core.parser.NodeNotFoundException;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
 
 /**
@@ -102,28 +101,11 @@ public class ExternalFunction
    */
   public ExternalFunction(ConfigThingy conf, ClassLoader classLoader) throws ConfigurationErrorException
   {
-    ClassLoader cLoader;
-    if (classLoader == null) {
-      cLoader = this.getClass().getClassLoader();
-    }
-    else {
-      cLoader = classLoader;
-    }
-    String url;
-    try
-    {
-      url = conf.get("URL").toString();
-      // Der folgende Spezialfall dient der Kompatibilität mit
-      // wollmux-standard-config <=4.7.0
-      // FIXME: diesen Spezialfall irgendwann 2010 entfernen...
-      if ("java:de.muenchen.allg.itd51.wollmux.dialog.MailMergeNew.mailMergeNewSetFormValue".equals(url))
-        url =
-          "java:de.muenchen.allg.itd51.wollmux.func.StandardPrint.mailMergeNewSetFormValue";
-    }
-    catch (NodeNotFoundException x)
-    {
-      throw new ConfigurationErrorException(L.m("URL fehlt in EXTERN"), x);
-    }
+    ClassLoader cLoader = (classLoader == null)
+        ? this.getClass().getClassLoader()
+        : classLoader;
+
+    String url = conf.getString("URL");
 
     try
     {
@@ -156,7 +138,7 @@ public class ExternalFunction
         script = UNO.masterScriptProvider.getScript(url);
       }
     }
-    catch (Exception e)
+    catch (ClassNotFoundException | ScriptFrameworkErrorException e)
     {
       throw new ConfigurationErrorException(
         L.m("Skript \"%1\" nicht verfügbar", url), e);
@@ -165,21 +147,16 @@ public class ExternalFunction
     ConfigThingy paramsConf = conf.query("PARAMS");
 
     List<String> paramList = new ArrayList<>();
-    Iterator<ConfigThingy> iter = paramsConf.iterator();
-    while (iter.hasNext())
+    for (ConfigThingy param : paramsConf)
     {
-      ConfigThingy param = iter.next();
-      Iterator<ConfigThingy> paramIter = param.iterator();
-      while (paramIter.hasNext())
+      for (ConfigThingy it : param)
       {
-        String p = paramIter.next().toString();
+        String p = it.toString();
         paramList.add(p);
       }
     }
 
-    params = new String[paramList.size()];
-    for (int i = 0; i < paramList.size(); ++i)
-      params[i] = paramList.get(i);
+    params = paramList.toArray(new String[] {});
   }
 
   /**

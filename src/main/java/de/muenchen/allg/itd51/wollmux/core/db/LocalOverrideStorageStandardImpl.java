@@ -175,10 +175,9 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
     {
       selectedDataset = data.get(0);
     }
-    Iterator<LOSDJDataset> iter = data.iterator();
-    while (iter.hasNext())
+
+    for (LOSDJDataset ds : data)
     {
-      LOSDJDataset ds = iter.next();
       if (selectKey.equals(ds.getKey()))
       {
         selectedDataset = ds;

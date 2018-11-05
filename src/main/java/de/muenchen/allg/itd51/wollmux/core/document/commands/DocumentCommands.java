@@ -30,6 +30,7 @@
  */
 package de.muenchen.allg.itd51.wollmux.core.document.commands;
 
+import java.io.IOException;
 import java.io.StringReader;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -772,11 +773,13 @@ public class DocumentCommands implements Iterable<DocumentCommand>
     {
       ConfigThingy groupsCfg =
         new ConfigThingy("", null, new StringReader(groupsStr));
-      Iterator<ConfigThingy> giter = groupsCfg.get("GROUPS").iterator();
-      while (giter.hasNext())
-        groups.add(giter.next().toString());
+
+      for (ConfigThingy c : groupsCfg.get("GROUPS"))
+      {
+        groups.add(c.toString());
+      }
     }
-    catch (java.lang.Exception e)
+    catch (IOException | SyntaxErrorException | NodeNotFoundException e)
     {
       LOGGER.error(
         L.m(

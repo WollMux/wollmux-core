@@ -501,19 +501,11 @@ public class TextDocumentModel
     for (Iterator<ConfigThingy> iter = functions.iterator(); iter.hasNext();)
     {
       ConfigThingy func = iter.next();
-      String name;
-      try
-      {
-        name = func.get("FUNCTION").toString();
-      }
-      catch (NodeNotFoundException e)
-      {
-        // kann nicht vorkommen wg. obigem Query
-        LOGGER.trace("", e);
-        continue;
-      }
+      String name = func.getString("FUNCTION");
 
-      printFunctions.add(name);
+      if (name != null && !name.isEmpty()) {
+        printFunctions.add(name);
+      }
     }
   }
 
@@ -575,26 +567,21 @@ public class TextDocumentModel
       ConfigThingy conf = new ConfigThingy("", null, new StringReader(werteStr));
       werte = conf.get("WM").get("Formularwerte");
     }
-    catch (java.lang.Exception e)
+    catch (NodeNotFoundException | IOException | SyntaxErrorException e)
     {
       LOGGER.error(L.m("Formularwerte-Abschnitt ist fehlerhaft"), e);
       return;
     }
 
     // "Formularwerte"-Abschnitt auswerten.
-    Iterator<ConfigThingy> iter = werte.iterator();
-    while (iter.hasNext())
+    for (ConfigThingy element : werte)
     {
-      ConfigThingy element = iter.next();
-      try
+      String id = element.getString("ID");
+      String value = element.getString("VALUE");
+
+      if (id != null && value != null)
       {
-        String id = element.get("ID").toString();
-        String value = element.get("VALUE").toString();
         formFieldValues.put(id, value);
-      }
-      catch (NodeNotFoundException e)
-      {
-        LOGGER.error("", e);
       }
     }
   }
@@ -1403,31 +1390,17 @@ public class TextDocumentModel
     {
       wm = new ConfigThingy("", cmdStr).get("WM");
     }
-    catch (java.lang.Exception e)
+    catch (NodeNotFoundException | IOException | SyntaxErrorException e)
     {
       LOGGER.trace("", e);
     }
 
-    String cmd = "";
-    try
-    {
-      cmd = wm.get("CMD").toString();
-    }
-    catch (NodeNotFoundException e)
-    {
-      LOGGER.trace("", e);
-    }
+    String cmd = wm.getString("CMD", "");
 
     if ("insertFormValue".equalsIgnoreCase(cmd)) {
-      try
-      {
-        return wm.get("TRAFO").toString();
-      }
-      catch (NodeNotFoundException e)
-      {
-        LOGGER.trace("", e);
-      }
+      return wm.getString("TRAFO");
     }
+
     return null;
   }
 
@@ -2050,7 +2023,7 @@ public class TextDocumentModel
             neverOrAlwaysConf.setName("");
             alwaysActions.add(new ActionUIElementPair(action, neverOrAlwaysConf));
           }
-          catch (Exception x)
+          catch (NodeNotFoundException x)
           {
             LOGGER.error(
               L.m("Fehlerhafter ALWAYS-Angabe in Buttonanpassung-Abschnitt"), x);
@@ -2066,36 +2039,21 @@ public class TextDocumentModel
     List<ActionUIElementPair> existingUIElements = new ArrayList<>(); // of
     // ActionUIElementPair
     ConfigThingy buttonsConf = tabConf.query("Buttons");
-    Iterator<ConfigThingy> buttonsOuterIter = buttonsConf.iterator(); // durchläuft
-    // die
-    // Buttons-Abschnitte
-    while (buttonsOuterIter.hasNext())
+
+		// durchläuft die Buttons-Abschnitte
+		for (ConfigThingy buttonsInner : buttonsConf)
     {
-      Iterator<ConfigThingy> buttonsInnerIter = buttonsOuterIter.next().iterator(); // durchläuft
-      // die
-      // Eingabeelemente
-      // im
-      // Buttons-Abschnitt
-      while (buttonsInnerIter.hasNext())
+			// durchläuft die Eingabeelemente im Buttons-Abschnitt
+			for (ConfigThingy buttonConf : buttonsInner)
       {
-        ConfigThingy buttonConf = buttonsInnerIter.next();
-        String action = null;
-        try
-        {
-          action = buttonConf.get("ACTION").toString();
-        }
-        catch (Exception x)
-        {
-          LOGGER.trace("", x);
-        }
+				String action = buttonConf.getString("ACTION");
+
         if (action == null || !neverActions.contains(action))
           existingUIElements.add(new ActionUIElementPair(action, buttonConf));
       }
     }
 
-    /*
-     * den Buttons-Abschnitt löschen (weil nachher ein neuer generiert wird)
-     */
+		// den Buttons-Abschnitt löschen (weil nachher ein neuer generiert wird)
     Iterator<ConfigThingy> iter = tabConf.iterator();
     while (iter.hasNext())
     {
@@ -2131,9 +2089,9 @@ public class TextDocumentModel
         String predecessorAction = alwaysActions.get(i - 1).action;
         if (predecessorAction != null)
         {
-          for (int k = 0; k < existingUIElements.size(); ++k)
+					for (int k = 0; k < existingUIElements.size(); ++k)
           {
-            ActionUIElementPair act2 = existingUIElements.get(k);
+						ActionUIElementPair act2 = existingUIElements.get(k);
             if (act2.action != null && act2.action.equals(predecessorAction))
             {
               existingUIElements.add(k + 1, act);
@@ -2180,15 +2138,8 @@ public class TextDocumentModel
     while (liter.hasPrevious())
     {
       ActionUIElementPair act = liter.previous();
-      String type = null;
-      try
-      {
-        type = act.uiElementDesc.get("TYPE").toString();
-      }
-      catch (Exception x)
-      {
-        LOGGER.trace("", x);
-      }
+			String type = act.uiElementDesc.getString("TYPE");
+
       if (type != null && "glue".equals(type))
         liter.remove();
       else

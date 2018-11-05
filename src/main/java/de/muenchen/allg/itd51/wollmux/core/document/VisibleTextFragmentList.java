@@ -90,18 +90,15 @@ public class VisibleTextFragmentList
   {
     // Map der sichtbaren Variablen erzeugen:
     Map<String, String> variables = new HashMap<>();
-    Iterator<ConfigThingy> i =
-      ConfigThingy.getNodesVisibleAt(node, "VAR", root).iterator();
-    while (i.hasNext())
+
+    for (ConfigThingy var : ConfigThingy.getNodesVisibleAt(node, "VAR", root))
     {
-      ConfigThingy var = i.next();
-      try
+      String name = var.getString("NAME");
+      String value = var.getString("VALUE");
+
+      if (name != null && value != null)
       {
-        variables.put(var.get("NAME").toString(), var.get("VALUE").toString());
-      }
-      catch (NodeNotFoundException e)
-      {
-        LOGGER.error("", e);
+        variables.put(name, value);
       }
     }
 
@@ -180,11 +177,9 @@ public class VisibleTextFragmentList
       ConfigThingy textfragmente = iterTbListe.next();
 
       ConfigThingy mappingsConf = textfragmente.queryByChild("FRAG_ID");
-      Iterator<ConfigThingy> iterMappings = mappingsConf.iterator();
 
-      while (iterMappings.hasNext())
+      for (ConfigThingy mappingConf : mappingsConf)
       {
-        ConfigThingy mappingConf = iterMappings.next();
 
         String fragIdConf = null;
         try
@@ -202,10 +197,10 @@ public class VisibleTextFragmentList
           continue;
         }
 
-        Iterator<ConfigThingy> urlIterator = null;
+        ConfigThingy url = null;
         try
         {
-          urlIterator = mappingConf.get("URL").iterator();
+          url = mappingConf.get("URL");
         }
         catch (NodeNotFoundException e)
         {
@@ -216,10 +211,8 @@ public class VisibleTextFragmentList
 
         if (fragId.matches(fragIdConf))
         {
-
-          while (urlIterator.hasNext())
+          for (ConfigThingy urlNext : url)
           {
-            ConfigThingy urlNext = urlIterator.next();
             try
             {
               String urlStr = expandVariable(urlNext, conf);

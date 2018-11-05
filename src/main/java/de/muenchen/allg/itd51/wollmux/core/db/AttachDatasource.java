@@ -122,30 +122,9 @@ public class AttachDatasource implements Datasource
    */
   public AttachDatasource(Map<String, Datasource> nameToDatasource, ConfigThingy sourceDesc, URL context)
   {
-    try
-    {
-      name = sourceDesc.get("NAME").toString();
-    } catch (NodeNotFoundException x)
-    {
-      throw new ConfigurationErrorException(L.m("NAME der Datenquelle fehlt"), x);
-    }
-
-    try
-    {
-      source1Name = sourceDesc.get("SOURCE").toString();
-    } catch (NodeNotFoundException x)
-    {
-      throw new ConfigurationErrorException(L.m("SOURCE der Datenquelle %1 fehlt", name), x);
-    }
-
-    try
-    {
-      source2Name = sourceDesc.get("ATTACH").toString();
-    } catch (NodeNotFoundException x)
-    {
-      throw new ConfigurationErrorException(L.m("ATTACH-Angabe der Datenquelle %1 fehlt", name), x);
-    }
-
+    name = sourceDesc.get("NAME", ConfigurationErrorException.class, L.m("NAME der Datenquelle fehlt")).toString();
+    source1Name = sourceDesc.get("SOURCE", ConfigurationErrorException.class, L.m("SOURCE der Datenquelle %1 fehlt", name)).toString();
+    source2Name = sourceDesc.get("ATTACH", ConfigurationErrorException.class, L.m("ATTACH-Angabe der Datenquelle %1 fehlt", name)).toString();
     source1 = nameToDatasource.get(source1Name);
     source2 = nameToDatasource.get(source2Name);
 
@@ -368,10 +347,8 @@ public class AttachDatasource implements Datasource
 
     List<ConcatDataset> resultsWithAttachments = new ArrayList<>(results.size());
 
-    Iterator<Dataset> iter = results.iterator();
-    while (iter.hasNext())
+    for (Dataset ds : results)
     {
-      Dataset ds = iter.next();
       List<QueryPart> query = new ArrayList<>(match1.length);
       for (int i = 0; i < match1.length; ++i)
       {
@@ -393,9 +370,10 @@ public class AttachDatasource implements Datasource
 
       if (prependix.size() > 0)
       {
-        Iterator<Dataset> iter2 = prependix.iterator();
-        while (iter2.hasNext())
-          resultsWithAttachments.add(new ConcatDataset(iter2.next(), ds));
+        for (Dataset ds1 : prependix)
+        {
+          resultsWithAttachments.add(new ConcatDataset(ds1, ds));
+        }
       }
     }
 

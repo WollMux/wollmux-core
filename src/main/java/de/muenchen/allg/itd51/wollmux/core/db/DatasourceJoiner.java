@@ -64,6 +64,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import java.util.regex.Pattern;
+import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -348,20 +350,23 @@ public class DatasourceJoiner
   {
     Datasource source = nameToDatasource.get(query.getDatasourceName());
     if (source == null)
+    {
       throw new IllegalArgumentException(L.m(
         "Datenquelle \"%1\" soll durchsucht werden, ist aber nicht definiert",
         query.getDatasourceName()));
+    }
 
     /*
      * Suchstrings auf Legalität prüfen.
      */
-    Iterator<QueryPart> iter = query.iterator();
-    while (iter.hasNext())
+    for (QueryPart part : query)
     {
-      String suchString = iter.next().getSearchString();
+      String suchString = part.getSearchString();
       if (suchString == null || !SUCHSTRING_PATTERN.matcher(suchString).matches())
+      {
         throw new IllegalArgumentException(L.m("Illegaler Suchstring: %1",
           suchString));
+      }
     }
 
     // Suche ausführen.
@@ -380,13 +385,13 @@ public class DatasourceJoiner
   public QueryResults find(List<QueryPart> query) throws TimeoutException
   { // TESTED
     QueryResults res = mainDatasource.find(query, queryTimeout());
-    List<DJDatasetWrapper> djDatasetsList = new ArrayList<>(res.size());
-    Iterator<Dataset> iter = res.iterator();
-    while (iter.hasNext())
-    {
-      Dataset ds = iter.next();
-      djDatasetsList.add(new DJDatasetWrapper(ds));
-    }
+    List<DJDatasetWrapper> djDatasetsList = StreamSupport
+        .stream(res.spliterator(), false)
+        .map(ds -> {
+          return new DJDatasetWrapper(ds);
+        })
+        .collect(Collectors.toList());
+
     return new QueryResultsList(djDatasetsList);
   }
 
@@ -443,13 +448,13 @@ public class DatasourceJoiner
   public QueryResults getContentsOfMainDatasource() throws TimeoutException
   {
     QueryResults res = mainDatasource.getContents(queryTimeout());
-    List<DJDatasetWrapper> djDatasetsList = new ArrayList<>(res.size());
-    Iterator<Dataset> iter = res.iterator();
-    while (iter.hasNext())
-    {
-      Dataset ds = iter.next();
-      djDatasetsList.add(new DJDatasetWrapper(ds));
-    }
+    List<DJDatasetWrapper> djDatasetsList = StreamSupport
+        .stream(res.spliterator(), false)
+        .map(ds -> {
+          return new DJDatasetWrapper(ds);
+        })
+        .collect(Collectors.toList());
+
     return new QueryResultsList(djDatasetsList);
   }
 

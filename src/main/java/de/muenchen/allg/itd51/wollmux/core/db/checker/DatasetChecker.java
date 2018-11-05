@@ -21,7 +21,6 @@
  */
 package de.muenchen.allg.itd51.wollmux.core.db.checker;
 
-import java.util.Iterator;
 import java.util.List;
 
 import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
@@ -79,10 +78,8 @@ public interface DatasetChecker
   public static DatasetChecker makeChecker(List<QueryPart> query)
   {
     DatasetChecker checker = new MatchAllDatasetChecker();
-    Iterator<QueryPart> iter = query.iterator();
-    while (iter.hasNext())
+    for (QueryPart part : query)
     {
-      QueryPart part = iter.next();
       checker =
         checker.and(DatasetChecker.makeChecker(part.getColumnName(),
           part.getSearchString()));

@@ -80,6 +80,7 @@ import java.io.InputStreamReader;
 import java.io.Reader;
 import java.io.StringReader;
 import java.io.UnsupportedEncodingException;
+import java.lang.reflect.InvocationTargetException;
 import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayDeque;
@@ -642,6 +643,38 @@ public class ConfigThingy implements Iterable<ConfigThingy>
   public ConfigThingy get(String name) throws NodeNotFoundException
   {
     return get(name, INTEGER_MAX);
+  }
+  
+  public <T extends RuntimeException> ConfigThingy get(String name, Class<T> ex, String msg) 
+  {
+  	try
+  	{
+  		return get(name);
+  	}
+  	catch (NodeNotFoundException e)
+  	{
+  		try
+			{
+				throw ex.getConstructor(String.class, Throwable.class).newInstance(msg, e);
+			} catch (InstantiationException | IllegalAccessException
+			    | IllegalArgumentException | InvocationTargetException
+			    | NoSuchMethodException | SecurityException e1)
+			{
+				throw new RuntimeException(e1);
+			}
+  	}
+  }
+  
+  public String getString(String name)
+  {
+    try
+    {
+      return get(name, INTEGER_MAX).toString();
+    }
+    catch (NodeNotFoundException e)
+    {
+      return null;
+    }
   }
 
   /**

@@ -239,43 +239,21 @@ public class OOoDatasource implements Datasource
     oooTableName = parseConfig(sourceDesc, "TABLE", () -> L
         .m("Datenquelle \"%1\": Name der Tabelle/Sicht innerhalb der OOo-Datenquelle muss als TABLE angegeben werden", datasourceName));
 
-    try
-    {
-      userName = sourceDesc.get("USER").toString();
-    }
-    catch (NodeNotFoundException x)
-    {
-      LOGGER.trace("", x);
-    }
+    userName = sourceDesc.getString("USER", "");
+    password = sourceDesc.getString("PASSWORD", "");
 
-    try
-    {
-      password = sourceDesc.get("PASSWORD").toString();
-    }
-    catch (NodeNotFoundException x)
-    {
-      LOGGER.trace("", x);
-    }
-
-    try
-    {
-      String sqlSyntaxStr = sourceDesc.get("SQL_SYNTAX").toString();
-      if ("ansi".equalsIgnoreCase(sqlSyntaxStr))
-        sqlSyntax = SQL_SYNTAX_ANSI;
-      else if ("oracle".equalsIgnoreCase(sqlSyntaxStr))
-        sqlSyntax = SQL_SYNTAX_ORACLE;
-      else if ("mysql".equalsIgnoreCase(sqlSyntaxStr))
-        sqlSyntax = SQL_SYNTAX_MYSQL;
-      else if ("pervasivesql".equalsIgnoreCase(sqlSyntaxStr))
-        sqlSyntax = SQL_SYNTAX_PERVASIVESQL;
-      else
-        throw new ConfigurationErrorException(L.m(
-          "SQL_SYNTAX \"%1\" nicht unterstützt", sqlSyntaxStr));
-    }
-    catch (NodeNotFoundException x)
-    {
-      LOGGER.trace("", x);
-    }
+    String sqlSyntaxStr = sourceDesc.getString("SQL_SYNTAX", "").toString();
+    if ("ansi".equalsIgnoreCase(sqlSyntaxStr))
+      sqlSyntax = SQL_SYNTAX_ANSI;
+    else if ("oracle".equalsIgnoreCase(sqlSyntaxStr))
+      sqlSyntax = SQL_SYNTAX_ORACLE;
+    else if ("mysql".equalsIgnoreCase(sqlSyntaxStr))
+      sqlSyntax = SQL_SYNTAX_MYSQL;
+    else if ("pervasivesql".equalsIgnoreCase(sqlSyntaxStr))
+      sqlSyntax = SQL_SYNTAX_PERVASIVESQL;
+    else
+      throw new ConfigurationErrorException(L.m(
+        "SQL_SYNTAX \"%1\" nicht unterstützt", sqlSyntaxStr));
 
     schema = new HashSet<>();
     ConfigThingy schemaConf = sourceDesc.query("Schema");

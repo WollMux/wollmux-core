@@ -320,24 +320,9 @@ public class UIElementFactory
     }
     else if ("textarea".equals(type))
     {
-      int lines = 3;
-      boolean wrap = true;
-      try
-      {
-        lines = Integer.parseInt(conf.get("LINES").toString());
-      }
-      catch (Exception x)
-      {
-        LOGGER.trace("", x);
-      }
-      try
-      {
-        wrap = "true".equalsIgnoreCase(conf.get("WRAP").toString());
-      }
-      catch (Exception x)
-      {
-        LOGGER.trace("", x);
-      }
+			int lines = Integer.parseInt(conf.getString("LINES", "3"));
+			boolean wrap = "true".equalsIgnoreCase(conf.getString("WRAP", "true"));
+
       JTextArea textarea = new JTextArea(lines, textfieldWidth);
       textarea.setEditable(!readonly);
       textarea.setFocusable(!readonly);
@@ -396,13 +381,12 @@ public class UIElementFactory
       }
       try
       {
-        Iterator<ConfigThingy> values = conf.get("VALUES").iterator();
-        while (values.hasNext())
+        for (ConfigThingy val : conf.get("VALUES"))
         {
-          combo.addItem(values.next().toString());
+          combo.addItem(val.toString());
         }
       }
-      catch (Exception x)
+			catch (NodeNotFoundException x)
       {
         LOGGER.error(L.m("Fehlerhaftes Element des Typs \"combobox\""), x);
       }
@@ -454,15 +438,7 @@ public class UIElementFactory
     }
     else if ("listbox".equals(type))
     {
-      int lines = 10;
-      try
-      {
-        lines = Integer.parseInt(conf.get("LINES").toString());
-      }
-      catch (Exception e)
-      {
-        LOGGER.trace("", e);
-      }
+      int lines = Integer.parseInt(conf.getString("LINES", "10"));
 
       JList<Object> list = new JList<>(new DefaultListModel<>());
 
@@ -501,33 +477,10 @@ public class UIElementFactory
     }
     else if ("h-glue".equals(type))
     {
-      int minsize = 0;
-      int prefsize = 0;
-      int maxsize = Integer.MAX_VALUE;
-      try
-      {
-        minsize = Integer.parseInt(conf.get("MINSIZE").toString());
-      }
-      catch (Exception x)
-      {
-        LOGGER.trace("", x);
-      }
-      try
-      {
-        maxsize = Integer.parseInt(conf.get("MAXSIZE").toString());
-      }
-      catch (Exception x)
-      {
-        LOGGER.trace("", x);
-      }
-      try
-      {
-        prefsize = Integer.parseInt(conf.get("PREFSIZE").toString());
-      }
-      catch (Exception x)
-      {
-        LOGGER.trace("", x);
-      }
+      int minsize = Integer.parseInt(conf.getString("MINSIZE", "0"));
+      int prefsize = Integer.parseInt(conf.getString("PREFSIZE", "0"));
+      int maxsize = Integer
+          .parseInt(conf.getString("MAXSIZE", "" + Integer.MAX_VALUE));
 
       return new Box(id, new javax.swing.Box.Filler(new Dimension(minsize, 0),
         new Dimension(prefsize, 0), new Dimension(maxsize, Integer.MAX_VALUE)),
@@ -535,41 +488,20 @@ public class UIElementFactory
     }
     else if ("v-glue".equals(type))
     {
-      int minsize = 0;
-      int prefsize = 0;
-      int maxsize = Integer.MAX_VALUE;
-      try
-      {
-        minsize = Integer.parseInt(conf.get("MINSIZE").toString());
-      }
-      catch (Exception x)
-      {
-        LOGGER.trace("", x);
-      }
-      try
-      {
-        maxsize = Integer.parseInt(conf.get("MAXSIZE").toString());
-      }
-      catch (Exception x)
-      {
-        LOGGER.trace("", x);
-      }
-      try
-      {
-        prefsize = Integer.parseInt(conf.get("PREFSIZE").toString());
-      }
-      catch (Exception x)
-      {
-        LOGGER.trace("", x);
-      }
+      int minsize = Integer.parseInt(conf.getString("MINSIZE", "0"));
+      int prefsize = Integer.parseInt(conf.getString("PREFSIZE", "0"));
+      int maxsize = Integer
+          .parseInt(conf.getString("MAXSIZE", "" + Integer.MAX_VALUE));
 
       return new Box(id, new javax.swing.Box.Filler(new Dimension(0, minsize),
         new Dimension(0, prefsize), new Dimension(Integer.MAX_VALUE, maxsize)),
         layoutConstraints);
     }
     else
+    {
       throw new ConfigurationErrorException(L.m(
         "Ununterstützter TYPE für GUI Element: \"%1\"", type));
+    }
   }
   
   private void copySpaceBindingToEnter(AbstractButton button)

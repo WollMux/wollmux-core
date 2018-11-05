@@ -896,9 +896,11 @@ public abstract class DocumentCommand
     {
       super(wmCmd, bookmark);
 
+      ConfigThingy wm = wmCmd.query("WM");
+
       try
       {
-        fragID = wmCmd.get("WM").get("FRAG_ID").toString();
+        fragID = wm.get("FRAG_ID").toString();
       }
       catch (NodeNotFoundException e)
       {
@@ -908,11 +910,9 @@ public abstract class DocumentCommand
       args = new Vector<>();
       try
       {
-        ConfigThingy argsConf = wmCmd.get("WM").get("ARGS");
-        Iterator<ConfigThingy> iter = argsConf.iterator();
-        while (iter.hasNext())
+        ConfigThingy argsConf = wm.get("ARGS");
+        for (ConfigThingy arg : argsConf)
         {
-          ConfigThingy arg = iter.next();
           args.add(arg.getName());
         }
       }
@@ -921,27 +921,16 @@ public abstract class DocumentCommand
         // ARGS sind optional
       }
 
-      String mode = "";
-      try
-      {
-        mode = wmCmd.get("WM").get("MODE").toString();
-        if ("manual".equalsIgnoreCase(mode))
-        {
-          manualMode = true;
-        }
-      }
-      catch (NodeNotFoundException e)
-      {
-        // MODE ist optional
-      }
+      String mode = wm.getString("MODE", "");
+      manualMode = "manual".equalsIgnoreCase(mode);
 
       styles = new HashSet<>();
       try
       {
-        ConfigThingy stylesConf = wmCmd.get("WM").get("STYLES");
-        for (Iterator<ConfigThingy> iter = stylesConf.iterator(); iter.hasNext();)
+        ConfigThingy stylesConf = wm.get("STYLES");
+        for (ConfigThingy style : stylesConf)
         {
-          String s = iter.next().toString();
+          String s = style.toString();
           if ("all".equalsIgnoreCase(s))
           {
             styles.add("textstyles");
@@ -1426,9 +1415,9 @@ public abstract class DocumentCommand
       {}
 
       // Gruppen aus dem GROUPS-Argument in das Set aufnehmen:
-      for (Iterator<ConfigThingy> iter = groups.iterator(); iter.hasNext();)
+      for (ConfigThingy group : groups)
       {
-        String groupId = iter.next().toString();
+        String groupId = group.toString();
         groupsSet.add(groupId);
       }
 

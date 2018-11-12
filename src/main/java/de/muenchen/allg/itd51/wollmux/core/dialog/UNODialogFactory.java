@@ -94,9 +94,9 @@ public class UNODialogFactory
   {
     XTitle xtitle = UnoRuntime.queryInterface(XTitle.class,
         "com.sun.star.chart2.Title");
+
     if (xtitle == null)
     {
-      System.out.println("Unable to create xtitle interface");
       return null;
     }
 

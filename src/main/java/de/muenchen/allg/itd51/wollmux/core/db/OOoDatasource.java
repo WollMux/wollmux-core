@@ -184,6 +184,8 @@ public class OOoDatasource implements Datasource
    * Benutzername für den Login bei der Datenbank.
    */
   private String userName = "";
+  
+  private static final String SQLSelectCommand = "SELECT * FROM ";
 
   /**
    * Passwort für den Login bei der Datenbank.
@@ -459,7 +461,7 @@ public class OOoDatasource implements Datasource
 
     long endTime = System.currentTimeMillis() + timeout;
     StringBuilder buffy =
-      new StringBuilder("SELECT * FROM " + sqlIdentifier(oooTableName) + " WHERE ");
+      new StringBuilder(this.SQLSelectCommand + sqlIdentifier(oooTableName) + " WHERE ");
 
     Iterator<String> iter = keys.iterator();
     boolean first = true;
@@ -502,7 +504,7 @@ public class OOoDatasource implements Datasource
     }
 
     StringBuilder buffy =
-      new StringBuilder("SELECT * FROM " + sqlIdentifier(oooTableName) + " WHERE ");
+      new StringBuilder(this.SQLSelectCommand + sqlIdentifier(oooTableName) + " WHERE ");
 
     Iterator<QueryPart> iter = query.iterator();
     boolean first = true;
@@ -545,7 +547,7 @@ public class OOoDatasource implements Datasource
   @Override
   public QueryResults getContents(long timeout) throws TimeoutException
   {
-    String command = "SELECT * FROM " + sqlIdentifier(oooTableName) + ";";
+    String command = this.SQLSelectCommand + sqlIdentifier(oooTableName) + ";";
     return sqlQuery(command, timeout, false);
   }
 

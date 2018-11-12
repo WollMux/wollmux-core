@@ -26,8 +26,6 @@ public class UNODialogFactory
 {
   private static final Logger LOGGER = LoggerFactory
       .getLogger(UNODialogFactory.class);
-  private XToolkit xToolkit;
-  private XControl m_xDialogControl;
   private XControlContainer contXContainer;
   private XComponentContext context;
   private XMultiComponentFactory xmcf;
@@ -43,29 +41,26 @@ public class UNODialogFactory
   public void createDialog() throws Exception
   {
     Object cont = UNO.createUNOService("com.sun.star.awt.UnoControlContainer");
-    m_xDialogControl = UnoRuntime.queryInterface(XControl.class, cont);
+    XControl dialogControl = UnoRuntime.queryInterface(XControl.class, cont);
     contXContainer = UnoRuntime.queryInterface(XControlContainer.class, cont);
 
     Object unoControlContainerModelO = UNO
         .createUNOService("com.sun.star.awt.UnoControlContainerModel");
     XControlModel unoControlContainerModel = UnoRuntime
         .queryInterface(XControlModel.class, unoControlContainerModelO);
-    m_xDialogControl.setModel(unoControlContainerModel);
+    dialogControl.setModel(unoControlContainerModel);
 
-    XWindow contXWindow = UNO.XWindow(m_xDialogControl);
+    XWindow contXWindow = UNO.XWindow(dialogControl);
 
     Object toolkit = xmcf.createInstanceWithContext("com.sun.star.awt.Toolkit",
         context);
-    xToolkit = UnoRuntime.queryInterface(XToolkit.class, toolkit);
+    XToolkit xToolkit = UnoRuntime.queryInterface(XToolkit.class, toolkit);
 
     XWindow currentWindow = UNO.desktop.getCurrentFrame().getContainerWindow();
     XWindowPeer currentWindowPeer = UNO.XWindowPeer(currentWindow);
     XWindowPeer modalBaseDialog = createModalBaseDialog(xToolkit,
         currentWindowPeer);
     modalBaseDialogWindow = UNO.XWindow(modalBaseDialog);
-
-    // dialog = UnoRuntime.queryInterface(XDialog.class, modalBaseDialogWindow);
-    // dialog.setTitle("test");
 
     Object testFrame = xmcf
         .createInstanceWithContext("com.sun.star.frame.Frame", context);
@@ -75,7 +70,7 @@ public class UNODialogFactory
     XFramesSupplier creator = UNO.desktop.getCurrentFrame().getCreator();
     xFrameTest.setCreator(creator);
     xFrameTest.activate();
-    m_xDialogControl.createPeer(xToolkit, modalBaseDialog);
+    dialogControl.createPeer(xToolkit, modalBaseDialog);
 
     boolean isSuccessfullySet = xFrameTest.setComponent(contXWindow, null);
 
@@ -104,7 +99,6 @@ public class UNODialogFactory
         XFormattedString.class, "com.sun.star.chart2.FormattedString");
     if (xtitleStr == null)
     {
-      System.out.println("Unable to create formatted string");
       return null;
     }
     xtitleStr.setString(titleString);
@@ -125,7 +119,7 @@ public class UNODialogFactory
   }
 
   private XWindowPeer createModalBaseDialog(XToolkit toolkit,
-      XWindowPeer parentWindow) throws IllegalArgumentException
+      XWindowPeer parentWindow)
   {
     com.sun.star.awt.Rectangle rect = new Rectangle();
 

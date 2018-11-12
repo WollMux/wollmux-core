@@ -31,7 +31,7 @@ public class SimpleDialogLayout implements XWindowListener
   private XWindow containerWindow;
   private int linebreakHeight = 20;
   private int marginBetweenControls = 5;
-  private List<ControlModel> controlList = new ArrayList<ControlModel>();
+  private List<ControlModel> controlList = new ArrayList<>();
   private int yOffset = 0;
   private int xOffset = 0;
   private int controlHeight = 20; // default
@@ -65,12 +65,11 @@ public class SimpleDialogLayout implements XWindowListener
       {
         for (XControl control : entry.getControls())
         {
-          this.addControlVertical(windowRect, control, entry.getAlignment(),
-              entry.getControls().size());
+          this.addControlVertical(windowRect, control, entry.getAlignment());
         }
       }
 
-      this.newLine(windowRect);
+      this.newLine();
     }
   }
 
@@ -122,7 +121,7 @@ public class SimpleDialogLayout implements XWindowListener
   }
 
   private void addControlVertical(Rectangle windowRect, XControl control,
-      Align alignment, int controlCount)
+      Align alignment)
       throws UnknownPropertyException, WrappedTargetException
   {
     XWindow wnd = UnoRuntime.queryInterface(XWindow.class, control);
@@ -167,7 +166,7 @@ public class SimpleDialogLayout implements XWindowListener
     return "";
   }
 
-  private void newLine(Rectangle windowRect)
+  private void newLine()
   {
     yOffset += this.getLinebreakHeight();
     xOffset = 0;
@@ -260,19 +259,19 @@ public class SimpleDialogLayout implements XWindowListener
   @Override
   public void disposing(EventObject arg0)
   {
-    // TODO Auto-generated method stub
+
   }
 
   @Override
   public void windowHidden(EventObject arg0)
   {
-    // TODO Auto-generated method stub
+
   }
 
   @Override
   public void windowMoved(WindowEvent arg0)
   {
-    // TODO Auto-generated method stub
+
   }
 
   @Override

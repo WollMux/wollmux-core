@@ -2,7 +2,6 @@ package de.muenchen.allg.itd51.wollmux.core.dialog;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.sun.star.awt.PosSize;
@@ -18,9 +17,11 @@ import com.sun.star.beans.XPropertySet;
 import com.sun.star.lang.EventObject;
 import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.uno.UnoRuntime;
-import de.muenchen.allg.itd51.wollmux.dialog.ControlModel.Align;
-import de.muenchen.allg.itd51.wollmux.dialog.ControlModel.Dock;
-import de.muenchen.allg.itd51.wollmux.dialog.ControlModel.Orientation;
+
+import de.muenchen.allg.itd51.wollmux.core.dialog.ControlModel;
+import de.muenchen.allg.itd51.wollmux.core.dialog.ControlModel.Align;
+import de.muenchen.allg.itd51.wollmux.core.dialog.ControlModel.Dock;
+import de.muenchen.allg.itd51.wollmux.core.dialog.ControlModel.Orientation;
 
 public class SimpleDialogLayout implements XWindowListener
 {
@@ -55,18 +56,18 @@ public class SimpleDialogLayout implements XWindowListener
 
       if (entry.getOrientation() == Orientation.HORIZONTAL)
       {
-	for (XControl control : entry.getControls())
-	{
-	  this.addControlHorizontal(windowRect, control, entry.getAlignment(),
-	      entry.getControls().size());
-	}
+        for (XControl control : entry.getControls())
+        {
+          this.addControlHorizontal(windowRect, control, entry.getAlignment(),
+              entry.getControls().size());
+        }
       } else if (entry.getOrientation() == Orientation.VERTICAL)
       {
-	for (XControl control : entry.getControls())
-	{
-	  this.addControlVertical(windowRect, control, entry.getAlignment(),
-	      entry.getControls().size());
-	}
+        for (XControl control : entry.getControls())
+        {
+          this.addControlVertical(windowRect, control, entry.getAlignment(),
+              entry.getControls().size());
+        }
       }
 
       this.newLine(windowRect);
@@ -157,10 +158,8 @@ public class SimpleDialogLayout implements XWindowListener
     try
     {
       return (String) propertySet.getPropertyValue("Name");
-    } catch (UnknownPropertyException e)
-    {
-      LOGGER.error("", e);
-    } catch (WrappedTargetException e)
+    }
+    catch (Exception e)
     {
       LOGGER.error("", e);
     }
@@ -282,10 +281,8 @@ public class SimpleDialogLayout implements XWindowListener
     try
     {
       this.draw();
-    } catch (UnknownPropertyException e)
-    {
-      LOGGER.error("", e);
-    } catch (WrappedTargetException e)
+    }
+    catch (Exception e)
     {
       LOGGER.error("", e);
     }
@@ -297,10 +294,8 @@ public class SimpleDialogLayout implements XWindowListener
     try
     {
       this.draw();
-    } catch (UnknownPropertyException e)
-    {
-      LOGGER.error("", e);
-    } catch (WrappedTargetException e)
+    }
+    catch (Exception e)
     {
       LOGGER.error("", e);
     }

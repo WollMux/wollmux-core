@@ -45,21 +45,14 @@ public class ControlModel
 
   public ControlModel(Orientation horizontal, Align right,
       List<SimpleEntry<ControlType, SimpleEntry<String[], Object[]>>> controls,
-      Optional<Dock> dock)
+      Optional<Dock> dock) throws Exception
   {
     multiServiceFactory = UnoRuntime.queryInterface(XMultiServiceFactory.class,
         UNO.defaultContext.getServiceManager());
     this.orientation = horizontal;
     this.alignment = right;
     this.dock = dock;
-
-    try
-    {
-      this.controls = this.convertToXControl(controls);
-    } catch (Exception e)
-    {
-      LOGGER.error("", e);
-    }
+    this.controls = this.convertToXControl(controls);
   }
 
   public Orientation getOrientation()
@@ -84,7 +77,9 @@ public class ControlModel
 
   public enum Align
   {
-    NONE("NONE"), RIGHT("RIGHT"), LEFT("LEFT");
+    NONE("NONE"),
+    RIGHT("RIGHT"),
+    LEFT("LEFT");
 
     private final String alignment;
 
@@ -102,7 +97,8 @@ public class ControlModel
 
   public enum Dock
   {
-    TOP("TOP"), BOTTOM("BOTTOM");
+    TOP("TOP"),
+    BOTTOM("BOTTOM");
 
     private final String dock;
 
@@ -120,7 +116,8 @@ public class ControlModel
 
   public enum Orientation
   {
-    HORIZONTAL("HORIZONTAL"), VERTICAL("VERTICAL");
+    HORIZONTAL("HORIZONTAL"),
+    VERTICAL("VERTICAL");
 
     private final String orientation;
 
@@ -138,16 +135,16 @@ public class ControlModel
 
   public enum ControlType
   {
-    EDIT("com.sun.star.awt.UnoControlEdit"), BUTTON(
-        "com.sun.star.awt.UnoControlButton"), PROGRESSBAR(
-            "com.sun.star.awt.UnoControlProgressBar"), CHECKBOX(
-                "com.sun.star.awt.UnoControlCheckBox"), RADIO(
-                    "com.sun.star.awt.UnoControlRadioButton"), DATE(
-                        "com.sun.star.awt.UnoControlDateField"), LINE(
-                            "com.sun.star.awt.UnoControlFixedLine"), LABEL(
-                                "com.sun.star.awt.UnoControlFixedText"), SCROLLBAR(
-                                    "com.sun.star.awt.UnoControlScrollBar"), LINEBREAK(
-                                        "com.sun.star.awt.UnoControlButton");
+    EDIT("com.sun.star.awt.UnoControlEdit"),
+    BUTTON("com.sun.star.awt.UnoControlButton"),
+    PROGRESSBAR("com.sun.star.awt.UnoControlProgressBar"),
+    CHECKBOX("com.sun.star.awt.UnoControlCheckBox"),
+    RADIO("com.sun.star.awt.UnoControlRadioButton"),
+    DATE("com.sun.star.awt.UnoControlDateField"),
+    LINE("com.sun.star.awt.UnoControlFixedLine"),
+    LABEL("com.sun.star.awt.UnoControlFixedText"),
+    SCROLLBAR("com.sun.star.awt.UnoControlScrollBar"),
+    LINEBREAK("com.sun.star.awt.UnoControlButton");
 
     private String controlType;
 
@@ -165,7 +162,8 @@ public class ControlModel
 
   public List<XControl> convertToXControl(
       List<SimpleEntry<ControlType, SimpleEntry<String[], Object[]>>> controlTypes)
-      throws Exception
+      throws Exception, IllegalArgumentException, PropertyVetoException,
+      WrappedTargetException, IllegalArgumentException, UnknownPropertyException
   {
     List<XControl> controls = new ArrayList();
     for (SimpleEntry<ControlType, SimpleEntry<String[], Object[]>> controlType : controlTypes)
@@ -173,11 +171,14 @@ public class ControlModel
       Object control = UNO.createUNOService(controlType.getKey().toString());
 
       String controlTypeKey = controlType.getKey().toString();
-      Object editModel = this.multiServiceFactory
+      Object editModel;
+
+      editModel = this.multiServiceFactory
           .createInstance(controlTypeKey + "Model");
 
       XMultiPropertySet propertySet = UnoRuntime
           .queryInterface(XMultiPropertySet.class, editModel);
+
       propertySet.setPropertyValues(controlType.getValue().getKey(),
           controlType.getValue().getValue());
 
@@ -187,7 +188,9 @@ public class ControlModel
       XControl xControl = UnoRuntime.queryInterface(XControl.class, control);
 
       xControl.setModel(modelX);
+
       this.addEventListener(controlType.getKey(), xControl);
+
       controls.add(xControl);
     }
 
@@ -262,10 +265,8 @@ public class ControlModel
     {
       String sName = (String) propertySet.getPropertyValue("Name");
       String textValue = (String) propertySet.getPropertyValue("Text");
-    } catch (UnknownPropertyException e)
-    {
-      LOGGER.error("", e);
-    } catch (WrappedTargetException e)
+    }
+    catch (Exception e)
     {
       LOGGER.error("", e);
     }

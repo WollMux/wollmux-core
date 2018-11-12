@@ -2,5 +2,7 @@ package de.muenchen.allg.itd51.wollmux.core.dialog;
 
 public class XControlProperties
 {
-  public static final String Name = "Name";
+  protected XControlProperties() { }
+  
+  public static final String NAME = "Name";
 }

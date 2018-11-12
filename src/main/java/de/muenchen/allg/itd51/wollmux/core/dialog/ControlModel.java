@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.sun.star.awt.ActionEvent;
 import com.sun.star.awt.ItemEvent;
 import com.sun.star.awt.TextEvent;
@@ -20,13 +21,9 @@ import com.sun.star.awt.XRadioButton;
 import com.sun.star.awt.XTextComponent;
 import com.sun.star.awt.XTextListener;
 import com.sun.star.awt.XWindow;
-import com.sun.star.beans.PropertyVetoException;
-import com.sun.star.beans.UnknownPropertyException;
 import com.sun.star.beans.XMultiPropertySet;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.lang.EventObject;
-import com.sun.star.lang.IllegalArgumentException;
-import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.lang.XMultiServiceFactory;
 import com.sun.star.uno.Exception;
 import com.sun.star.uno.UnoRuntime;
@@ -40,15 +37,15 @@ public class ControlModel
   private Orientation orientation;
   private Align alignment;
   private Optional<Dock> dock;
-  private List<XControl> controls;
+  private List<XControl> controls = new ArrayList<>();
   private XMultiServiceFactory multiServiceFactory;
 
   public ControlModel(Orientation horizontal, Align right,
       List<SimpleEntry<ControlType, SimpleEntry<String[], Object[]>>> controls,
       Optional<Dock> dock) throws Exception
   {
-    multiServiceFactory = UnoRuntime.queryInterface(XMultiServiceFactory.class,
-        UNO.defaultContext.getServiceManager());
+    this.multiServiceFactory = UnoRuntime.queryInterface(
+        XMultiServiceFactory.class, UNO.defaultContext.getServiceManager());
     this.orientation = horizontal;
     this.alignment = right;
     this.dock = dock;
@@ -91,7 +88,7 @@ public class ControlModel
     @Override
     public String toString()
     {
-      return alignment;
+      return this.alignment;
     }
   }
 
@@ -110,7 +107,7 @@ public class ControlModel
     @Override
     public String toString()
     {
-      return dock;
+      return this.dock;
     }
   }
 
@@ -129,7 +126,7 @@ public class ControlModel
     @Override
     public String toString()
     {
-      return orientation;
+      return this.orientation;
     }
   }
 
@@ -156,16 +153,14 @@ public class ControlModel
     @Override
     public String toString()
     {
-      return controlType;
+      return this.controlType;
     }
   }
 
   public List<XControl> convertToXControl(
       List<SimpleEntry<ControlType, SimpleEntry<String[], Object[]>>> controlTypes)
-      throws Exception, IllegalArgumentException, PropertyVetoException,
-      WrappedTargetException, IllegalArgumentException, UnknownPropertyException
+      throws Exception
   {
-    List<XControl> controls = new ArrayList();
     for (SimpleEntry<ControlType, SimpleEntry<String[], Object[]>> controlType : controlTypes)
     {
       Object control = UNO.createUNOService(controlType.getKey().toString());
@@ -191,15 +186,13 @@ public class ControlModel
 
       this.addEventListener(controlType.getKey(), xControl);
 
-      controls.add(xControl);
+      this.controls.add(xControl);
     }
 
-    return controls;
+    return this.controls;
   }
 
   private void addEventListener(ControlType controlType, XControl xControl)
-      throws IllegalArgumentException, UnknownPropertyException,
-      PropertyVetoException, WrappedTargetException
   {
     switch (controlType)
     {
@@ -220,6 +213,7 @@ public class ControlModel
     case PROGRESSBAR:
       XProgressBar progressBar = UnoRuntime.queryInterface(XProgressBar.class,
           xControl);
+      progressBar.getValue();
       break;
     case CHECKBOX:
       XCheckBox checkbox = UnoRuntime.queryInterface(XCheckBox.class, xControl);
@@ -230,28 +224,27 @@ public class ControlModel
           xControl);
       radioButton.addItemListener(this);
       break;
+    default:
+      break;
     }
   }
 
   @Override
   public void disposing(EventObject arg0)
   {
-    // TODO Auto-generated method stub
-
+    //
   }
 
   @Override
   public void itemStateChanged(ItemEvent arg0)
   {
-    // TODO Auto-generated method stub
-
+    //
   }
 
   @Override
   public void actionPerformed(ActionEvent arg0)
   {
-    // TODO Auto-generated method stub
-
+    //
   }
 
   @Override
@@ -265,6 +258,10 @@ public class ControlModel
     {
       String sName = (String) propertySet.getPropertyValue("Name");
       String textValue = (String) propertySet.getPropertyValue("Text");
+      
+      if(!sName.isEmpty() && !textValue.isEmpty()) {
+        //
+      }
     }
     catch (Exception e)
     {

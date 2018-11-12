@@ -314,5 +314,6 @@ public class AnnotationBasedPersistentDataContainer implements
   @Override
   public void flush()
   {
+    //
   }
 }

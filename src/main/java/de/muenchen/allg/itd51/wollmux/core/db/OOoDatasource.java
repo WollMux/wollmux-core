@@ -63,7 +63,6 @@ import com.sun.star.sdbcx.XKeysSupplier;
 import de.muenchen.allg.afid.UNO;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
-import de.muenchen.allg.itd51.wollmux.core.parser.NodeNotFoundException;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
 
 /**
@@ -242,7 +241,7 @@ public class OOoDatasource implements Datasource
     userName = sourceDesc.getString("USER", "");
     password = sourceDesc.getString("PASSWORD", "");
 
-    String sqlSyntaxStr = sourceDesc.getString("SQL_SYNTAX", "").toString();
+    String sqlSyntaxStr = sourceDesc.getString("SQL_SYNTAX", "");
     if ("ansi".equalsIgnoreCase(sqlSyntaxStr))
       sqlSyntax = SQL_SYNTAX_ANSI;
     else if ("oracle".equalsIgnoreCase(sqlSyntaxStr))

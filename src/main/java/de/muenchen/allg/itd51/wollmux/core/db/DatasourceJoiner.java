@@ -387,9 +387,7 @@ public class DatasourceJoiner
     QueryResults res = mainDatasource.find(query, queryTimeout());
     List<DJDatasetWrapper> djDatasetsList = StreamSupport
         .stream(res.spliterator(), false)
-        .map(ds -> {
-          return new DJDatasetWrapper(ds);
-        })
+        .map(ds -> new DJDatasetWrapper(ds))
         .collect(Collectors.toList());
 
     return new QueryResultsList(djDatasetsList);
@@ -450,9 +448,7 @@ public class DatasourceJoiner
     QueryResults res = mainDatasource.getContents(queryTimeout());
     List<DJDatasetWrapper> djDatasetsList = StreamSupport
         .stream(res.spliterator(), false)
-        .map(ds -> {
-          return new DJDatasetWrapper(ds);
-        })
+        .map(ds -> new DJDatasetWrapper(ds))
         .collect(Collectors.toList());
 
     return new QueryResultsList(djDatasetsList);

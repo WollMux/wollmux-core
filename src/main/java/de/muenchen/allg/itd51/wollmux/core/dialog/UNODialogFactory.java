@@ -38,7 +38,7 @@ public class UNODialogFactory
     this.context = context;
   }
 
-  public void createDialog() throws Exception
+  public void createDialog(int width, int height) throws Exception
   {
     Object cont = UNO.createUNOService("com.sun.star.awt.UnoControlContainer");
     XControl dialogControl = UnoRuntime.queryInterface(XControl.class, cont);
@@ -59,7 +59,7 @@ public class UNODialogFactory
     XWindow currentWindow = UNO.desktop.getCurrentFrame().getContainerWindow();
     XWindowPeer currentWindowPeer = UNO.XWindowPeer(currentWindow);
     XWindowPeer modalBaseDialog = createModalBaseDialog(xToolkit,
-        currentWindowPeer);
+        currentWindowPeer, width, height);
     modalBaseDialogWindow = UNO.XWindow(modalBaseDialog);
 
     Object testFrame = xmcf
@@ -119,15 +119,15 @@ public class UNODialogFactory
   }
 
   private XWindowPeer createModalBaseDialog(XToolkit toolkit,
-      XWindowPeer parentWindow)
+      XWindowPeer parentWindow, int width, int height)
   {
     com.sun.star.awt.Rectangle rect = new Rectangle();
 
     XWindow parentXWindow = UNO.XWindow(parentWindow);
-    rect.X = parentXWindow.getPosSize().Width / 2;
-    rect.Y = parentXWindow.getPosSize().Height / 2;
-    rect.Width = parentXWindow.getPosSize().Width / 3;
-    rect.Height = parentXWindow.getPosSize().Height / 3;
+    rect.X = (parentXWindow.getPosSize().Width / 2) - (width / 2);
+    rect.Y = (parentXWindow.getPosSize().Height / 2) - (height / 2);
+    rect.Width = width;
+    rect.Height = height;
 
     WindowDescriptor aWindow = new WindowDescriptor();
     aWindow.Type = WindowClass.TOP;

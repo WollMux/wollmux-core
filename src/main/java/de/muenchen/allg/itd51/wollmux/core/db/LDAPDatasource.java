@@ -1392,7 +1392,9 @@ public class LDAPDatasource implements Datasource
     {
       try
       {
-        ctx.close();
+        if (ctx != null) {
+          ctx.close();
+        }
       }
       catch (Exception e)
       {}
@@ -1479,7 +1481,9 @@ public class LDAPDatasource implements Datasource
     {
       try
       {
-        ctx.close();
+        if (ctx != null) {
+          ctx.close();
+        }
       }
       catch (Exception e)
       {

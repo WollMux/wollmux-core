@@ -116,16 +116,16 @@ public class TextDocumentModel
   /**
    * Pattern zum Erkennen der Bookmarks, die entfernt werden sollen.
    */
-  public static final Pattern BOOKMARK_KILL_PATTERN =
-    Pattern.compile("(\\A\\s*(WM\\s*\\(.*CMD\\s*'((form)|(setGroups)|(insertFormValue))'.*\\))\\s*\\d*\\z)"
-      + "|(\\A\\s*(WM\\s*\\(.*CMD\\s*'(setType)'.*'formDocument'\\))\\s*\\d*\\z)"
-      + "|(\\A\\s*(WM\\s*\\(.*'formDocument'.*CMD\\s*'(setType)'.*\\))\\s*\\d*\\z)");
+  public static final Pattern BOOKMARK_KILL_PATTERN = Pattern.compile(
+      "(\\A\\s*(WM\\s*\\(.*CMD\\s*'((form)|(setGroups)|(insertFormValue))'.*\\))\\s*\\d*\\z)"
+          + "|(\\A\\s*(WM\\s*\\(.*CMD\\s*'(setType)'.*'formDocument'\\))\\s*\\d*\\z)"
+          + "|(\\A\\s*(WM\\s*\\(.*'formDocument'.*CMD\\s*'(setType)'.*\\))\\s*\\d*\\z)");
 
   /**
    * Pattern zum Erkennen von WollMux-Bookmarks.
    */
-  public static final Pattern WOLLMUX_BOOKMARK_PATTERN =
-    Pattern.compile("(\\A\\s*(WM\\s*\\(.*\\))\\s*\\d*\\z)");
+  public static final Pattern WOLLMUX_BOOKMARK_PATTERN = Pattern
+      .compile("(\\A\\s*(WM\\s*\\(.*\\))\\s*\\d*\\z)");
 
   /**
    * Prefix, mit dem die Namen aller automatisch generierten dokumentlokalen
@@ -260,8 +260,8 @@ public class TextDocumentModel
    * Pattern zum Erkennen von InputUser-Feldern, die eine WollMux-Funktion
    * referenzieren (z.B. die Spezialfelder des WollMux-Seriendrucks).
    */
-  public static final Pattern INPUT_USER_FUNCTION =
-    Pattern.compile("\\A\\s*(WM\\s*\\(.*FUNCTION\\s*'[^']*'.*\\))\\s*\\d*\\z");
+  public static final Pattern INPUT_USER_FUNCTION = Pattern
+      .compile("\\A\\s*(WM\\s*\\(.*FUNCTION\\s*'[^']*'.*\\))\\s*\\d*\\z");
 
   private String wollmuxVersion;
 
@@ -275,7 +275,9 @@ public class TextDocumentModel
    *
    * @param doc
    */
-  public TextDocumentModel(XTextDocument doc, PersistentDataContainer persistentDataContainer, String wollmuxVersion, String oooVersion)
+  public TextDocumentModel(XTextDocument doc,
+      PersistentDataContainer persistentDataContainer, String wollmuxVersion,
+      String oooVersion)
   {
     this.doc = doc;
     this.wollmuxVersion = wollmuxVersion;
@@ -301,12 +303,13 @@ public class TextDocumentModel
     String setTypeData = persistentData.getData(DataID.SETTYPE);
     parsePrintFunctions(persistentData.getData(DataID.PRINTFUNCTION));
     parseFormValues(persistentData.getData(DataID.FORMULARWERTE));
-    lastTouchedByWollMuxVersion =
-      persistentData.getData(DataID.TOUCH_WOLLMUXVERSION);
+    lastTouchedByWollMuxVersion = persistentData
+        .getData(DataID.TOUCH_WOLLMUXVERSION);
     if (lastTouchedByWollMuxVersion == null)
       lastTouchedByWollMuxVersion = VERSION_UNKNOWN;
     lastTouchedByOOoVersion = persistentData.getData(DataID.TOUCH_OOOVERSION);
-    if (lastTouchedByOOoVersion == null) {
+    if (lastTouchedByOOoVersion == null)
+    {
       lastTouchedByOOoVersion = VERSION_UNKNOWN;
     }
 
@@ -337,7 +340,8 @@ public class TextDocumentModel
     return mapGroupIdToVisibilityState;
   }
 
-  public void setMapGroupIdToVisibilityState(Map<String, Boolean> mapGroupIdToVisibilityState)
+  public void setMapGroupIdToVisibilityState(
+      Map<String, Boolean> mapGroupIdToVisibilityState)
   {
     this.mapGroupIdToVisibilityState = mapGroupIdToVisibilityState;
   }
@@ -415,7 +419,7 @@ public class TextDocumentModel
       haveUpdatedLastTouchedByVersionInfo = true;
       boolean modified = isDocumentModified();
       persistentData.setData(DataID.TOUCH_WOLLMUXVERSION,
-        wollmuxVersion);
+          wollmuxVersion);
       persistentData.setData(DataID.TOUCH_OOOVERSION, oooVersion);
       setDocumentModified(modified);
     }
@@ -463,12 +467,13 @@ public class TextDocumentModel
    */
   private void parsePrintFunctions(String data)
   {
-    if (data == null || data.length() == 0) {
+    if (data == null || data.length() == 0)
+    {
       return;
     }
 
-    final String errmsg =
-      L.m("Fehler beim Einlesen des Druckfunktionen-Abschnitts '%1':", data);
+    final String errmsg = L
+        .m("Fehler beim Einlesen des Druckfunktionen-Abschnitts '%1':", data);
 
     ConfigThingy conf = new ConfigThingy("dummy");
     try
@@ -486,8 +491,8 @@ public class TextDocumentModel
         // Abwärtskompatibilität mit älteren PrintFunction-Blöcken, in denen nur
         // der Funktionsname steht:
         ConfigThingy.checkIdentifier(data);
-        conf =
-          new ConfigThingy("dummy", "WM(Druckfunktionen((FUNCTION '" + data + "')))");
+        conf = new ConfigThingy("dummy",
+            "WM(Druckfunktionen((FUNCTION '" + data + "')))");
       }
       catch (java.lang.Exception forgetMe)
       {
@@ -496,14 +501,15 @@ public class TextDocumentModel
       }
     }
 
-    ConfigThingy functions =
-      conf.query("WM").query("Druckfunktionen").queryByChild("FUNCTION");
+    ConfigThingy functions = conf.query("WM").query("Druckfunktionen")
+        .queryByChild("FUNCTION");
     for (Iterator<ConfigThingy> iter = functions.iterator(); iter.hasNext();)
     {
       ConfigThingy func = iter.next();
       String name = func.getString("FUNCTION");
 
-      if (name != null && !name.isEmpty()) {
+      if (name != null && !name.isEmpty())
+      {
         printFunctions.add(name);
       }
     }
@@ -523,7 +529,8 @@ public class TextDocumentModel
    */
   public static void addToFormDescription(ConfigThingy formDesc, String value)
   {
-    if (value == null || value.length() == 0) {
+    if (value == null || value.length() == 0)
+    {
       return;
     }
 
@@ -556,7 +563,8 @@ public class TextDocumentModel
    */
   private void parseFormValues(String werteStr)
   {
-    if (werteStr == null) {
+    if (werteStr == null)
+    {
       return;
     }
 
@@ -564,7 +572,8 @@ public class TextDocumentModel
     ConfigThingy werte;
     try
     {
-      ConfigThingy conf = new ConfigThingy("", null, new StringReader(werteStr));
+      ConfigThingy conf = new ConfigThingy("", null,
+          new StringReader(werteStr));
       werte = conf.get("WM").get("Formularwerte");
     }
     catch (NodeNotFoundException | IOException | SyntaxErrorException e)
@@ -608,7 +617,8 @@ public class TextDocumentModel
   {
     for (FormField field : fields)
     {
-      if (field.getTrafoName() == null) {
+      if (field.getTrafoName() == null)
+      {
         return field.getValue();
       }
     }
@@ -677,8 +687,8 @@ public class TextDocumentModel
     public String getMessage()
     {
       return L.m(
-        "Mit overrideFrag können keine Ersetzungsketten definiert werden, das Fragment '%1' taucht jedoch bereits in einem anderen overrideFrag-Kommando auf.",
-        fragId);
+          "Mit overrideFrag können keine Ersetzungsketten definiert werden, das Fragment '%1' taucht jedoch bereits in einem anderen overrideFrag-Kommando auf.",
+          fragId);
     }
 
   }
@@ -773,7 +783,8 @@ public class TextDocumentModel
   {
     try
     {
-      return getFormDescription().query("Formular").query("Fenster").getLastChild().count() != 0;
+      return getFormDescription().query("Formular").query("Fenster")
+          .getLastChild().count() != 0;
     }
     catch (NodeNotFoundException e)
     {
@@ -803,7 +814,8 @@ public class TextDocumentModel
       isTemplate = true;
     else if ("templateTemplate".equalsIgnoreCase(typeStr))
       isTemplate = false;
-    else if ("formDocument".equalsIgnoreCase(typeStr)) {
+    else if ("formDocument".equalsIgnoreCase(typeStr))
+    {
       isFormDocument = true;
     }
   }
@@ -816,7 +828,8 @@ public class TextDocumentModel
 
   public void removePrintFunction(String functionName)
   {
-    if (!printFunctions.remove(functionName)) {
+    if (!printFunctions.remove(functionName))
+    {
       return;
     }
     storePrintFunctions();
@@ -891,7 +904,7 @@ public class TextDocumentModel
         persistentData.setData(DataID.PRINTFUNCTION, wm.stringRepresentation());
       else
         persistentData.setData(DataID.PRINTFUNCTION,
-          printFunctions.iterator().next());
+            printFunctions.iterator().next());
     }
   }
 
@@ -980,12 +993,14 @@ public class TextDocumentModel
    */
   public synchronized XTextViewCursor getViewCursor()
   {
-    if (UNO.XModel(doc) == null) {
+    if (UNO.XModel(doc) == null)
+    {
       return null;
     }
-    XTextViewCursorSupplier suppl =
-      UNO.XTextViewCursorSupplier(UNO.XModel(doc).getCurrentController());
-    if (suppl != null) {
+    XTextViewCursorSupplier suppl = UNO
+        .XTextViewCursorSupplier(UNO.XModel(doc).getCurrentController());
+    if (suppl != null)
+    {
       return suppl.getViewCursor();
     }
     return null;
@@ -1017,12 +1032,13 @@ public class TextDocumentModel
       LOGGER.debug(L.m("Einlesen der Formularbeschreibung von %1", this));
       formularConf = new ConfigThingy("WM");
       addToFormDescription(formularConf,
-        persistentData.getData(DataID.FORMULARBESCHREIBUNG));
+          persistentData.getData(DataID.FORMULARBESCHREIBUNG));
 
       ConfigThingy title = formularConf.query("TITLE");
       if (title.count() > 0)
-        LOGGER.debug(L.m("Formular %1 eingelesen.", title.stringRepresentation(true,
-          '\'')));
+        LOGGER.debug(
+            L.m("Formular %1 eingelesen.", title.stringRepresentation(true,
+                '\'')));
     }
 
     return formularConf;
@@ -1045,8 +1061,8 @@ public class TextDocumentModel
       if (data != null)
         try
         {
-          mailmergeConf =
-            new ConfigThingy("", data).query("WM").query("Seriendruck").getLastChild();
+          mailmergeConf = new ConfigThingy("", data).query("WM")
+              .query("Seriendruck").getLastChild();
         }
         catch (java.lang.Exception e)
         {
@@ -1111,7 +1127,8 @@ public class TextDocumentModel
 
     try
     {
-      if (field != null) {
+      if (field != null)
+      {
         field.focus();
       }
     }
@@ -1132,9 +1149,11 @@ public class TextDocumentModel
    *          Liste mit FormField-Elementen
    * @return Ein FormField Element, wobei untransformierte Felder bevorzugt werden.
    */
-  protected static FormField preferUntransformedFormField(List<FormField> formFields)
+  protected static FormField preferUntransformedFormField(
+      List<FormField> formFields)
   {
-    if (formFields == null) {
+    if (formFields == null)
+    {
       return null;
     }
     Iterator<FormField> iter = formFields.iterator();
@@ -1142,16 +1161,17 @@ public class TextDocumentModel
     while (iter.hasNext())
     {
       FormField f = iter.next();
-      if (field == null) {
+      if (field == null)
+      {
         field = f;
       }
-      if (f.getTrafoName() == null) {
+      if (f.getTrafoName() == null)
+      {
         return f;
       }
     }
     return field;
   }
-
 
   /**
    * Liefert die Gesamtseitenzahl des Dokuments oder 0, wenn die Seitenzahl nicht
@@ -1164,8 +1184,9 @@ public class TextDocumentModel
   {
     try
     {
-      return (int) AnyConverter.toLong(UNO.getProperty(doc.getCurrentController(),
-        "PageCount"));
+      return (int) AnyConverter
+          .toLong(UNO.getProperty(doc.getCurrentController(),
+              "PageCount"));
     }
     catch (java.lang.Exception e)
     {
@@ -1252,12 +1273,13 @@ public class TextDocumentModel
     boolean closeOk = true;
     if (UNO.XFramesSupplier(UNO.desktop) != null)
     {
-      XFrame[] frames =
-        UNO.XFramesSupplier(UNO.desktop).getFrames().queryFrames(FrameSearchFlag.ALL);
+      XFrame[] frames = UNO.XFramesSupplier(UNO.desktop).getFrames()
+          .queryFrames(FrameSearchFlag.ALL);
       for (int i = 0; i < frames.length; i++)
       {
         XController c = frames[i].getController();
-        if (c != null && UnoRuntime.areSame(c.getModel(), doc) && !c.suspend(true))
+        if (c != null && UnoRuntime.areSame(c.getModel(), doc)
+            && !c.suspend(true))
         {
           // closeOk wird auf false gesetzt, wenn im save/dismiss-Dialog auf die
           // Schaltflächen "Speichern" und "Abbrechen" gedrückt wird. Bei
@@ -1278,7 +1300,8 @@ public class TextDocumentModel
       // Hier das eigentliche Schließen:
       try
       {
-        if (UNO.XCloseable(doc) != null) {
+        if (UNO.XCloseable(doc) != null)
+        {
           UNO.XCloseable(doc).close(true);
         }
       }
@@ -1293,12 +1316,13 @@ public class TextDocumentModel
 
       // Tritt in Kraft, wenn "Abbrechen" betätigt wurde. In diesem Fall werden
       // die Controllers mit suspend(FALSE) wieder reaktiviert.
-      XFrame[] frames =
-        UNO.XFramesSupplier(UNO.desktop).getFrames().queryFrames(FrameSearchFlag.ALL);
+      XFrame[] frames = UNO.XFramesSupplier(UNO.desktop).getFrames()
+          .queryFrames(FrameSearchFlag.ALL);
       for (int i = 0; i < frames.length; i++)
       {
         XController c = frames[i].getController();
-        if (c != null && UnoRuntime.areSame(c.getModel(), doc)) {
+        if (c != null && UnoRuntime.areSame(c.getModel(), doc))
+        {
           c.suspend(false);
         }
       }
@@ -1343,13 +1367,15 @@ public class TextDocumentModel
    */
   public static String getFunctionNameForUserFieldName(String userFieldName)
   {
-    if (userFieldName == null) {
+    if (userFieldName == null)
+    {
       return null;
     }
 
     Matcher m = TextDocumentModel.INPUT_USER_FUNCTION.matcher(userFieldName);
 
-    if (!m.matches()) {
+    if (!m.matches())
+    {
       return null;
     }
     String confStr = m.group(1);
@@ -1397,7 +1423,8 @@ public class TextDocumentModel
 
     String cmd = wm.getString("CMD", "");
 
-    if ("insertFormValue".equalsIgnoreCase(cmd)) {
+    if ("insertFormValue".equalsIgnoreCase(cmd))
+    {
       return wm.getString("TRAFO");
     }
 
@@ -1420,7 +1447,8 @@ public class TextDocumentModel
   public synchronized ConfigThingy getFormFieldTrafoFromSelection()
   {
     XTextCursor vc = getViewCursor();
-    if (vc == null) {
+    if (vc == null)
+    {
       return null;
     }
 
@@ -1435,13 +1463,16 @@ public class TextDocumentModel
     {
       String trafo = ent.getKey();
       int complete = ent.getValue().intValue();
-      if (complete == 1) {
+      if (complete == 1)
+      {
         startedFields.add(trafo);
       }
-      if (complete == 2) {
+      if (complete == 2)
+      {
         finishedFields.add(trafo);
       }
-      if (complete == 3) {
+      if (complete == 3)
+      {
         completeFields.add(trafo);
       }
     }
@@ -1453,7 +1484,8 @@ public class TextDocumentModel
       return null; // nicht eindeutige Felder
     else if (completeFields.size() == 1)
       trafoName = completeFields.iterator().next();
-    else if (startedFields.size() == 1) {
+    else if (startedFields.size() == 1)
+    {
       trafoName = startedFields.iterator().next();
     }
 
@@ -1462,7 +1494,7 @@ public class TextDocumentModel
       try
       {
         return getFormDescription().query("Formular").query("Funktionen").query(
-          trafoName, 2).getLastChild();
+            trafoName, 2).getLastChild();
       }
       catch (NodeNotFoundException e)
       {
@@ -1487,12 +1519,14 @@ public class TextDocumentModel
   {
     HashMap<String, Integer> collectedTrafos = new HashMap<>();
 
-    if (textRange == null) {
+    if (textRange == null)
+    {
       return collectedTrafos;
     }
-    XEnumerationAccess parEnumAcc =
-      UNO.XEnumerationAccess(textRange.getText().createTextCursorByRange(textRange));
-    if (parEnumAcc == null) {
+    XEnumerationAccess parEnumAcc = UNO.XEnumerationAccess(
+        textRange.getText().createTextCursorByRange(textRange));
+    if (parEnumAcc == null)
+    {
       return collectedTrafos;
     }
 
@@ -1508,7 +1542,8 @@ public class TextDocumentModel
       {
         LOGGER.error("", e);
       }
-      if (porEnumAcc == null) {
+      if (porEnumAcc == null)
+      {
         continue;
       }
 
@@ -1528,11 +1563,12 @@ public class TextDocumentModel
         // InputUser-Textfelder verarbeiten
         XTextField tf = UNO.XTextField(UNO.getProperty(portion, "TextField"));
         if (tf != null
-          && UNO.supportsService(tf, "com.sun.star.text.TextField.InputUser"))
+            && UNO.supportsService(tf, "com.sun.star.text.TextField.InputUser"))
         {
           String varName = "" + UNO.getProperty(tf, "Content");
           String t = getFunctionNameForUserFieldName(varName);
-          if (t != null) {
+          if (t != null)
+          {
             collectedTrafos.put(t, Integer.valueOf(3));
           }
         }
@@ -1547,10 +1583,10 @@ public class TextDocumentModel
           boolean isEnd = false;
           try
           {
-            boolean isCollapsed =
-              AnyConverter.toBoolean(UNO.getProperty(portion, "IsCollapsed"));
-            isStart =
-              AnyConverter.toBoolean(UNO.getProperty(portion, "IsStart"))
+            boolean isCollapsed = AnyConverter
+                .toBoolean(UNO.getProperty(portion, "IsCollapsed"));
+            isStart = AnyConverter
+                .toBoolean(UNO.getProperty(portion, "IsStart"))
                 || isCollapsed;
             isEnd = !isStart || isCollapsed;
           }
@@ -1566,13 +1602,16 @@ public class TextDocumentModel
             if (t != null)
             {
               Integer s = collectedTrafos.get(t);
-              if (s == null) {
+              if (s == null)
+              {
                 s = Integer.valueOf(0);
               }
-              if (isStart) {
+              if (isStart)
+              {
                 s = Integer.valueOf(s.intValue() | 1);
               }
-              if (isEnd) {
+              if (isEnd)
+              {
                 s = Integer.valueOf(s.intValue() | 2);
               }
               collectedTrafos.put(t, s);
@@ -1593,7 +1632,8 @@ public class TextDocumentModel
   public static String getDocumentCommandByBookmarkName(String bookmarkName)
   {
     Matcher m = WOLLMUX_BOOKMARK_PATTERN.matcher(bookmarkName);
-    if (m.matches()) {
+    if (m.matches())
+    {
       return m.group(1);
     }
     return null;
@@ -1623,20 +1663,24 @@ public class TextDocumentModel
     for (Iterator<String> iter = sortedIDs.iterator(); iter.hasNext();)
     {
       String id = iter.next();
-      if (schema.contains(id)) {
+      if (schema.contains(id))
+      {
         continue;
       }
       List<FormField> fields = new ArrayList<>();
-      if (idToFormFields.containsKey(id)) {
+      if (idToFormFields.containsKey(id))
+      {
         fields.addAll(idToFormFields.get(id));
       }
       if (getIdToTextFieldFormFields().containsKey(id))
         fields.addAll(getIdToTextFieldFormFields().get(id));
       boolean hasTrafo = false;
-      for (Iterator<FormField> fieldIter = fields.iterator(); fieldIter.hasNext();)
+      for (Iterator<FormField> fieldIter = fields.iterator(); fieldIter
+          .hasNext();)
       {
         FormField field = fieldIter.next();
-        if (field.getTrafoName() != null) {
+        if (field.getTrafoName() != null)
+        {
           hasTrafo = true;
         }
       }
@@ -1725,7 +1769,8 @@ public class TextDocumentModel
     {
       StringBuilder buffy = new StringBuilder();
       for (SubstElement ele : this)
-        buffy.append(ele.isField() ? "<" + ele.getValue() + ">" : ele.getValue());
+        buffy.append(
+            ele.isField() ? "<" + ele.getValue() + ">" : ele.getValue());
       return buffy.toString();
     }
 
@@ -1800,7 +1845,8 @@ public class TextDocumentModel
           Object child = xEnum.nextElement();
           XTextField found = findAnnotationFieldRecursive(child);
           // das erste gefundene Element zurückliefern.
-          if (found != null) {
+          if (found != null)
+          {
             return found;
           }
         }
@@ -1813,7 +1859,8 @@ public class TextDocumentModel
 
     Object textField = UNO.getProperty(element, "TextField");
     if (textField != null
-      && UNO.supportsService(textField, "com.sun.star.text.TextField.Annotation"))
+        && UNO.supportsService(textField,
+            "com.sun.star.text.TextField.Annotation"))
     {
       return UNO.XTextField(textField);
     }
@@ -1845,14 +1892,10 @@ public class TextDocumentModel
     if (buttonAnpassung == null)
       buttonAnpassung = new ConfigThingy("Buttonanpassung");
     String plausiColor = null;
-    Map<String, ConfigThingy> mapFensterIdToConfigThingy =
-      new HashMap<>();
-    Map<String, ConfigThingy> mapSichtbarkeitIdToConfigThingy =
-      new HashMap<>();
-    Map<String, ConfigThingy> mapFunktionenIdToConfigThingy =
-      new HashMap<>();
-    Map<String, ConfigThingy> mapFunktionsdialogeIdToConfigThingy =
-      new HashMap<>();
+    Map<String, ConfigThingy> mapFensterIdToConfigThingy = new HashMap<>();
+    Map<String, ConfigThingy> mapSichtbarkeitIdToConfigThingy = new HashMap<>();
+    Map<String, ConfigThingy> mapFunktionenIdToConfigThingy = new HashMap<>();
+    Map<String, ConfigThingy> mapFunktionsdialogeIdToConfigThingy = new HashMap<>();
     List<String> tabNames = new ArrayList<>();
     for (ConfigThingy conf : desc)
     {
@@ -1867,21 +1910,25 @@ public class TextDocumentModel
 
       mergeSection(conf, "Fenster", mapFensterIdToConfigThingy, tabNames, true);
       mergeSection(conf, "Sichtbarkeit", mapSichtbarkeitIdToConfigThingy, null,
-        false);
-      mergeSection(conf, "Funktionen", mapFunktionenIdToConfigThingy, null, false);
-      mergeSection(conf, "Funktionsdialoge", mapFunktionsdialogeIdToConfigThingy,
-        null, false);
+          false);
+      mergeSection(conf, "Funktionen", mapFunktionenIdToConfigThingy, null,
+          false);
+      mergeSection(conf, "Funktionsdialoge",
+          mapFunktionsdialogeIdToConfigThingy,
+          null, false);
     }
 
     ConfigThingy conf = new ConfigThingy("Formular");
     conf.add("TITLE").add(newTitle);
-    if (plausiColor != null) {
+    if (plausiColor != null)
+    {
       conf.add("PLAUSI_MARKER_COLOR").add(plausiColor);
     }
 
     ConfigThingy subConf = conf.add("Fenster");
     int tabNum = -1;
-    if (tabNames.size() > 1) {
+    if (tabNames.size() > 1)
+    {
       tabNum = 0;
     }
     Iterator<String> iter = tabNames.iterator();
@@ -1889,7 +1936,8 @@ public class TextDocumentModel
     {
       ConfigThingy tabConf = mapFensterIdToConfigThingy.get(iter.next());
       buttonAnpassung(tabNum, tabConf, buttonAnpassung);
-      if (++tabNum == tabNames.size() - 1) {
+      if (++tabNum == tabNames.size() - 1)
+      {
         tabNum = Integer.MAX_VALUE;
       }
       subConf.addChild(tabConf);
@@ -1933,7 +1981,8 @@ public class TextDocumentModel
    *          hinzugefügt.
    */
   private static void mergeSection(ConfigThingy conf, String sectionName,
-      Map<String, ConfigThingy> mapFensterIdToConfigThingy, List<String> tabNames,
+      Map<String, ConfigThingy> mapFensterIdToConfigThingy,
+      List<String> tabNames,
       boolean duplicatesAllowed)
   {
     Iterator<ConfigThingy> parentIter = conf.query(sectionName).iterator();
@@ -1944,13 +1993,14 @@ public class TextDocumentModel
       {
         ConfigThingy node = iter.next();
         String name = node.getName();
-        if (tabNames != null && !tabNames.contains(name)) {
+        if (tabNames != null && !tabNames.contains(name))
+        {
           tabNames.add(name);
         }
         if (!duplicatesAllowed && mapFensterIdToConfigThingy.containsKey(name))
           LOGGER.error(L.m(
-            "Fehler beim Zusammenfassen mehrerer Formulare zum gemeinsamen Ausfüllen: Mehrere \"%1\" Abschnitte enthalten \"%2\"",
-            sectionName, name));
+              "Fehler beim Zusammenfassen mehrerer Formulare zum gemeinsamen Ausfüllen: Mehrere \"%1\" Abschnitte enthalten \"%2\"",
+              sectionName, name));
 
         mapFensterIdToConfigThingy.put(name, new ConfigThingy(node));
       }
@@ -1975,18 +2025,18 @@ public class TextDocumentModel
     ConfigThingy anpassung;
     switch (tabNum)
     {
-      case -1:
-        anpassung = buttonAnpassung.query("EinzigerTab");
-        break;
-      case 0:
-        anpassung = buttonAnpassung.query("ErsterTab");
-        break;
-      case Integer.MAX_VALUE:
-        anpassung = buttonAnpassung.query("LetzterTab");
-        break;
-      default:
-        anpassung = buttonAnpassung.query("MittlererTab");
-        break;
+    case -1:
+      anpassung = buttonAnpassung.query("EinzigerTab");
+      break;
+    case 0:
+      anpassung = buttonAnpassung.query("ErsterTab");
+      break;
+    case Integer.MAX_VALUE:
+      anpassung = buttonAnpassung.query("LetzterTab");
+      break;
+    default:
+      anpassung = buttonAnpassung.query("MittlererTab");
+      break;
     }
 
     /*
@@ -2021,12 +2071,14 @@ public class TextDocumentModel
           {
             String action = neverOrAlwaysConf.get("ACTION").toString();
             neverOrAlwaysConf.setName("");
-            alwaysActions.add(new ActionUIElementPair(action, neverOrAlwaysConf));
+            alwaysActions
+                .add(new ActionUIElementPair(action, neverOrAlwaysConf));
           }
           catch (NodeNotFoundException x)
           {
             LOGGER.error(
-              L.m("Fehlerhafter ALWAYS-Angabe in Buttonanpassung-Abschnitt"), x);
+                L.m("Fehlerhafter ALWAYS-Angabe in Buttonanpassung-Abschnitt"),
+                x);
           }
         }
       }
@@ -2040,25 +2092,26 @@ public class TextDocumentModel
     // ActionUIElementPair
     ConfigThingy buttonsConf = tabConf.query("Buttons");
 
-		// durchläuft die Buttons-Abschnitte
-		for (ConfigThingy buttonsInner : buttonsConf)
+    // durchläuft die Buttons-Abschnitte
+    for (ConfigThingy buttonsInner : buttonsConf)
     {
-			// durchläuft die Eingabeelemente im Buttons-Abschnitt
-			for (ConfigThingy buttonConf : buttonsInner)
+      // durchläuft die Eingabeelemente im Buttons-Abschnitt
+      for (ConfigThingy buttonConf : buttonsInner)
       {
-				String action = buttonConf.getString("ACTION");
+        String action = buttonConf.getString("ACTION");
 
         if (action == null || !neverActions.contains(action))
           existingUIElements.add(new ActionUIElementPair(action, buttonConf));
       }
     }
 
-		// den Buttons-Abschnitt löschen (weil nachher ein neuer generiert wird)
+    // den Buttons-Abschnitt löschen (weil nachher ein neuer generiert wird)
     Iterator<ConfigThingy> iter = tabConf.iterator();
     while (iter.hasNext())
     {
       ConfigThingy possiblyButtonsConf = iter.next();
-      if ("Buttons".equals(possiblyButtonsConf.getName())) {
+      if ("Buttons".equals(possiblyButtonsConf.getName()))
+      {
         iter.remove();
       }
     }
@@ -2089,9 +2142,9 @@ public class TextDocumentModel
         String predecessorAction = alwaysActions.get(i - 1).action;
         if (predecessorAction != null)
         {
-					for (int k = 0; k < existingUIElements.size(); ++k)
+          for (int k = 0; k < existingUIElements.size(); ++k)
           {
-						ActionUIElementPair act2 = existingUIElements.get(k);
+            ActionUIElementPair act2 = existingUIElements.get(k);
             if (act2.action != null && act2.action.equals(predecessorAction))
             {
               existingUIElements.add(k + 1, act);
@@ -2133,12 +2186,12 @@ public class TextDocumentModel
      * "glue" Elemente am Ende der Buttonliste löschen, da diese dort normalerweise
      * nicht erwünscht sind.
      */
-    ListIterator<ActionUIElementPair> liter =
-      existingUIElements.listIterator(existingUIElements.size());
+    ListIterator<ActionUIElementPair> liter = existingUIElements
+        .listIterator(existingUIElements.size());
     while (liter.hasPrevious())
     {
       ActionUIElementPair act = liter.previous();
-			String type = act.uiElementDesc.getString("TYPE");
+      String type = act.uiElementDesc.getString("TYPE");
 
       if (type != null && "glue".equals(type))
         liter.remove();

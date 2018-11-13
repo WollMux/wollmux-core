@@ -33,24 +33,12 @@ package de.muenchen.allg.itd51.wollmux.core.functions;
 
 import java.util.Collection;
 
-import de.muenchen.allg.itd51.wollmux.core.util.L;
-
 /**
  * Eine Funktion, die einen Wert in Abhängigkeit von Parametern berechnet.
  * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public interface Function
 {
-  public static final String ERROR = L.m("!¤£!FEHLERHAFTE DATEN!¤£!");
-  /**
-   * Eine leere Liste von Parameter-Namen.
-   */
-  static final String[] noParams = new String[] {};
-  /**
-   * Eine leere Values-Sammlung.
-   */
-  public static final Values noValues = new Values.None();
-
   /**
    * Liefert die Namen der Parameter, die die Funktion erwartet.
    * Die Reihenfolge ist undefiniert. Es kann kein Name mehrfach vorkommen.

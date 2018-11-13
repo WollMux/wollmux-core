@@ -114,7 +114,8 @@ import de.muenchen.allg.itd51.wollmux.core.util.L;
 public class UIElementFactory
 {
 
-  private static final Logger LOGGER = LoggerFactory.getLogger(UIElementFactory.class);
+  private static final Logger LOGGER = LoggerFactory
+      .getLogger(UIElementFactory.class);
 
   /**
    * Standardbreite für Textfelder und Textareas. Wird verwendet, wenn nicht mit
@@ -244,7 +245,7 @@ public class UIElementFactory
 
     if (type.length() == 0)
       throw new ConfigurationErrorException(L.m(
-        "TYPE-Angabe fehlt bei Element mit Label \"%1\"", label));
+          "TYPE-Angabe fehlt bei Element mit Label \"%1\"", label));
 
     /*
      * Den richtigen type aus dem context bestimmen.
@@ -275,8 +276,8 @@ public class UIElementFactory
       }
       uiElement = new Button(id, button, layoutConstraints);
 
-      ActionListener actionL =
-          getAction(uiElement, action, conf, context.getUiElementEventHandler(), context.getSupportedActions());
+      ActionListener actionL = getAction(uiElement, action, conf,
+          context.getUiElementEventHandler(), context.getSupportedActions());
       if (actionL != null)
       {
         button.addActionListener(actionL);
@@ -299,18 +300,19 @@ public class UIElementFactory
       {
         tf.setToolTipText(tip);
       }
-      uiElement =
-        new Textfield(id, tf, layoutConstraints, labelType, label,
+      uiElement = new Textfield(id, tf, layoutConstraints, labelType, label,
           labelLayoutConstraints);
       tf.getDocument().addDocumentListener(
-          new UIElementDocumentListener(context.getUiElementEventHandler(), uiElement,
-          "valueChanged", new Object[] {}));
-      tf.addFocusListener(new UIElementFocusListener(context.getUiElementEventHandler(),
-        uiElement));
+          new UIElementDocumentListener(context.getUiElementEventHandler(),
+              uiElement,
+              "valueChanged", new Object[] {}));
+      tf.addFocusListener(
+          new UIElementFocusListener(context.getUiElementEventHandler(),
+              uiElement));
       if (action.length() > 0)
       {
-        ActionListener actionL =
-            getAction(uiElement, action, conf, context.getUiElementEventHandler(), context.getSupportedActions());
+        ActionListener actionL = getAction(uiElement, action, conf,
+            context.getUiElementEventHandler(), context.getSupportedActions());
         if (actionL != null)
         {
           tf.addActionListener(actionL);
@@ -320,8 +322,8 @@ public class UIElementFactory
     }
     else if ("textarea".equals(type))
     {
-			int lines = Integer.parseInt(conf.getString("LINES", "3"));
-			boolean wrap = "true".equalsIgnoreCase(conf.getString("WRAP", "true"));
+      int lines = Integer.parseInt(conf.getString("LINES", "3"));
+      boolean wrap = "true".equalsIgnoreCase(conf.getString("WRAP", "true"));
 
       JTextArea textarea = new JTextArea(lines, textfieldWidth);
       textarea.setEditable(!readonly);
@@ -340,31 +342,36 @@ public class UIElementFactory
       /*
        * Tab auch zum Weiterschalten und Shift-Tab zum Zurückschalten erlauben
        */
-      Set<AWTKeyStroke> focusKeys =
-        textarea.getFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS);
+      Set<AWTKeyStroke> focusKeys = textarea
+          .getFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS);
       focusKeys = new HashSet<>(focusKeys);
       focusKeys.add(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0));
-      textarea.setFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
-        focusKeys);
-      focusKeys =
-        textarea.getFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS);
+      textarea.setFocusTraversalKeys(
+          KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
+          focusKeys);
+      focusKeys = textarea
+          .getFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS);
       focusKeys = new HashSet<>(focusKeys);
       focusKeys.add(KeyStroke.getKeyStroke(KeyEvent.VK_TAB,
-        InputEvent.SHIFT_DOWN_MASK));
-      textarea.setFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
-        focusKeys);
+          InputEvent.SHIFT_DOWN_MASK));
+      textarea.setFocusTraversalKeys(
+          KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
+          focusKeys);
 
       JPanel panel = new JPanel(new GridLayout(1, 1));
       JScrollPane scrollPane = new JScrollPane(textarea);
-      scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-      scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+      scrollPane.setHorizontalScrollBarPolicy(
+          ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+      scrollPane.setVerticalScrollBarPolicy(
+          ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
       panel.add(scrollPane);
-      uiElement =
-        new Textarea(id, textarea, panel, layoutConstraints, labelType,
+      uiElement = new Textarea(id, textarea, panel, layoutConstraints,
+          labelType,
           label, labelLayoutConstraints);
       textarea.getDocument().addDocumentListener(
-          new UIElementDocumentListener(context.getUiElementEventHandler(), uiElement,
-          "valueChanged", new Object[] {}));
+          new UIElementDocumentListener(context.getUiElementEventHandler(),
+              uiElement,
+              "valueChanged", new Object[] {}));
       textarea.addFocusListener(new UIElementFocusListener(
           context.getUiElementEventHandler(), uiElement));
       return uiElement;
@@ -386,29 +393,30 @@ public class UIElementFactory
           combo.addItem(val.toString());
         }
       }
-			catch (NodeNotFoundException x)
+      catch (NodeNotFoundException x)
       {
         LOGGER.error(L.m("Fehlerhaftes Element des Typs \"combobox\""), x);
       }
 
-      uiElement =
-        new Combobox(id, combo, layoutConstraints, labelType, label,
+      uiElement = new Combobox(id, combo, layoutConstraints, labelType, label,
           labelLayoutConstraints);
 
       if (editable)
       {
-        JTextComponent tc =
-          ((JTextComponent) combo.getEditor().getEditorComponent());
+        JTextComponent tc = ((JTextComponent) combo.getEditor()
+            .getEditorComponent());
         tc.addFocusListener(new UIElementFocusListener(
             context.getUiElementEventHandler(), uiElement));
         tc.getDocument().addDocumentListener(
-            new UIElementDocumentListener(context.getUiElementEventHandler(), uiElement,
-            "valueChanged", new Object[] {}));
+            new UIElementDocumentListener(context.getUiElementEventHandler(),
+                uiElement,
+                "valueChanged", new Object[] {}));
       }
       else
       {
         combo.addItemListener(new UIElementItemListener(
-            context.getUiElementEventHandler(), uiElement, "valueChanged", new Object[] {}));
+            context.getUiElementEventHandler(), uiElement, "valueChanged",
+            new Object[] {}));
         combo.addFocusListener(new UIElementFocusListener(
             context.getUiElementEventHandler(), uiElement));
       }
@@ -431,7 +439,7 @@ public class UIElementFactory
       uiElement = new Checkbox(id, boxBruceleitner, layoutConstraints);
       boxBruceleitner.addActionListener(new UIElementActionListener(
           context.getUiElementEventHandler(), uiElement, true, "valueChanged",
-        new Object[] {}));
+          new Object[] {}));
       boxBruceleitner.addFocusListener(new UIElementFocusListener(
           context.getUiElementEventHandler(), uiElement));
       return uiElement;
@@ -445,22 +453,25 @@ public class UIElementFactory
       list.setVisibleRowCount(lines);
       list.setSelectionMode(ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
       list.setLayoutOrientation(JList.VERTICAL);
-      list.setPrototypeCellValue("Al-chman hemnal ulhillim el-WollMux(W-OLL-MUX-5.1)");
+      list.setPrototypeCellValue(
+          "Al-chman hemnal ulhillim el-WollMux(W-OLL-MUX-5.1)");
 
       JScrollPane scrollPane = new JScrollPane(list);
-      scrollPane.setHorizontalScrollBarPolicy(ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
-      scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
+      scrollPane.setHorizontalScrollBarPolicy(
+          ScrollPaneConstants.HORIZONTAL_SCROLLBAR_AS_NEEDED);
+      scrollPane.setVerticalScrollBarPolicy(
+          ScrollPaneConstants.VERTICAL_SCROLLBAR_AS_NEEDED);
 
-      uiElement =
-        new Listbox(id, scrollPane, list, layoutConstraints, labelType,
+      uiElement = new Listbox(id, scrollPane, list, layoutConstraints,
+          labelType,
           label, labelLayoutConstraints);
 
       list.addListSelectionListener(new UIElementListSelectionListener(
           context.getUiElementEventHandler(), uiElement, "listSelectionChanged",
-        new Object[] {}));
+          new Object[] {}));
 
-      ActionListener actionL =
-          getAction(uiElement, action, conf, context.getUiElementEventHandler(), context.getSupportedActions());
+      ActionListener actionL = getAction(uiElement, action, conf,
+          context.getUiElementEventHandler(), context.getSupportedActions());
       if (actionL != null)
         list.addMouseListener(new MyActionMouseListener(list, actionL));
       return uiElement;
@@ -483,8 +494,9 @@ public class UIElementFactory
           .parseInt(conf.getString("MAXSIZE", "" + Integer.MAX_VALUE));
 
       return new Box(id, new javax.swing.Box.Filler(new Dimension(minsize, 0),
-        new Dimension(prefsize, 0), new Dimension(maxsize, Integer.MAX_VALUE)),
-        layoutConstraints);
+          new Dimension(prefsize, 0),
+          new Dimension(maxsize, Integer.MAX_VALUE)),
+          layoutConstraints);
     }
     else if ("v-glue".equals(type))
     {
@@ -494,21 +506,23 @@ public class UIElementFactory
           .parseInt(conf.getString("MAXSIZE", "" + Integer.MAX_VALUE));
 
       return new Box(id, new javax.swing.Box.Filler(new Dimension(0, minsize),
-        new Dimension(0, prefsize), new Dimension(Integer.MAX_VALUE, maxsize)),
-        layoutConstraints);
+          new Dimension(0, prefsize),
+          new Dimension(Integer.MAX_VALUE, maxsize)),
+          layoutConstraints);
     }
     else
     {
       throw new ConfigurationErrorException(L.m(
-        "Ununterstützter TYPE für GUI Element: \"%1\"", type));
+          "Ununterstützter TYPE für GUI Element: \"%1\"", type));
     }
   }
-  
+
   private void copySpaceBindingToEnter(AbstractButton button)
   {
     InputMap imap = button.getInputMap(JComponent.WHEN_FOCUSED);
 
-    Object binding = imap.get(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, true));
+    Object binding = imap
+        .get(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, true));
     if (binding != null)
       imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, true), binding);
 
@@ -533,7 +547,8 @@ public class UIElementFactory
 
     private static final String[] gained = new String[] { "gained" };
 
-    public UIElementFocusListener(UIElementEventHandler handler, UIElement uiElement)
+    public UIElementFocusListener(UIElementEventHandler handler,
+        UIElement uiElement)
     {
       this.handler = handler;
       this.uiElement = uiElement;
@@ -651,7 +666,8 @@ public class UIElementFactory
 
     private Object[] args;
 
-    public UIElementItemListener(UIElementEventHandler handler, UIElement uiElement,
+    public UIElementItemListener(UIElementEventHandler handler,
+        UIElement uiElement,
         String eventType, Object[] args)
     {
       this.handler = handler;
@@ -769,7 +785,8 @@ public class UIElementFactory
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private ActionListener getAction(UIElement uiElement, String action,
-      ConfigThingy conf, UIElementEventHandler handler, Set<String> supportedActions)
+      ConfigThingy conf, UIElementEventHandler handler,
+      Set<String> supportedActions)
   {
     if (!supportedActions.contains(action))
     {
@@ -783,12 +800,13 @@ public class UIElementFactory
       {
         String window = conf.get("WINDOW").toString();
         return new UIElementActionListener(handler, uiElement, false, "action",
-          new Object[] {
-            action, window });
+            new Object[] {
+                action, window });
       }
       catch (NodeNotFoundException x)
       {
-        LOGGER.error(L.m("ACTION \"switchWindow\" erfordert WINDOW-Attribut"), x);
+        LOGGER.error(L.m("ACTION \"switchWindow\" erfordert WINDOW-Attribut"),
+            x);
       }
     }
     else if ("openTemplate".equals(action) || "openDocument".equals(action))
@@ -805,13 +823,14 @@ public class UIElementFactory
           fragId.append(i.next().toString());
         }
         return new UIElementActionListener(handler, uiElement, false, "action",
-          new Object[] {
-            action, fragId.toString() });
+            new Object[] {
+                action, fragId.toString() });
       }
       else
       {
-        LOGGER.error(L.m("ACTION \"%1\" erfordert mindestens ein Attribut FRAG_ID",
-          action));
+        LOGGER.error(
+            L.m("ACTION \"%1\" erfordert mindestens ein Attribut FRAG_ID",
+                action));
       }
     }
     else if ("openExt".equals(action))
@@ -819,35 +838,40 @@ public class UIElementFactory
       ConfigThingy ext = conf.query("EXT");
       if (ext.count() != 1)
       {
-        LOGGER.error(L.m("ACTION \"%1\" erfordert genau ein Attribut EXT", action));
+        LOGGER.error(
+            L.m("ACTION \"%1\" erfordert genau ein Attribut EXT", action));
       }
       else
       {
         ConfigThingy url = conf.query("URL");
         if (url.count() != 1)
         {
-          LOGGER.error(L.m("ACTION \"%1\" erfordert genau ein Attribut URL", action));
+          LOGGER.error(
+              L.m("ACTION \"%1\" erfordert genau ein Attribut URL", action));
         }
         else
         {
-          return new UIElementActionListener(handler, uiElement, false, "action",
-            new Object[] {
-              action, ext.toString(), url.toString() });
+          return new UIElementActionListener(handler, uiElement, false,
+              "action",
+              new Object[] {
+                  action, ext.toString(), url.toString() });
         }
       }
     }
-    else if ("closeAndOpenExt".equals(action) || "saveTempAndOpenExt".equals(action))
+    else if ("closeAndOpenExt".equals(action)
+        || "saveTempAndOpenExt".equals(action))
     {
       ConfigThingy ext = conf.query("EXT");
       if (ext.count() != 1)
       {
-        LOGGER.error(L.m("ACTION \"%1\" erfordert genau ein Attribut EXT", action));
+        LOGGER.error(
+            L.m("ACTION \"%1\" erfordert genau ein Attribut EXT", action));
       }
       else
       {
         return new UIElementActionListener(handler, uiElement, false, "action",
-          new Object[] {
-            action, ext.toString() });
+            new Object[] {
+                action, ext.toString() });
       }
     }
     else if ("open".equals(action))
@@ -856,12 +880,13 @@ public class UIElementFactory
       {
         ConfigThingy openConf = conf.get("OPEN");
         return new UIElementActionListener(handler, uiElement, false, "action",
-          new Object[] {
-            action, openConf });
+            new Object[] {
+                action, openConf });
       }
       catch (NodeNotFoundException e)
       {
-        LOGGER.error(L.m("ACTION \"open\" erfordert die Angabe OPEN \"...\""), e);
+        LOGGER.error(L.m("ACTION \"open\" erfordert die Angabe OPEN \"...\""),
+            e);
       }
     }
     else if ("funcDialog".equals(action))
@@ -870,8 +895,8 @@ public class UIElementFactory
       {
         String dialogName = conf.get("DIALOG").toString();
         return new UIElementActionListener(handler, uiElement, false, "action",
-          new Object[] {
-            action, dialogName });
+            new Object[] {
+                action, dialogName });
       }
       catch (NodeNotFoundException x)
       {
@@ -881,7 +906,7 @@ public class UIElementFactory
     else
     {
       return new UIElementActionListener(handler, uiElement, false, "action",
-        new Object[] { action });
+          new Object[] { action });
     }
 
     return null;

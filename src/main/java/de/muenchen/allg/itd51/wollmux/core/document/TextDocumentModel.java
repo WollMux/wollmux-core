@@ -210,12 +210,6 @@ public class TextDocumentModel
   private Map<String, Boolean> mapGroupIdToVisibilityState;
 
   /**
-   * Kann über setPartOfMultiformDocument gesetzt werden und sollte dann true
-   * enthalten, wenn das Dokument ein Teil eines Multiformdokuments ist.
-   */
-  private volatile boolean partOfMultiform;
-
-  /**
    * Enthält ein ein Mapping von alten FRAG_IDs fragId auf die jeweils neuen FRAG_IDs
    * newFragId, die über im Dokument enthaltene Dokumentkommando WM(CMD
    * 'overrideFrag' FRAG_ID 'fragId' NEW_FRAG_ID 'newFragId') entstanden sind.
@@ -757,21 +751,6 @@ public class TextDocumentModel
   public boolean isFormDocument()
   {
     return isFormDocument;
-  }
-
-  /**
-   * Liefert true, wenn das Dokument ein Teil eines Multiformdokuments ist.
-   *
-   * @return Liefert true, wenn das Dokument Teil eines Multiformdokuments ist.
-   */
-  public synchronized boolean isPartOfMultiformDocument()
-  {
-    return partOfMultiform;
-  }
-
-  public synchronized void setPartOfMultiformDocument(boolean partOfMultiform)
-  {
-    this.partOfMultiform = partOfMultiform;
   }
 
   /**

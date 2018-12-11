@@ -6,6 +6,7 @@ import java.awt.Component;
 import javax.swing.JComponent;
 import javax.swing.JLabel;
 
+import de.muenchen.allg.itd51.wollmux.core.form.model.Control;
 import de.muenchen.allg.itd51.wollmux.core.functions.Function;
 
 /**
@@ -15,6 +16,7 @@ import de.muenchen.allg.itd51.wollmux.core.functions.Function;
  */
 public abstract class UIElementBase implements UIElement
 {
+
   protected UIElement.LabelPosition labelType = UIElement.LabelPosition.NONE;
 
   protected JLabel label = null;
@@ -27,7 +29,10 @@ public abstract class UIElementBase implements UIElement
 
   protected String id = "";
 
+  @Deprecated
   protected Object addData = null;
+
+  protected Control field = null;
 
   @Override
   public void setBackground(Color bg)
@@ -75,6 +80,18 @@ public abstract class UIElementBase implements UIElement
   public void setAdditionalData(Object o)
   {
     addData = o;
+  }
+
+  @Override
+  public Control getFormField()
+  {
+    return field;
+  }
+
+  @Override
+  public void setFormField(Control field)
+  {
+    this.field = field;
   }
 
   @Override

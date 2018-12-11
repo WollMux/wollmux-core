@@ -42,6 +42,7 @@ package de.muenchen.allg.itd51.wollmux.core.dialog.controls;
 import java.awt.Color;
 import java.awt.Component;
 
+import de.muenchen.allg.itd51.wollmux.core.form.model.Control;
 import de.muenchen.allg.itd51.wollmux.core.functions.Value;
 
 /**
@@ -114,6 +115,7 @@ public interface UIElement extends Value
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
+  @Deprecated
   public Object getAdditionalData();
 
   /**
@@ -121,7 +123,12 @@ public interface UIElement extends Value
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
+  @Deprecated
   public void setAdditionalData(Object o);
+
+  public Control getFormField();
+
+  public void setFormField(Control field);
 
   /**
    * Der aktuelle Wert des UI Elements. Falls es sich um ein boolesches Element
@@ -198,5 +205,4 @@ public interface UIElement extends Value
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public void takeFocus();
-
 }

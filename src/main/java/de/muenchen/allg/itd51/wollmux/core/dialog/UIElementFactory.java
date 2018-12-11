@@ -60,8 +60,10 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Set;
 
 import javax.swing.AbstractButton;
@@ -101,6 +103,9 @@ import de.muenchen.allg.itd51.wollmux.core.dialog.controls.Separator;
 import de.muenchen.allg.itd51.wollmux.core.dialog.controls.Textarea;
 import de.muenchen.allg.itd51.wollmux.core.dialog.controls.Textfield;
 import de.muenchen.allg.itd51.wollmux.core.dialog.controls.UIElement;
+import de.muenchen.allg.itd51.wollmux.core.form.model.Control;
+import de.muenchen.allg.itd51.wollmux.core.form.model.FormModelException;
+import de.muenchen.allg.itd51.wollmux.core.form.model.FormType;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
 import de.muenchen.allg.itd51.wollmux.core.parser.NodeNotFoundException;
@@ -147,6 +152,111 @@ public class UIElementFactory
   public void setTextfieldWidth(int anzahlZeichen)
   {
     textfieldWidth = anzahlZeichen;
+  }
+
+  public UIElement createUIElement(UIElementContext context, Control control)
+  {
+    try
+    {
+      /*
+       * Den richtigen type aus dem context bestimmen.
+       */
+      String type = context.getMappedType(FormType.getString(control.getType()));
+
+      Object layoutConstraints = context.getLayoutConstraints(type);
+      Object labelLayoutConstraints = context.getLabelLayoutConstraints(type);
+      UIElement.LabelPosition labelType = context.getLabelType(type);
+
+      UIElement uiElement;
+
+      switch (FormType.getType(type))
+      {
+      case BUTTON:
+      case MENUITEM:
+      {
+        uiElement = createButton(context, control.getLabel(), control.getTip(), control.getId(),
+            type, control.getHotkey(), layoutConstraints);
+        ActionListener actionL = getAction(uiElement, control, context.getUiElementEventHandler(),
+            context.getSupportedActions());
+        if (actionL != null)
+        {
+          ((AbstractButton) uiElement.getComponent()).addActionListener(actionL);
+        }
+        return uiElement;
+      }
+      case LABEL:
+      {
+        return createLabel(control.getLabel(), control.getId(), layoutConstraints);
+      }
+      case TEXTFIELD:
+      {
+        uiElement = createTextfield(context, control.getLabel(), control.getTip(), control.getId(),
+            control.isReadonly(), layoutConstraints, labelLayoutConstraints, labelType);
+        if (control.getAction() != null && control.getAction().length() > 0)
+        {
+          ActionListener actionL = getAction(uiElement, control, context.getUiElementEventHandler(),
+              context.getSupportedActions());
+          if (actionL != null)
+          {
+            ((JTextField) uiElement.getComponent()).addActionListener(actionL);
+          }
+        }
+        return uiElement;
+      }
+      case TEXTAREA:
+      {
+        return createTextarea(context, control.getLabel(), control.getTip(), control.getId(),
+            control.isReadonly(), layoutConstraints, labelLayoutConstraints, labelType,
+            control.getLines(), control.isWrap());
+      }
+      case COMBOBOX:
+      {
+        return createCombobox(context, control.getLabel(), control.getTip(), control.getId(),
+            control.isReadonly(), control.isEditable(), control.getOptions(), layoutConstraints,
+            labelLayoutConstraints, labelType);
+      }
+      case CHECKBOX:
+      {
+        return createCheckbox(context, control.getLabel(), control.getTip(), control.getId(),
+            control.isReadonly(), layoutConstraints);
+      }
+      case H_SEPARATOR:
+      {
+        JSeparator wurzelSepp = new JSeparator(SwingConstants.HORIZONTAL);
+        return new Separator(control.getId(), wurzelSepp, layoutConstraints);
+      }
+      case V_SEPARATOR:
+      {
+        JSeparator wurzelSepp = new JSeparator(SwingConstants.VERTICAL);
+        return new Separator(control.getId(), wurzelSepp, layoutConstraints);
+      }
+      case H_GLUE:
+      {
+        return new Box(control.getId(),
+            new javax.swing.Box.Filler(new Dimension(control.getMinsize(), 0),
+                new Dimension(control.getPrefsize(), 0),
+                new Dimension(control.getMaxsize(), Integer.MAX_VALUE)),
+            layoutConstraints);
+      }
+      case V_GLUE:
+      {
+        return new Box(control.getId(),
+            new javax.swing.Box.Filler(new Dimension(0, control.getMinsize()),
+                new Dimension(0, control.getPrefsize()),
+                new Dimension(Integer.MAX_VALUE, control.getMaxsize())),
+            layoutConstraints);
+      }
+      case LISTBOX:
+      default:
+      {
+        throw new ConfigurationErrorException(
+            L.m("Ununterstützter TYPE für GUI Element: \"%1\"", type));
+      }
+      }
+    } catch (FormModelException e)
+    {
+      throw new ConfigurationErrorException(e);
+    }
   }
 
   /**
@@ -260,62 +370,30 @@ public class UIElementFactory
 
     if ("button".equals(type) || "menuitem".equals(type))
     {
-      AbstractButton button;
-      if ("button".equals(type))
-      {
-        button = new JButton(label);
-        copySpaceBindingToEnter(button);
-      }
-      else
-        button = new JMenuItem(label);
-
-      button.setMnemonic(hotkey);
-      if (!tip.isEmpty())
-      {
-        button.setToolTipText(tip);
-      }
-      uiElement = new Button(id, button, layoutConstraints);
-
+      uiElement = createButton(context, label, tip, id, type, hotkey, layoutConstraints);
       ActionListener actionL = getAction(uiElement, action, conf,
           context.getUiElementEventHandler(), context.getSupportedActions());
       if (actionL != null)
       {
-        button.addActionListener(actionL);
+        ((AbstractButton) uiElement.getComponent()).addActionListener(actionL);
       }
-      button.addFocusListener(new UIElementFocusListener(
-          context.getUiElementEventHandler(), uiElement));
       return uiElement;
     }
     else if ("label".equals(type))
     {
-      uiElement = new Label(id, label, layoutConstraints);
-      return uiElement;
+      return createLabel(label, id, layoutConstraints);
     }
     else if ("textfield".equals(type))
     {
-      JTextField tf = new JTextField(textfieldWidth);
-      tf.setEditable(!readonly);
-      tf.setFocusable(!readonly);
-      if (!tip.isEmpty())
-      {
-        tf.setToolTipText(tip);
-      }
-      uiElement = new Textfield(id, tf, layoutConstraints, labelType, label,
-          labelLayoutConstraints);
-      tf.getDocument().addDocumentListener(
-          new UIElementDocumentListener(context.getUiElementEventHandler(),
-              uiElement,
-              "valueChanged", new Object[] {}));
-      tf.addFocusListener(
-          new UIElementFocusListener(context.getUiElementEventHandler(),
-              uiElement));
+      uiElement = createTextfield(context, label, tip, id, readonly, layoutConstraints,
+          labelLayoutConstraints, labelType);
       if (action.length() > 0)
       {
         ActionListener actionL = getAction(uiElement, action, conf,
             context.getUiElementEventHandler(), context.getSupportedActions());
         if (actionL != null)
         {
-          tf.addActionListener(actionL);
+          ((JTextField) uiElement.getComponent()).addActionListener(actionL);
         }
       }
       return uiElement;
@@ -325,124 +403,28 @@ public class UIElementFactory
       int lines = Integer.parseInt(conf.getString("LINES", "3"));
       boolean wrap = "true".equalsIgnoreCase(conf.getString("WRAP", "true"));
 
-      JTextArea textarea = new JTextArea(lines, textfieldWidth);
-      textarea.setEditable(!readonly);
-      textarea.setFocusable(!readonly);
-      if (wrap)
-      {
-        textarea.setLineWrap(true);
-        textarea.setWrapStyleWord(true);
-      }
-      textarea.setFont(new JTextField().getFont());
-      if (!tip.isEmpty())
-      {
-        textarea.setToolTipText(tip);
-      }
-
-      /*
-       * Tab auch zum Weiterschalten und Shift-Tab zum Zurückschalten erlauben
-       */
-      Set<AWTKeyStroke> focusKeys = textarea
-          .getFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS);
-      focusKeys = new HashSet<>(focusKeys);
-      focusKeys.add(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0));
-      textarea.setFocusTraversalKeys(
-          KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
-          focusKeys);
-      focusKeys = textarea
-          .getFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS);
-      focusKeys = new HashSet<>(focusKeys);
-      focusKeys.add(KeyStroke.getKeyStroke(KeyEvent.VK_TAB,
-          InputEvent.SHIFT_DOWN_MASK));
-      textarea.setFocusTraversalKeys(
-          KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
-          focusKeys);
-
-      JPanel panel = new JPanel(new GridLayout(1, 1));
-      JScrollPane scrollPane = new JScrollPane(textarea);
-      scrollPane.setHorizontalScrollBarPolicy(
-          ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
-      scrollPane.setVerticalScrollBarPolicy(
-          ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
-      panel.add(scrollPane);
-      uiElement = new Textarea(id, textarea, panel, layoutConstraints,
-          labelType,
-          label, labelLayoutConstraints);
-      textarea.getDocument().addDocumentListener(
-          new UIElementDocumentListener(context.getUiElementEventHandler(),
-              uiElement,
-              "valueChanged", new Object[] {}));
-      textarea.addFocusListener(new UIElementFocusListener(
-          context.getUiElementEventHandler(), uiElement));
-      return uiElement;
+      return createTextarea(context, label, tip, id, readonly, layoutConstraints,
+          labelLayoutConstraints, labelType, lines, wrap);
     }
     else if ("combobox".equals(type))
     {
-      JComboBox<Object> combo = new JComboBox<>();
-      combo.setEnabled(!readonly);
-      combo.setFocusable(!readonly);
-      combo.setEditable(editable);
-      if (!tip.isEmpty())
-      {
-        combo.setToolTipText(tip);
-      }
+      List<String> values = new ArrayList<>();
       try
       {
         for (ConfigThingy val : conf.get("VALUES"))
         {
-          combo.addItem(val.toString());
+          values.add(val.toString());
         }
-      }
-      catch (NodeNotFoundException x)
+      } catch (NodeNotFoundException x)
       {
         LOGGER.error(L.m("Fehlerhaftes Element des Typs \"combobox\""), x);
       }
-
-      uiElement = new Combobox(id, combo, layoutConstraints, labelType, label,
-          labelLayoutConstraints);
-
-      if (editable)
-      {
-        JTextComponent tc = ((JTextComponent) combo.getEditor()
-            .getEditorComponent());
-        tc.addFocusListener(new UIElementFocusListener(
-            context.getUiElementEventHandler(), uiElement));
-        tc.getDocument().addDocumentListener(
-            new UIElementDocumentListener(context.getUiElementEventHandler(),
-                uiElement,
-                "valueChanged", new Object[] {}));
-      }
-      else
-      {
-        combo.addItemListener(new UIElementItemListener(
-            context.getUiElementEventHandler(), uiElement, "valueChanged",
-            new Object[] {}));
-        combo.addFocusListener(new UIElementFocusListener(
-            context.getUiElementEventHandler(), uiElement));
-      }
-      return uiElement;
+      return createCombobox(context, label, tip, id, readonly, editable, values,
+          layoutConstraints, labelLayoutConstraints, labelType);
     }
     else if ("checkbox".equals(type))
     {
-      /*
-       * ACHTUNG! Diese checkbox hat ihr Label fest integriert auf der rechten Seite
-       * und liefert als Zusatzlabel immer LABEL_NONE.
-       */
-      final JCheckBox boxBruceleitner = new JCheckBox(label);
-      copySpaceBindingToEnter(boxBruceleitner);
-      boxBruceleitner.setEnabled(!readonly);
-      boxBruceleitner.setFocusable(!readonly);
-      if (!tip.isEmpty())
-      {
-        boxBruceleitner.setToolTipText(tip);
-      }
-      uiElement = new Checkbox(id, boxBruceleitner, layoutConstraints);
-      boxBruceleitner.addActionListener(new UIElementActionListener(
-          context.getUiElementEventHandler(), uiElement, true, "valueChanged",
-          new Object[] {}));
-      boxBruceleitner.addFocusListener(new UIElementFocusListener(
-          context.getUiElementEventHandler(), uiElement));
-      return uiElement;
+      return createCheckbox(context, label, tip, id, readonly, layoutConstraints);
     }
     else if ("listbox".equals(type))
     {
@@ -474,6 +456,7 @@ public class UIElementFactory
           context.getUiElementEventHandler(), context.getSupportedActions());
       if (actionL != null)
         list.addMouseListener(new MyActionMouseListener(list, actionL));
+
       return uiElement;
     }
     else if ("h-separator".equals(type))
@@ -517,6 +500,184 @@ public class UIElementFactory
     }
   }
 
+  private UIElement createCheckbox(UIElementContext context, String label, String tip, String id,
+      boolean readonly, Object layoutConstraints)
+  {
+    UIElement uiElement;
+    /*
+     * ACHTUNG! Diese checkbox hat ihr Label fest integriert auf der rechten Seite
+     * und liefert als Zusatzlabel immer LABEL_NONE.
+     */
+    final JCheckBox boxBruceleitner = new JCheckBox(label);
+    copySpaceBindingToEnter(boxBruceleitner);
+    boxBruceleitner.setEnabled(!readonly);
+    boxBruceleitner.setFocusable(!readonly);
+    if (!tip.isEmpty())
+    {
+      boxBruceleitner.setToolTipText(tip);
+    }
+    uiElement = new Checkbox(id, boxBruceleitner, layoutConstraints);
+    boxBruceleitner.addActionListener(new UIElementActionListener(
+        context.getUiElementEventHandler(), uiElement, true, "valueChanged",
+        new Object[] {}));
+    boxBruceleitner.addFocusListener(new UIElementFocusListener(
+        context.getUiElementEventHandler(), uiElement));
+    return uiElement;
+  }
+
+  private UIElement createCombobox(UIElementContext context, String label, String tip, String id,
+      boolean readonly, boolean editable, List<String> values, Object layoutConstraints,
+      Object labelLayoutConstraints, UIElement.LabelPosition labelType)
+  {
+    UIElement uiElement;
+    JComboBox<Object> combo = new JComboBox<>();
+    combo.setEnabled(!readonly);
+    combo.setFocusable(!readonly);
+    combo.setEditable(editable);
+    if (!tip.isEmpty())
+    {
+      combo.setToolTipText(tip);
+    }
+    values.forEach(combo::addItem);
+
+    uiElement = new Combobox(id, combo, layoutConstraints, labelType, label,
+        labelLayoutConstraints);
+
+    if (editable)
+    {
+      JTextComponent tc = ((JTextComponent) combo.getEditor()
+          .getEditorComponent());
+      tc.addFocusListener(new UIElementFocusListener(
+          context.getUiElementEventHandler(), uiElement));
+      tc.getDocument().addDocumentListener(
+          new UIElementDocumentListener(context.getUiElementEventHandler(),
+              uiElement,
+              "valueChanged", new Object[] {}));
+    }
+    else
+    {
+      combo.addItemListener(new UIElementItemListener(
+          context.getUiElementEventHandler(), uiElement, "valueChanged",
+          new Object[] {}));
+      combo.addFocusListener(new UIElementFocusListener(
+          context.getUiElementEventHandler(), uiElement));
+    }
+    return uiElement;
+  }
+
+  private UIElement createTextarea(UIElementContext context, String label, String tip, String id,
+      boolean readonly, Object layoutConstraints, Object labelLayoutConstraints,
+      UIElement.LabelPosition labelType, int lines, boolean wrap)
+  {
+    UIElement uiElement;
+    JTextArea textarea = new JTextArea(lines, textfieldWidth);
+    textarea.setEditable(!readonly);
+    textarea.setFocusable(!readonly);
+    if (wrap)
+    {
+      textarea.setLineWrap(true);
+      textarea.setWrapStyleWord(true);
+    }
+    textarea.setFont(new JTextField().getFont());
+    if (!tip.isEmpty())
+    {
+      textarea.setToolTipText(tip);
+    }
+
+    /*
+     * Tab auch zum Weiterschalten und Shift-Tab zum Zurückschalten erlauben
+     */
+    Set<AWTKeyStroke> focusKeys = textarea
+        .getFocusTraversalKeys(KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS);
+    focusKeys = new HashSet<>(focusKeys);
+    focusKeys.add(KeyStroke.getKeyStroke(KeyEvent.VK_TAB, 0));
+    textarea.setFocusTraversalKeys(
+        KeyboardFocusManager.FORWARD_TRAVERSAL_KEYS,
+        focusKeys);
+    focusKeys = textarea
+        .getFocusTraversalKeys(KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS);
+    focusKeys = new HashSet<>(focusKeys);
+    focusKeys.add(KeyStroke.getKeyStroke(KeyEvent.VK_TAB,
+        InputEvent.SHIFT_DOWN_MASK));
+    textarea.setFocusTraversalKeys(
+        KeyboardFocusManager.BACKWARD_TRAVERSAL_KEYS,
+        focusKeys);
+
+    JPanel panel = new JPanel(new GridLayout(1, 1));
+    JScrollPane scrollPane = new JScrollPane(textarea);
+    scrollPane.setHorizontalScrollBarPolicy(
+        ScrollPaneConstants.HORIZONTAL_SCROLLBAR_NEVER);
+    scrollPane.setVerticalScrollBarPolicy(
+        ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+    panel.add(scrollPane);
+    uiElement = new Textarea(id, textarea, panel, layoutConstraints,
+        labelType,
+        label, labelLayoutConstraints);
+    textarea.getDocument().addDocumentListener(
+        new UIElementDocumentListener(context.getUiElementEventHandler(),
+            uiElement,
+            "valueChanged", new Object[] {}));
+    textarea.addFocusListener(new UIElementFocusListener(
+        context.getUiElementEventHandler(), uiElement));
+    return uiElement;
+  }
+
+  private UIElement createTextfield(UIElementContext context, String label,
+      String tip, String id, boolean readonly, Object layoutConstraints,
+      Object labelLayoutConstraints, UIElement.LabelPosition labelType)
+  {
+    UIElement uiElement;
+    JTextField tf = new JTextField(textfieldWidth);
+    tf.setEditable(!readonly);
+    tf.setFocusable(!readonly);
+    if (!tip.isEmpty())
+    {
+      tf.setToolTipText(tip);
+    }
+    uiElement = new Textfield(id, tf, layoutConstraints, labelType, label,
+        labelLayoutConstraints);
+    tf.getDocument().addDocumentListener(
+        new UIElementDocumentListener(context.getUiElementEventHandler(),
+            uiElement,
+            "valueChanged", new Object[] {}));
+    tf.addFocusListener(
+        new UIElementFocusListener(context.getUiElementEventHandler(),
+            uiElement));
+    return uiElement;
+  }
+
+  private UIElement createLabel(String label, String id, Object layoutConstraints)
+  {
+    UIElement uiElement;
+    uiElement = new Label(id, label, layoutConstraints);
+    return uiElement;
+  }
+
+  private UIElement createButton(UIElementContext context, String label,
+      String tip, String id, String type, char hotkey, Object layoutConstraints)
+  {
+    UIElement uiElement;
+    AbstractButton button;
+    if ("button".equals(type))
+    {
+      button = new JButton(label);
+      copySpaceBindingToEnter(button);
+    }
+    else
+      button = new JMenuItem(label);
+
+    button.setMnemonic(hotkey);
+    if (!tip.isEmpty())
+    {
+      button.setToolTipText(tip);
+    }
+    uiElement = new Button(id, button, layoutConstraints);
+
+    button.addFocusListener(new UIElementFocusListener(
+        context.getUiElementEventHandler(), uiElement));
+    return uiElement;
+  }
+
   private void copySpaceBindingToEnter(AbstractButton button)
   {
     InputMap imap = button.getInputMap(JComponent.WHEN_FOCUSED);
@@ -529,6 +690,232 @@ public class UIElementFactory
     binding = imap.get(KeyStroke.getKeyStroke(KeyEvent.VK_SPACE, 0, false));
     if (binding != null)
       imap.put(KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0, false), binding);
+  }
+
+  /**
+   * Liefert einen {@link UIElementActionListener} zurück, der ActionEvents von uiElement an handler
+   * weitergibt, wobei der eventType "action" ist.
+   * 
+   * @param uiElement
+   *          das uiElement zu dem der ActionListener gehört. Achtung! der ActionListener wird durch
+   *          diese Methode nicht auf uiElement registriert!
+   * @param action
+   *          wird als erstes Element des args Arrays an die Funktion
+   *          {@link UIElementEventHandler#processUiElementEvent(UIElement, String, Object[])}
+   *          übergeben.
+   * @param conf
+   *          Manche ACTIONs erfordern zusätzliche Angaben (z.B. WINDOW Attribut für die ACTION
+   *          "switchWindow"). Damit diese ausgewertet und an handler übergeben werden können muss
+   *          hier das ConfigThingy des UI Elements übergeben werden (also der Knoten, der TYPE als
+   *          Kind hat).
+   * @param handler
+   *          der {@link UIElementEventHandler} an den die Events weitergereicht werden sollen.
+   * @param supportedActions
+   *          Ist action nicht in dieser Menge enthalten gibt es einen Fehler.
+   * @return einen ActionListener, den man auf uiElement registrieren kann, damit er dessen Actions
+   *         an handler weiterreicht. Im Falle eines Fehlers (z.B. fehlende Zusatzangaben für ACTION
+   *         die dieses erfordert) wird null geliefert.
+   * @author Matthias Benkmann (D-III-ITD 5.1)
+   */
+  private ActionListener getAction(UIElement uiElement, String action, ConfigThingy conf,
+      UIElementEventHandler handler, Set<String> supportedActions)
+  {
+    if (!supportedActions.contains(action))
+    {
+      LOGGER.error(L.m("Ununterstützte ACTION \"%1\"", action));
+      return null;
+    }
+
+    if ("switchWindow".equals(action))
+    {
+      try
+      {
+        String window = conf.get("WINDOW").toString();
+        return new UIElementActionListener(handler, uiElement, false, "action",
+            new Object[] { action, window });
+      } catch (NodeNotFoundException x)
+      {
+        LOGGER.error(L.m("ACTION \"switchWindow\" erfordert WINDOW-Attribut"), x);
+      }
+    } else if ("openTemplate".equals(action) || "openDocument".equals(action))
+    {
+      ConfigThingy fids = conf.query("FRAG_ID");
+      if (fids.count() > 0)
+      {
+        Iterator<ConfigThingy> i = fids.iterator();
+        StringBuilder fragId = new StringBuilder();
+        fragId.append(i.next().toString());
+        while (i.hasNext())
+        {
+          fragId.append("&");
+          fragId.append(i.next().toString());
+        }
+        return new UIElementActionListener(handler, uiElement, false, "action",
+            new Object[] { action, fragId.toString() });
+      } else
+      {
+        LOGGER.error(L.m("ACTION \"%1\" erfordert mindestens ein Attribut FRAG_ID", action));
+      }
+    } else if ("openExt".equals(action))
+    {
+      ConfigThingy ext = conf.query("EXT");
+      if (ext.count() != 1)
+      {
+        LOGGER.error(L.m("ACTION \"%1\" erfordert genau ein Attribut EXT", action));
+      } else
+      {
+        ConfigThingy url = conf.query("URL");
+        if (url.count() != 1)
+        {
+          LOGGER.error(L.m("ACTION \"%1\" erfordert genau ein Attribut URL", action));
+        } else
+        {
+          return new UIElementActionListener(handler, uiElement, false, "action",
+              new Object[] { action, ext.toString(), url.toString() });
+        }
+      }
+    } else if ("closeAndOpenExt".equals(action) || "saveTempAndOpenExt".equals(action))
+    {
+      ConfigThingy ext = conf.query("EXT");
+      if (ext.count() != 1)
+      {
+        LOGGER.error(L.m("ACTION \"%1\" erfordert genau ein Attribut EXT", action));
+      } else
+      {
+        return new UIElementActionListener(handler, uiElement, false, "action",
+            new Object[] { action, ext.toString() });
+      }
+    } else if ("open".equals(action))
+    {
+      try
+      {
+        ConfigThingy openConf = conf.get("OPEN");
+        return new UIElementActionListener(handler, uiElement, false, "action",
+            new Object[] { action, openConf });
+      } catch (NodeNotFoundException e)
+      {
+        LOGGER.error(L.m("ACTION \"open\" erfordert die Angabe OPEN \"...\""), e);
+      }
+    } else if ("funcDialog".equals(action))
+    {
+      try
+      {
+        String dialogName = conf.get("DIALOG").toString();
+        return new UIElementActionListener(handler, uiElement, false, "action",
+            new Object[] { action, dialogName });
+      } catch (NodeNotFoundException x)
+      {
+        LOGGER.error(L.m("ACTION \"funcDialog\" erfordert DIALOG-Attribut"), x);
+      }
+    } else
+    {
+      return new UIElementActionListener(handler, uiElement, false, "action",
+          new Object[] { action });
+    }
+
+    return null;
+  }
+
+  /**
+   * Liefert einen {@link UIElementActionListener} zurück, der ActionEvents von uiElement an handler
+   * weitergibt, wobei der eventType "action" ist.
+   * 
+   * @param uiElement
+   *          das uiElement zu dem der ActionListener gehört. Achtung! der ActionListener wird durch
+   *          diese Methode nicht auf uiElement registriert!
+   * @param action
+   *          wird als erstes Element des args Arrays an die Funktion
+   *          {@link UIElementEventHandler#processUiElementEvent(UIElement, String, Object[])}
+   *          übergeben.
+   * @param conf
+   *          Manche ACTIONs erfordern zusätzliche Angaben (z.B. WINDOW Attribut für die ACTION
+   *          "switchWindow"). Damit diese ausgewertet und an handler übergeben werden können muss
+   *          hier das ConfigThingy des UI Elements übergeben werden (also der Knoten, der TYPE als
+   *          Kind hat).
+   * @param handler
+   *          der {@link UIElementEventHandler} an den die Events weitergereicht werden sollen.
+   * @param supportedActions
+   *          Ist action nicht in dieser Menge enthalten gibt es einen Fehler.
+   * @return einen ActionListener, den man auf uiElement registrieren kann, damit er dessen Actions
+   *         an handler weiterreicht. Im Falle eines Fehlers (z.B. fehlende Zusatzangaben für ACTION
+   *         die dieses erfordert) wird null geliefert.
+   * @author Matthias Benkmann (D-III-ITD 5.1)
+   */
+  private ActionListener getAction(UIElement uiElement, Control control,
+      UIElementEventHandler handler, Set<String> supportedActions)
+  {
+    if (!supportedActions.contains(control.getAction()))
+    {
+      LOGGER.error(L.m("Ununterstützte ACTION \"%1\"", control.getAction()));
+      return null;
+    }
+
+    if ("switchWindow".equals(control.getAction()))
+    {
+      if (control.getWindow() != null)
+      {
+        return new UIElementActionListener(handler, uiElement, false, "action",
+            new Object[] { control.getAction(), control.getWindow() });
+      } else
+      {
+        LOGGER.error(L.m("ACTION \"switchWindow\" erfordert WINDOW-Attribut"));
+      }
+    } else if ("openTemplate".equals(control.getAction())
+        || "openDocument".equals(control.getAction()))
+    {
+      if (control.getFragId() != null && !control.getFragId().isEmpty())
+      {
+        return new UIElementActionListener(handler, uiElement, false, "action",
+            new Object[] { control.getAction(), control.getFragId() });
+      } else
+      {
+        LOGGER.error(
+            L.m("ACTION \"%1\" erfordert mindestens ein Attribut FRAG_ID", control.getAction()));
+      }
+    } else if ("openExt".equals(control.getAction()))
+    {
+      if (control.getExt() == null)
+      {
+        LOGGER.error(L.m("ACTION \"%1\" erfordert genau ein Attribut EXT", control.getAction()));
+      } else
+      {
+        if (control.getUrl() == null)
+        {
+          LOGGER.error(L.m("ACTION \"%1\" erfordert genau ein Attribut URL", control.getAction()));
+        } else
+        {
+          return new UIElementActionListener(handler, uiElement, false, "action",
+              new Object[] { control.getAction(), control.getExt(), control.getUrl() });
+        }
+      }
+    } else if ("closeAndOpenExt".equals(control.getAction())
+        || "saveTempAndOpenExt".equals(control.getAction()))
+    {
+      if (control.getExt() != null)
+      {
+        LOGGER.error(L.m("ACTION \"%1\" erfordert genau ein Attribut EXT", control.getAction()));
+      } else
+      {
+        return new UIElementActionListener(handler, uiElement, false, "action",
+            new Object[] { control.getAction(), control.getExt() });
+      }
+    } else if ("funcDialog".equals(control.getAction()))
+    {
+      if (control.getDialog() != null)
+      {
+        return new UIElementActionListener(handler, uiElement, false, "action",
+            new Object[] { control.getAction(), control.getDialog() });
+      } else
+      {
+        LOGGER.error(L.m("ACTION \"funcDialog\" erfordert DIALOG-Attribut"));
+      }
+    } else
+    {
+      return new UIElementActionListener(handler, uiElement, false, "action",
+          new Object[] { control.getAction() });
+    }
+
+    return null;
   }
 
   /**
@@ -755,161 +1142,4 @@ public class UIElementFactory
       }
     }
   }
-
-  /**
-   * Liefert einen {@link UIElementActionListener} zurück, der ActionEvents von
-   * uiElement an handler weitergibt, wobei der eventType "action" ist.
-   * 
-   * @param uiElement
-   *          das uiElement zu dem der ActionListener gehört. Achtung! der
-   *          ActionListener wird durch diese Methode nicht auf uiElement
-   *          registriert!
-   * @param action
-   *          wird als erstes Element des args Arrays an die Funktion
-   *          {@link UIElementEventHandler#processUiElementEvent(UIElement, String, Object[])}
-   *          übergeben.
-   * @param conf
-   *          Manche ACTIONs erfordern zusätzliche Angaben (z.B. WINDOW Attribut für
-   *          die ACTION "switchWindow"). Damit diese ausgewertet und an handler
-   *          übergeben werden können muss hier das ConfigThingy des UI Elements
-   *          übergeben werden (also der Knoten, der TYPE als Kind hat).
-   * @param handler
-   *          der {@link UIElementEventHandler} an den die Events weitergereicht
-   *          werden sollen.
-   * @param supportedActions
-   *          Ist action nicht in dieser Menge enthalten gibt es einen Fehler.
-   * @return einen ActionListener, den man auf uiElement registrieren kann, damit er
-   *         dessen Actions an handler weiterreicht. Im Falle eines Fehlers (z.B.
-   *         fehlende Zusatzangaben für ACTION die dieses erfordert) wird null
-   *         geliefert.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
-   */
-  private ActionListener getAction(UIElement uiElement, String action,
-      ConfigThingy conf, UIElementEventHandler handler,
-      Set<String> supportedActions)
-  {
-    if (!supportedActions.contains(action))
-    {
-      LOGGER.error(L.m("Ununterstützte ACTION \"%1\"", action));
-      return null;
-    }
-
-    if ("switchWindow".equals(action))
-    {
-      try
-      {
-        String window = conf.get("WINDOW").toString();
-        return new UIElementActionListener(handler, uiElement, false, "action",
-            new Object[] {
-                action, window });
-      }
-      catch (NodeNotFoundException x)
-      {
-        LOGGER.error(L.m("ACTION \"switchWindow\" erfordert WINDOW-Attribut"),
-            x);
-      }
-    }
-    else if ("openTemplate".equals(action) || "openDocument".equals(action))
-    {
-      ConfigThingy fids = conf.query("FRAG_ID");
-      if (fids.count() > 0)
-      {
-        Iterator<ConfigThingy> i = fids.iterator();
-        StringBuilder fragId = new StringBuilder();
-        fragId.append(i.next().toString());
-        while (i.hasNext())
-        {
-          fragId.append("&");
-          fragId.append(i.next().toString());
-        }
-        return new UIElementActionListener(handler, uiElement, false, "action",
-            new Object[] {
-                action, fragId.toString() });
-      }
-      else
-      {
-        LOGGER.error(
-            L.m("ACTION \"%1\" erfordert mindestens ein Attribut FRAG_ID",
-                action));
-      }
-    }
-    else if ("openExt".equals(action))
-    {
-      ConfigThingy ext = conf.query("EXT");
-      if (ext.count() != 1)
-      {
-        LOGGER.error(
-            L.m("ACTION \"%1\" erfordert genau ein Attribut EXT", action));
-      }
-      else
-      {
-        ConfigThingy url = conf.query("URL");
-        if (url.count() != 1)
-        {
-          LOGGER.error(
-              L.m("ACTION \"%1\" erfordert genau ein Attribut URL", action));
-        }
-        else
-        {
-          return new UIElementActionListener(handler, uiElement, false,
-              "action",
-              new Object[] {
-                  action, ext.toString(), url.toString() });
-        }
-      }
-    }
-    else if ("closeAndOpenExt".equals(action)
-        || "saveTempAndOpenExt".equals(action))
-    {
-      ConfigThingy ext = conf.query("EXT");
-      if (ext.count() != 1)
-      {
-        LOGGER.error(
-            L.m("ACTION \"%1\" erfordert genau ein Attribut EXT", action));
-      }
-      else
-      {
-        return new UIElementActionListener(handler, uiElement, false, "action",
-            new Object[] {
-                action, ext.toString() });
-      }
-    }
-    else if ("open".equals(action))
-    {
-      try
-      {
-        ConfigThingy openConf = conf.get("OPEN");
-        return new UIElementActionListener(handler, uiElement, false, "action",
-            new Object[] {
-                action, openConf });
-      }
-      catch (NodeNotFoundException e)
-      {
-        LOGGER.error(L.m("ACTION \"open\" erfordert die Angabe OPEN \"...\""),
-            e);
-      }
-    }
-    else if ("funcDialog".equals(action))
-    {
-      try
-      {
-        String dialogName = conf.get("DIALOG").toString();
-        return new UIElementActionListener(handler, uiElement, false, "action",
-            new Object[] {
-                action, dialogName });
-      }
-      catch (NodeNotFoundException x)
-      {
-        LOGGER.error(L.m("ACTION \"funcDialog\" erfordert DIALOG-Attribut"), x);
-      }
-    }
-    else
-    {
-      return new UIElementActionListener(handler, uiElement, false, "action",
-          new Object[] { action });
-    }
-
-    return null;
-  }
-
 }

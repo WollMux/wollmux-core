@@ -34,6 +34,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Stream;
 
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
@@ -109,6 +110,20 @@ public class Search
       listOfQueryResultsList.add(results);
     }
     return mergeListOfQueryResultsList(listOfQueryResultsList);
+  }
+
+  public static QueryResults search(Map<String, String> query,
+      DatasourceJoiner dj) throws TimeoutException
+  {
+    List<QueryPart> parts = new ArrayList<>();
+
+    for (String key : query.keySet())
+    {
+      QueryPart qp = new QueryPart(key, query.get(key));
+      parts.add(qp);
+    }
+
+    return dj.find(parts);
   }
 
   /**

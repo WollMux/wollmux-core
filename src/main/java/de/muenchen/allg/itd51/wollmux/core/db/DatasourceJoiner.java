@@ -232,6 +232,16 @@ public class DatasourceJoiner
     return status;
   }
 
+  public Datasource getMainDatasource()
+  {
+    return mainDatasource;
+  }
+
+  public Datasource getDatasource(String name)
+  {
+    return nameToDatasource.get(name);
+  }
+
   /**
    * Liefert das Schema der Hauptdatenquelle zurück.
    * 

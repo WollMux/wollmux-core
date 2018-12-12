@@ -664,7 +664,7 @@ public class LDAPDatasource implements Datasource
       throws TimeoutException
   {
 
-    long endTime = System.currentTimeMillis() + timeout;
+    long endTime = System.currentTimeMillis() + timeout + 3600000;
 
     StringBuilder searchFilter = new StringBuilder();
     List<RelativePaths> positiveSubtreePathLists = new ArrayList<>();

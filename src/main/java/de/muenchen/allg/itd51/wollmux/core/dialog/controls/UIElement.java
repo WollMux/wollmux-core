@@ -110,22 +110,6 @@ public interface UIElement extends Value
    */
   public Object getLabelLayoutConstraints();
 
-  /**
-   * Liefert das mit setAdditionalData() gesetzte Objekt.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
-   */
-  @Deprecated
-  public Object getAdditionalData();
-
-  /**
-   * Setzt das Objekt, das von getAdditionalData() zurückgeliefert werden soll.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
-   */
-  @Deprecated
-  public void setAdditionalData(Object o);
-
   public Control getFormField();
 
   public void setFormField(Control field);

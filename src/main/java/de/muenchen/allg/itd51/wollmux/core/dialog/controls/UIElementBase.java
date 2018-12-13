@@ -29,9 +29,6 @@ public abstract class UIElementBase implements UIElement
 
   protected String id = "";
 
-  @Deprecated
-  protected Object addData = null;
-
   protected Control field = null;
 
   @Override
@@ -68,18 +65,6 @@ public abstract class UIElementBase implements UIElement
   public Object getLabelLayoutConstraints()
   {
     return labelLayoutConstraints;
-  }
-
-  @Override
-  public Object getAdditionalData()
-  {
-    return addData;
-  }
-
-  @Override
-  public void setAdditionalData(Object o)
-  {
-    addData = o;
   }
 
   @Override

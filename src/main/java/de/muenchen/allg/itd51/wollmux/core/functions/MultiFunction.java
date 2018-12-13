@@ -50,6 +50,7 @@ public abstract class MultiFunction implements Function
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
+  @SuppressWarnings("squid:S1172")
   protected boolean handleParam(ConfigThingy conf, FunctionLibrary funcLib,
       DialogLibrary dialogLib, Map<Object, Object> context)
   {

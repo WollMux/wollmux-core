@@ -18,7 +18,7 @@ public class IfFunction implements Function
   public IfFunction(Function ifFunction, Function thenFunction,
       Function elseFunction)
   {
-    Set<String> myparams = new HashSet<String>();
+    Set<String> myparams = new HashSet<>();
     myparams.addAll(Arrays.asList(ifFunction.parameters()));
     myparams.addAll(Arrays.asList(thenFunction.parameters()));
     myparams.addAll(Arrays.asList(elseFunction.parameters()));

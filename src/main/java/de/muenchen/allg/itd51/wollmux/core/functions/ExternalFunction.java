@@ -87,7 +87,7 @@ public class ExternalFunction
    * @throws ConfigurationErrorException
    *           falls die Spezifikation in conf fehlerhaft ist. TESTED
    */
-  public ExternalFunction(ConfigThingy conf) throws ConfigurationErrorException
+  public ExternalFunction(ConfigThingy conf)
   {
     this(conf, null);
   }
@@ -99,7 +99,7 @@ public class ExternalFunction
    * @throws ConfigurationErrorException
    *           falls die Spezifikation in conf fehlerhaft ist. TESTED
    */
-  public ExternalFunction(ConfigThingy conf, ClassLoader classLoader) throws ConfigurationErrorException
+  public ExternalFunction(ConfigThingy conf, ClassLoader classLoader)
   {
     ClassLoader cLoader = (classLoader == null)
         ? this.getClass().getClassLoader()

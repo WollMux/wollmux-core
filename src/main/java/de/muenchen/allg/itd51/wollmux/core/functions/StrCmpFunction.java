@@ -12,7 +12,6 @@ public class StrCmpFunction extends MultiFunction
 {
   public StrCmpFunction(ConfigThingy conf, FunctionLibrary funcLib,
       DialogLibrary dialogLib, Map<Object, Object> context)
-      throws ConfigurationErrorException
   {
     super(conf, funcLib, dialogLib, context);
     if (subFunction.size() < 2)

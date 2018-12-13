@@ -22,7 +22,6 @@ public class IsErrorFunction implements Function
    */
   public IsErrorFunction(boolean objectCompare, ConfigThingy conf,
       FunctionLibrary funcLib, DialogLibrary dialogLib, Map<Object, Object> context)
-      throws ConfigurationErrorException
   {
     if (conf.count() != 1)
       throw new ConfigurationErrorException(L.m(

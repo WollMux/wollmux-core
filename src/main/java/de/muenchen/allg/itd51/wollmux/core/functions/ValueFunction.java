@@ -19,7 +19,9 @@ public class ValueFunction implements Function
 
   @Override
   public void getFunctionDialogReferences(Collection<String> set)
-  {}
+  {
+    // Value Function hat keine Referenzen auf Dialoge.
+  }
 
   @Override
   public String getString(Values parameters)

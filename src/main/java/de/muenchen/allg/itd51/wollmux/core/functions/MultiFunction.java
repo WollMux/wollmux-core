@@ -3,8 +3,10 @@ package de.muenchen.allg.itd51.wollmux.core.functions;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
-import java.util.Vector;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import de.muenchen.allg.itd51.wollmux.core.dialog.DialogLibrary;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
@@ -19,24 +21,22 @@ public abstract class MultiFunction implements Function
 
   public MultiFunction(ConfigThingy conf, FunctionLibrary funcLib,
       DialogLibrary dialogLib, Map<Object, Object> context)
-      throws ConfigurationErrorException
   {
-    Vector<Function> subFunction = new Vector<>(conf.count());
+    List<Function> subFunc = new ArrayList<>(conf.count());
     Iterator<ConfigThingy> iter = conf.iterator();
     while (iter.hasNext())
     {
       ConfigThingy subFunConf = iter.next();
       if (handleParam(subFunConf, funcLib, dialogLib, context)) continue;
       Function fun = FunctionFactory.parse(subFunConf, funcLib, dialogLib, context);
-      subFunction.add(fun);
+      subFunc.add(fun);
     }
 
-    if (subFunction.size() == 0)
+    if (subFunc.isEmpty())
       throw new ConfigurationErrorException(L.m(
         "Funktion %1 erfordert mindestens einen Parameter", conf.getName()));
 
-    subFunction.trimToSize();
-    init(subFunction);
+    init(subFunc);
   }
 
   /**
@@ -52,7 +52,6 @@ public abstract class MultiFunction implements Function
    */
   protected boolean handleParam(ConfigThingy conf, FunctionLibrary funcLib,
       DialogLibrary dialogLib, Map<Object, Object> context)
-      throws ConfigurationErrorException
   {
     return false;
   }
@@ -66,7 +65,7 @@ public abstract class MultiFunction implements Function
    */
   protected String[] getAdditionalParams()
   {
-    return null;
+    return ArrayUtils.EMPTY_STRING_ARRAY;
   }
 
   public MultiFunction(Collection<Function> subFunction)
@@ -88,28 +87,24 @@ public abstract class MultiFunction implements Function
     ArrayList<String> deps = new ArrayList<>();
     for (Function f : subFunction)
     {
-      String[] params = f.parameters();
-      for (String str : params)
+      String[] parameter = f.parameters();
+      for (String str : parameter)
       {
         if (!deps.contains(str)) deps.add(str);
       }
     }
 
-    String[] additionalparams = getAdditionalParams();
-    if (additionalparams != null)
+    for (String str : getAdditionalParams())
     {
-      for (String str : additionalparams)
+      if (!deps.contains(str))
       {
-        if (!deps.contains(str)) deps.add(str);
+        deps.add(str);
       }
     }
 
     params = new String[deps.size()];
     params = deps.toArray(params);
   }
-
-  @Override
-  public abstract String getString(Values parameters);
 
   @Override
   public boolean getBoolean(Values parameters)

@@ -168,33 +168,29 @@ public class UIElementFactory
       UIElement.LabelPosition labelType = context.getLabelType(type);
 
       UIElement uiElement;
+      ActionListener actionL;
 
       switch (FormType.getType(type))
       {
       case BUTTON:
       case MENUITEM:
-      {
         uiElement = createButton(context, control.getLabel(), control.getTip(), control.getId(),
             type, control.getHotkey(), layoutConstraints);
-        ActionListener actionL = getAction(uiElement, control, context.getUiElementEventHandler(),
+        actionL = getAction(uiElement, control, context.getUiElementEventHandler(),
             context.getSupportedActions());
         if (actionL != null)
         {
           ((AbstractButton) uiElement.getComponent()).addActionListener(actionL);
         }
         return uiElement;
-      }
       case LABEL:
-      {
         return createLabel(control.getLabel(), control.getId(), layoutConstraints);
-      }
       case TEXTFIELD:
-      {
         uiElement = createTextfield(context, control.getLabel(), control.getTip(), control.getId(),
             control.isReadonly(), layoutConstraints, labelLayoutConstraints, labelType);
         if (control.getAction() != null && control.getAction().length() > 0)
         {
-          ActionListener actionL = getAction(uiElement, control, context.getUiElementEventHandler(),
+          actionL = getAction(uiElement, control, context.getUiElementEventHandler(),
               context.getSupportedActions());
           if (actionL != null)
           {
@@ -202,56 +198,39 @@ public class UIElementFactory
           }
         }
         return uiElement;
-      }
       case TEXTAREA:
-      {
         return createTextarea(context, control.getLabel(), control.getTip(), control.getId(),
             control.isReadonly(), layoutConstraints, labelLayoutConstraints, labelType,
             control.getLines(), control.isWrap());
-      }
       case COMBOBOX:
-      {
         return createCombobox(context, control.getLabel(), control.getTip(), control.getId(),
             control.isReadonly(), control.isEditable(), control.getOptions(), layoutConstraints,
             labelLayoutConstraints, labelType);
-      }
       case CHECKBOX:
-      {
         return createCheckbox(context, control.getLabel(), control.getTip(), control.getId(),
             control.isReadonly(), layoutConstraints);
-      }
       case H_SEPARATOR:
-      {
         JSeparator wurzelSepp = new JSeparator(SwingConstants.HORIZONTAL);
         return new Separator(control.getId(), wurzelSepp, layoutConstraints);
-      }
       case V_SEPARATOR:
-      {
-        JSeparator wurzelSepp = new JSeparator(SwingConstants.VERTICAL);
-        return new Separator(control.getId(), wurzelSepp, layoutConstraints);
-      }
+        JSeparator sepp = new JSeparator(SwingConstants.VERTICAL);
+        return new Separator(control.getId(), sepp, layoutConstraints);
       case H_GLUE:
-      {
         return new Box(control.getId(),
             new javax.swing.Box.Filler(new Dimension(control.getMinsize(), 0),
                 new Dimension(control.getPrefsize(), 0),
                 new Dimension(control.getMaxsize(), Integer.MAX_VALUE)),
             layoutConstraints);
-      }
       case V_GLUE:
-      {
         return new Box(control.getId(),
             new javax.swing.Box.Filler(new Dimension(0, control.getMinsize()),
                 new Dimension(0, control.getPrefsize()),
                 new Dimension(Integer.MAX_VALUE, control.getMaxsize())),
             layoutConstraints);
-      }
       case LISTBOX:
       default:
-      {
         throw new ConfigurationErrorException(
             L.m("Ununterstützter TYPE für GUI Element: \"%1\"", type));
-      }
       }
     } catch (FormModelException e)
     {

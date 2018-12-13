@@ -29,7 +29,7 @@ public class DivideFunction implements Function
   public DivideFunction(Function dividendFunction, Function divisorFunction,
       int minScale, int maxScale)
   {
-    Set<String> myparams = new HashSet<String>();
+    Set<String> myparams = new HashSet<>();
     myparams.addAll(Arrays.asList(dividendFunction.parameters()));
     if (divisorFunction != null)
       myparams.addAll(Arrays.asList(divisorFunction.parameters()));
@@ -56,15 +56,16 @@ public class DivideFunction implements Function
   @Override
   public String getString(Values parameters)
   { // TESTED
-    char decimalPoint = '.';
+    char decimalPoint;
     try
     {
       decimalPoint =
         ((DecimalFormat) NumberFormat.getInstance()).getDecimalFormatSymbols().getDecimalSeparator();
     }
     catch (Exception x)
-    {}
-    ;
+    {
+      decimalPoint = '.';
+    }
 
     String dividend = dividendFunction.getString(parameters);
     if (dividend == FunctionLibrary.ERROR) return FunctionLibrary.ERROR;

@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import de.muenchen.allg.itd51.wollmux.core.ConfClassLoader;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
-import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
 
 public class ExternalFunctionFunction implements Function
@@ -19,7 +18,6 @@ public class ExternalFunctionFunction implements Function
   private ExternalFunction func;
 
   public ExternalFunctionFunction(ConfigThingy conf)
-      throws ConfigurationErrorException
   {
     func = new ExternalFunction(conf, ConfClassLoader.getClassLoader());
   }
@@ -32,7 +30,9 @@ public class ExternalFunctionFunction implements Function
 
   @Override
   public void getFunctionDialogReferences(Collection<String> set)
-  {}
+  {
+    // Externe Funtkionen haben keine Dialoge.
+  }
 
   @Override
   public String getString(Values parameters)

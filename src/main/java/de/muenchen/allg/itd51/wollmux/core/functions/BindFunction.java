@@ -16,23 +16,21 @@ import de.muenchen.allg.itd51.wollmux.core.util.L;
 
 public class BindFunction implements Function
 {
-  private Map<String, Function> mapParamNameToSetFunction =
-    new HashMap<String, Function>();
+  private Map<String, Function> mapParamNameToSetFunction = new HashMap<>();
 
   private Function func;
 
   private String[] params;
 
-  private Set<String> functionDialogReferences = new HashSet<String>();
+  private Set<String> functionDialogReferences = new HashSet<>();
 
   public BindFunction(Function func, ConfigThingy conf, FunctionLibrary funcLib,
       DialogLibrary dialogLib, Map<Object, Object> context)
-      throws ConfigurationErrorException
   {
     this.func = func;
 
-    Set<String> myParams = new HashSet<String>(Arrays.asList(func.parameters()));
-    Set<String> setFuncParams = new HashSet<String>();
+    Set<String> myParams = new HashSet<>(Arrays.asList(func.parameters()));
+    Set<String> setFuncParams = new HashSet<>();
 
     ConfigThingy sets = conf.query("SET");
     Iterator<ConfigThingy> iter = sets.iterator();
@@ -43,34 +41,31 @@ public class BindFunction implements Function
         throw new ConfigurationErrorException(
           L.m("BIND: SET benötigt genau 2 Parameter"));
 
-      String name;
-      Function setFunc;
       try
       {
-        name = set.getFirstChild().toString();
-        setFunc = FunctionFactory.parse(set.getLastChild(), funcLib, dialogLib, context);
+        String name = set.getFirstChild().toString();
+        Function setFunc = FunctionFactory.parse(set.getLastChild(), funcLib, dialogLib, context);
+
+        if (mapParamNameToSetFunction.containsKey(name))
+          throw new ConfigurationErrorException(
+              L.m("BIND: Der Parameter %1 wird 2 mal mit SET gebunden", name));
+
+        mapParamNameToSetFunction.put(name, setFunc);
+        setFuncParams.addAll(Arrays.asList(setFunc.parameters()));
+        setFunc.getFunctionDialogReferences(functionDialogReferences);
+
+        /*
+         * name wurde gebunden, wird also nicht mehr als Parameter benötigt, außer wenn eine der
+         * setFuncs den Parameter benötigt. In diesem Fall ist der Parameter in setFuncParams
+         * erfasst und wird nachher wieder zu myparams hinzugefügt.
+         */
+        myParams.remove(name);
       }
       catch (NodeNotFoundException x)
-      { // kann nicht passieren, hab count() getestet
-        name = null;
-        setFunc = null;
+      {
+        // kann nicht passieren, hab count() getestet
       }
 
-      if (mapParamNameToSetFunction.containsKey(name))
-        throw new ConfigurationErrorException(L.m(
-          "BIND: Der Parameter %1 wird 2 mal mit SET gebunden", name));
-
-      mapParamNameToSetFunction.put(name, setFunc);
-      setFuncParams.addAll(Arrays.asList(setFunc.parameters()));
-      setFunc.getFunctionDialogReferences(functionDialogReferences);
-
-      /*
-       * name wurde gebunden, wird also nicht mehr als Parameter benötigt, außer
-       * wenn eine der setFuncs den Parameter benötigt. In diesem Fall ist der
-       * Parameter in setFuncParams erfasst und wird nachher wieder zu myparams
-       * hinzugefügt.
-       */
-      myParams.remove(name);
     }
 
     /*
@@ -115,7 +110,7 @@ public class BindFunction implements Function
   {
     private Values values;
 
-    public boolean hasError;
+    private boolean hasError;
 
     public TranslatedValues(Values values)
     {

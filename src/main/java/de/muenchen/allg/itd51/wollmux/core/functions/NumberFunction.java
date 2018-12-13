@@ -8,7 +8,6 @@ import java.util.Map;
 
 import de.muenchen.allg.itd51.wollmux.core.dialog.DialogLibrary;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
-import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
 
 abstract class NumberFunction extends MultiFunction
 {
@@ -16,17 +15,16 @@ abstract class NumberFunction extends MultiFunction
 
   public NumberFunction(ConfigThingy conf, FunctionLibrary funcLib,
       DialogLibrary dialogLib, Map<Object, Object> context)
-      throws ConfigurationErrorException
   {
     super(conf, funcLib, dialogLib, context);
     try
     {
-      decimalPoint =
-        ((DecimalFormat) NumberFormat.getInstance()).getDecimalFormatSymbols().getDecimalSeparator();
+      decimalPoint = ((DecimalFormat) NumberFormat.getInstance()).getDecimalFormatSymbols()
+          .getDecimalSeparator();
+    } catch (Exception x)
+    {
+      decimalPoint = '.';
     }
-    catch (Exception x)
-    {}
-    ;
   }
 
   /**
@@ -84,7 +82,7 @@ abstract class NumberFunction extends MultiFunction
     return computationResult();
   }
 
-  protected BigDecimal makeBigDecimal(String str) throws NumberFormatException
+  protected BigDecimal makeBigDecimal(String str)
   {
     /*
      * Falls der Dezimaltrenner nicht '.' ist, ersetzte alle '.' durch etwas, das

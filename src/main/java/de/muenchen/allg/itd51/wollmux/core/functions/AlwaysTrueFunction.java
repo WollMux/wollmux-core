@@ -14,7 +14,9 @@ public class AlwaysTrueFunction implements Function
 
   @Override
   public void getFunctionDialogReferences(Collection<String> set)
-  {}
+  {
+    // Hat keine Referenzen auf Dialoge.
+  }
 
   @Override
   public String getString(Values parameters)

@@ -4,6 +4,8 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Map;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import de.muenchen.allg.itd51.wollmux.core.dialog.DialogLibrary;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
@@ -52,7 +54,7 @@ public class NumberCompareFunction extends NumberFunction
    */
   public NumberCompareFunction(int cmp1, int cmp2, String result,
       ConfigThingy conf, FunctionLibrary funcLib, DialogLibrary dialogLib,
-      Map<Object, Object> context) throws ConfigurationErrorException
+      Map<Object, Object> context)
   {
     super(conf, funcLib, dialogLib, context);
     if (subFunction.size() < 2)
@@ -66,7 +68,6 @@ public class NumberCompareFunction extends NumberFunction
   @Override
   protected boolean handleParam(ConfigThingy conf, FunctionLibrary funcLib,
       DialogLibrary dialogLib, Map<Object, Object> context)
-      throws ConfigurationErrorException
   {
     if (conf.getName().equals("MARGIN"))
     {
@@ -86,7 +87,7 @@ public class NumberCompareFunction extends NumberFunction
     if (marginFun != null)
       return marginFun.parameters();
     else
-      return null;
+      return ArrayUtils.EMPTY_STRING_ARRAY;
   }
 
   @Override

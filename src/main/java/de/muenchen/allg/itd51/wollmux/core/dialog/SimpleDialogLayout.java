@@ -1,23 +1,38 @@
 package de.muenchen.allg.itd51.wollmux.core.dialog;
 
+import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.sun.star.awt.MouseEvent;
 import com.sun.star.awt.PosSize;
 import com.sun.star.awt.Rectangle;
 import com.sun.star.awt.WindowEvent;
+import com.sun.star.awt.XButton;
+import com.sun.star.awt.XCheckBox;
+import com.sun.star.awt.XComboBox;
 import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlContainer;
 import com.sun.star.awt.XControlModel;
+import com.sun.star.awt.XMouseListener;
+import com.sun.star.awt.XProgressBar;
+import com.sun.star.awt.XRadioButton;
+import com.sun.star.awt.XTextComponent;
 import com.sun.star.awt.XWindow;
 import com.sun.star.awt.XWindowListener;
-import com.sun.star.beans.UnknownPropertyException;
+import com.sun.star.beans.PropertyVetoException;
+import com.sun.star.beans.XMultiPropertySet;
 import com.sun.star.beans.XPropertySet;
 import com.sun.star.lang.EventObject;
+import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.WrappedTargetException;
+import com.sun.star.uno.Exception;
 import com.sun.star.uno.UnoRuntime;
 
+import de.muenchen.allg.afid.UNO;
 import de.muenchen.allg.itd51.wollmux.core.dialog.ControlModel;
 import de.muenchen.allg.itd51.wollmux.core.dialog.ControlModel.Align;
 import de.muenchen.allg.itd51.wollmux.core.dialog.ControlModel.Dock;
@@ -29,24 +44,27 @@ public class SimpleDialogLayout implements XWindowListener
       .getLogger(SimpleDialogLayout.class);
   private XControlContainer controlContainer;
   private XWindow containerWindow;
-  private int linebreakHeight = 20;
   private int marginBetweenControls = 5;
   private List<ControlModel> controlList = new ArrayList<>();
   private int yOffset = 0;
   private int xOffset = 0;
-  private int controlHeight = 20; // default
+  private int marginTop = 0;
+  private int marginRight = 0;
+  private int marginLeft = 0;
+  private int windowBottomMargin = 0;
 
-  public SimpleDialogLayout(XControlContainer controlContainer,
-      XWindow containerWindow)
+  public SimpleDialogLayout(XWindow dialogWindow)
   {
-    this.controlContainer = controlContainer;
-    this.containerWindow = containerWindow;
+    this.containerWindow = dialogWindow;
     this.containerWindow.addWindowListener(this);
+    this.controlContainer = UnoRuntime.queryInterface(XControlContainer.class,
+        dialogWindow);
   }
 
-  public void draw() throws UnknownPropertyException, WrappedTargetException
+  public void draw()
   {
-    this.yOffset = 0;
+    this.yOffset = this.getMarginTop() > 0 ? this.getMarginTop() : 0;
+    this.xOffset = this.getMarginLeft() > 0 ? this.getMarginLeft() : 0;
 
     Rectangle windowRect = this.getContainerWindow().getPosSize();
 
@@ -56,21 +74,58 @@ public class SimpleDialogLayout implements XWindowListener
 
       if (entry.getOrientation() == Orientation.HORIZONTAL)
       {
-        for (XControl control : entry.getControls())
+        for (SimpleEntry<ControlProperties, XControl> control : entry
+            .getControls())
         {
-          this.addControlHorizontal(windowRect, control, entry.getAlignment(),
-              entry.getControls().size());
+          XControl controlByControlContainer = this.controlContainer
+              .getControl(control.getKey().getControlName());
+          if (controlByControlContainer != null)
+          {
+            modifyHorizontalControl(windowRect, controlByControlContainer,
+                control.getKey(), entry.getAlignment(),
+                entry.getControls().size());
+          } else
+          {
+            this.modifyHorizontalControl(windowRect, control.getValue(),
+                control.getKey(), entry.getAlignment(),
+                entry.getControls().size());
+
+            this.addControlToControlContainer(control.getKey().getControlName(),
+                control.getValue());
+          }
         }
       } else if (entry.getOrientation() == Orientation.VERTICAL)
       {
-        for (XControl control : entry.getControls())
+        for (SimpleEntry<ControlProperties, XControl> control : entry
+            .getControls())
         {
-          this.addControlVertical(windowRect, control, entry.getAlignment());
+          XControl controlByControlContainer = this.controlContainer
+              .getControl(control.getKey().getControlName());
+          if (controlByControlContainer != null)
+          {
+            this.modifyVerticalControl(windowRect, control.getValue(),
+                control.getKey(), entry.getAlignment());
+          } else
+          {
+            this.modifyVerticalControl(windowRect, control.getValue(),
+                control.getKey(), entry.getAlignment());
+
+            this.addControlToControlContainer(control.getKey().getControlName(),
+                control.getValue());
+          }
         }
       }
 
-      this.newLine();
+      this.newLine(entry);
     }
+  }
+
+  private Optional<SimpleEntry<ControlProperties, XControl>> getMaxControlHeightByControlList(
+      ControlModel controlModel)
+  {
+    return controlModel.getControls().stream()
+        .max((v1, v2) -> Integer.compare(v1.getKey().getControlHeight(),
+            v2.getKey().getControlHeight()));
   }
 
   private void setDock(Rectangle windowRect, ControlModel controlModel,
@@ -78,51 +133,55 @@ public class SimpleDialogLayout implements XWindowListener
   {
     if (dock == Dock.BOTTOM)
     {
-      this.yOffset = this.getBottomYOffset(windowRect, this.getControlHeight(),
-          controlModel.getControls().size());
+      Optional<SimpleEntry<ControlProperties, XControl>> maxControlHeight = this
+          .getMaxControlHeightByControlList(controlModel);
+      this.yOffset = this.getBottomYOffset(windowRect,
+          maxControlHeight.isPresent()
+              ? maxControlHeight.get().getKey().getControlHeight()
+              : 0);
     }
   }
 
-  private void addControlHorizontal(Rectangle windowRect, XControl control,
-      Align alignment, int controlCount)
-      throws UnknownPropertyException, WrappedTargetException
+  private void modifyHorizontalControl(Rectangle windowRect, XControl control,
+      ControlProperties controlProperties, Align alignment, int controlCount)
   {
     XWindow wnd = UnoRuntime.queryInterface(XWindow.class, control);
 
-    Rectangle cr = wnd.getPosSize();
-
-    int calculatedControlWidth = (windowRect.Width - (controlCount * 10))
-        / controlCount;
+    int calculatedControlWidth = controlProperties.getControlPercentWidth() > 0
+        ? ((windowRect.Width / 100)
+            * controlProperties.getControlPercentWidth())
+            - (2 * this.getMarginLeft() / controlCount)
+        : (windowRect.Width - (controlCount * 10)) / controlCount;
 
     if (alignment == Align.RIGHT)
     {
       int calculatedControlWidthRight = (windowRect.Width / 2
           - (controlCount * 5)) / controlCount;
       wnd.setPosSize(xOffset + windowRect.Width / 2, yOffset,
-          calculatedControlWidthRight, this.getControlHeight(),
+          calculatedControlWidthRight, controlProperties.getControlHeight(),
           (short) (PosSize.POSSIZE));
     } else if (alignment == Align.LEFT)
     {
       int calculatedControlWidthLeft = (windowRect.Width / 2
           - (controlCount * 5)) / controlCount;
       wnd.setPosSize(xOffset, yOffset, calculatedControlWidthLeft,
-          this.getControlHeight(), (short) (PosSize.POSSIZE));
+          controlProperties.getControlHeight(), (short) (PosSize.POSSIZE));
     } else
     {
+      xOffset = controlProperties.getMarginLeft() > 0
+          ? controlProperties.getMarginLeft()
+          : xOffset;
+
       // full width
       wnd.setPosSize(xOffset, yOffset, calculatedControlWidth,
-          this.getControlHeight(), (short) (PosSize.POSSIZE));
+          controlProperties.getControlHeight(), (short) (PosSize.POSSIZE));
     }
 
-    xOffset += cr.Width + this.getMarginBetweenControls();
-
-    this.addControlToControlContainer(this.getControlName(control.getModel()),
-        control);
+    xOffset += calculatedControlWidth + this.getMarginBetweenControls();
   }
 
-  private void addControlVertical(Rectangle windowRect, XControl control,
-      Align alignment)
-      throws UnknownPropertyException, WrappedTargetException
+  private void modifyVerticalControl(Rectangle windowRect, XControl control,
+      ControlProperties controlProperties, Align alignment)
   {
     XWindow wnd = UnoRuntime.queryInterface(XWindow.class, control);
 
@@ -131,52 +190,140 @@ public class SimpleDialogLayout implements XWindowListener
     if (alignment == Align.RIGHT)
     {
       wnd.setPosSize(windowRect.Width / 2, yOffset, windowRect.Width / 2,
-          this.getControlHeight(), (short) (PosSize.POSSIZE));
+          controlProperties.getControlHeight(), (short) (PosSize.POSSIZE));
     } else if (alignment == Align.LEFT)
     {
-      wnd.setPosSize(0, yOffset, windowRect.Width / 2, this.getControlHeight(),
-          (short) (PosSize.POSSIZE));
+      wnd.setPosSize(0, yOffset, windowRect.Width / 2,
+          controlProperties.getControlHeight(), (short) (PosSize.POSSIZE));
     } else
     {
+      int xOffsetTemp = 0;
+
+      xOffsetTemp = this.getMarginLeft() > 0 ? this.getMarginLeft()
+          : xOffsetTemp;
+      xOffsetTemp = controlProperties.getMarginLeft() > 0
+          ? controlProperties.getMarginLeft()
+          : xOffsetTemp;
+
       // full width
-      wnd.setPosSize(0, yOffset, windowRect.Width, this.getControlHeight(),
-          (short) (PosSize.POSSIZE));
+      wnd.setPosSize(xOffsetTemp, yOffset, windowRect.Width,
+          controlProperties.getControlHeight(), (short) (PosSize.POSSIZE));
     }
 
-    yOffset += cr.Height + this.getMarginBetweenControls();
-
-    this.addControlToControlContainer(this.getControlName(control.getModel()),
-        control);
+    yOffset += cr.Height + (controlProperties.getMarginBetweenControls() > 0
+        ? controlProperties.getMarginBetweenControls()
+        : this.getMarginBetweenControls());
   }
 
-  private String getControlName(XControlModel controlModel)
+  private void newLine(ControlModel controlModel)
   {
-    XPropertySet propertySet = UnoRuntime.queryInterface(XPropertySet.class,
-        controlModel);
+    yOffset += controlModel.getLinebreakHeight();
+    xOffset = this.getMarginLeft() > 0 ? this.getMarginLeft() : 0;
+  }
+
+  public SimpleEntry<ControlProperties, XControl> convertToXControl(
+      ControlProperties controlProperties)
+  {
+    String controlType = controlProperties.getControlType().toString();
+    Object control = UNO.createUNOService(controlType);
+
+    Object editModel = null;
+    try
+    {
+      editModel = UNO.xMSF.createInstance(controlType + "Model");
+    }
+    catch (Exception e1)
+    {
+      LOGGER.error("", e1);
+    }
+
+    XMultiPropertySet propertySet = UnoRuntime
+        .queryInterface(XMultiPropertySet.class, editModel);
 
     try
     {
-      return (String) propertySet.getPropertyValue("Name");
+      propertySet.setPropertyValues(controlProperties.getPropertySet().getKey(),
+          controlProperties.getPropertySet().getValue());
     }
-    catch (Exception e)
+    catch (IllegalArgumentException | PropertyVetoException
+        | WrappedTargetException e)
     {
       LOGGER.error("", e);
     }
 
-    return "";
+    XControlModel modelX = UnoRuntime.queryInterface(XControlModel.class,
+        editModel);
+
+    XControl xControl = UnoRuntime.queryInterface(XControl.class, control);
+    this.castControl(controlProperties, xControl);
+    XWindow wnd = UnoRuntime.queryInterface(XWindow.class, xControl);
+    wnd.setPosSize(0, 0, controlProperties.getControlWidth(),
+        controlProperties.getControlHeight(), PosSize.SIZE);
+
+    xControl.setModel(modelX);
+
+    return new SimpleEntry<>(controlProperties, xControl);
   }
 
-  private void newLine()
+  int groupBoxHeight;
+
+  public int calcGroupBoxHeightByControlProperties(
+      List<ControlModel> controlModels)
   {
-    yOffset += this.getLinebreakHeight();
-    xOffset = 0;
+    if (controlModels.isEmpty())
+    {
+      return 0;
+    }
+
+    groupBoxHeight = 0;
+
+    controlModels.parallelStream().forEach(controlModel -> controlModel
+        .getControls().parallelStream().forEach(controlProperty -> {
+          groupBoxHeight += controlProperty.getKey().getControlHeight()
+              + controlProperty.getKey().getMarginBetweenControls();
+        }));
+
+    return groupBoxHeight + 10;
   }
 
-  private int getBottomYOffset(Rectangle windowRect, int controlHeight,
-      int controlCount)
+  private void castControl(ControlProperties controlProperties,
+      XControl xControl)
   {
-    return windowRect.Height - this.getMarginBetweenControls() - 5
-        - (controlHeight * controlCount);
+    switch (controlProperties.getControlType())
+    {
+    case EDIT:
+      XTextComponent textComponent = UnoRuntime
+          .queryInterface(XTextComponent.class, xControl);
+      break;
+    case BUTTON:
+      XButton button = UnoRuntime.queryInterface(XButton.class, xControl);
+      button.setActionCommand(controlProperties.getButtonCommand());
+      break;
+    case PROGRESSBAR:
+      XProgressBar progressBar = UnoRuntime.queryInterface(XProgressBar.class,
+          xControl);
+      progressBar.getValue();
+      break;
+    case CHECKBOX:
+      XCheckBox checkbox = UnoRuntime.queryInterface(XCheckBox.class, xControl);
+      break;
+    case RADIO:
+      XRadioButton radioButton = UnoRuntime.queryInterface(XRadioButton.class,
+          xControl);
+      break;
+    case COMBOBOX:
+      XComboBox comboBox = UnoRuntime.queryInterface(XComboBox.class, xControl);
+      break;
+    case SPINBUTTON:
+      break;
+    default:
+      break;
+    }
+  }
+
+  private int getBottomYOffset(Rectangle windowRect, int controlHeight)
+  {
+    return windowRect.Height - controlHeight - this.getWindowBottomMargin();
   }
 
   private void addControlToControlContainer(String name, XControl control)
@@ -189,7 +336,7 @@ public class SimpleDialogLayout implements XWindowListener
     this.controlList.add(control);
   }
 
-  private List<ControlModel> getControlList()
+  public List<ControlModel> getControlList()
   {
     return this.controlList;
   }
@@ -204,24 +351,44 @@ public class SimpleDialogLayout implements XWindowListener
     this.marginBetweenControls = margin;
   }
 
-  private int getLinebreakHeight()
+  public void setMarginTop(int marginTop)
   {
-    return this.linebreakHeight;
+    this.marginTop = marginTop;
   }
 
-  private int getControlHeight()
+  private int getMarginTop()
   {
-    return this.controlHeight;
+    return this.marginTop;
   }
 
-  public void setControlHeight(int controlHeight)
+  public void setMarginRight(int marginRight)
   {
-    this.controlHeight = controlHeight;
+    this.marginRight = marginRight;
   }
 
-  public void setLinebreakHeight(int height)
+  private int getMarginRight()
   {
-    this.linebreakHeight = height;
+    return this.marginRight;
+  }
+
+  public void setMarginLeft(int marginLeft)
+  {
+    this.marginLeft = marginLeft;
+  }
+
+  private int getWindowBottomMargin()
+  {
+    return this.windowBottomMargin;
+  }
+
+  public void setWindowBottomMargin(int marginBottom)
+  {
+    this.windowBottomMargin = marginBottom;
+  }
+
+  private int getMarginLeft()
+  {
+    return this.marginLeft;
   }
 
   public XControl getControl(String name)
@@ -259,44 +426,30 @@ public class SimpleDialogLayout implements XWindowListener
   @Override
   public void disposing(EventObject arg0)
   {
-
+    // ...
   }
 
   @Override
   public void windowHidden(EventObject arg0)
   {
-
+    // ...
   }
 
   @Override
   public void windowMoved(WindowEvent arg0)
   {
-
+    // ...
   }
 
   @Override
   public void windowResized(WindowEvent arg0)
   {
-    try
-    {
-      this.draw();
-    }
-    catch (Exception e)
-    {
-      LOGGER.error("", e);
-    }
+    this.draw();
   }
 
   @Override
   public void windowShown(EventObject arg0)
   {
-    try
-    {
-      this.draw();
-    }
-    catch (Exception e)
-    {
-      LOGGER.error("", e);
-    }
+    this.draw();
   }
 }

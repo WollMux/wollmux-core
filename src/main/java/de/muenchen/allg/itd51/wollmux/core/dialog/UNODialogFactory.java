@@ -7,7 +7,6 @@ import com.sun.star.awt.WindowAttribute;
 import com.sun.star.awt.WindowClass;
 import com.sun.star.awt.WindowDescriptor;
 import com.sun.star.awt.XControl;
-import com.sun.star.awt.XControlContainer;
 import com.sun.star.awt.XControlModel;
 import com.sun.star.awt.XToolkit;
 import com.sun.star.awt.XWindow;
@@ -16,33 +15,21 @@ import com.sun.star.chart2.XFormattedString;
 import com.sun.star.chart2.XTitle;
 import com.sun.star.frame.XFrame;
 import com.sun.star.frame.XFramesSupplier;
-import com.sun.star.lang.XMultiComponentFactory;
 import com.sun.star.uno.Exception;
 import com.sun.star.uno.UnoRuntime;
-import com.sun.star.uno.XComponentContext;
 import de.muenchen.allg.afid.UNO;
 
 public class UNODialogFactory
 {
   private static final Logger LOGGER = LoggerFactory
       .getLogger(UNODialogFactory.class);
-  private XControlContainer contXContainer;
-  private XComponentContext context;
-  private XMultiComponentFactory xmcf;
-  private XWindow modalBaseDialogWindow;
 
-  public UNODialogFactory(XMultiComponentFactory xmcf,
-      XComponentContext context)
-  {
-    this.xmcf = xmcf;
-    this.context = context;
-  }
-
-  public void createDialog(int width, int height) throws Exception
+  private XWindow modalBaseDialogWindow = null;
+  
+  public XWindow createDialog(int width, int height, int backgroundColor) throws Exception
   {
     Object cont = UNO.createUNOService("com.sun.star.awt.UnoControlContainer");
     XControl dialogControl = UnoRuntime.queryInterface(XControl.class, cont);
-    contXContainer = UnoRuntime.queryInterface(XControlContainer.class, cont);
 
     Object unoControlContainerModelO = UNO
         .createUNOService("com.sun.star.awt.UnoControlContainerModel");
@@ -52,37 +39,60 @@ public class UNODialogFactory
 
     XWindow contXWindow = UNO.XWindow(dialogControl);
 
-    Object toolkit = xmcf.createInstanceWithContext("com.sun.star.awt.Toolkit",
-        context);
+    Object toolkit = UNO.xMCF.createInstanceWithContext(
+        "com.sun.star.awt.Toolkit", UNO.defaultContext);
     XToolkit xToolkit = UnoRuntime.queryInterface(XToolkit.class, toolkit);
 
     XWindow currentWindow = UNO.desktop.getCurrentFrame().getContainerWindow();
     XWindowPeer currentWindowPeer = UNO.XWindowPeer(currentWindow);
     XWindowPeer modalBaseDialog = createModalBaseDialog(xToolkit,
         currentWindowPeer, width, height);
-    modalBaseDialogWindow = UNO.XWindow(modalBaseDialog);
+    this.modalBaseDialogWindow = UNO.XWindow(modalBaseDialog);
 
-    Object testFrame = xmcf
-        .createInstanceWithContext("com.sun.star.frame.Frame", context);
-    XFrame xFrameTest = UNO.XFrame(testFrame);
+    Object testFrame = UNO.xMCF.createInstanceWithContext(
+        "com.sun.star.frame.Frame", UNO.defaultContext);
 
-    xFrameTest.initialize(modalBaseDialogWindow);
+    XFrame xFrame = UNO.XFrame(testFrame);
+    xFrame.initialize(this.modalBaseDialogWindow);
     XFramesSupplier creator = UNO.desktop.getCurrentFrame().getCreator();
-    xFrameTest.setCreator(creator);
-    xFrameTest.activate();
+    xFrame.setCreator(creator);
+    xFrame.activate();
     dialogControl.createPeer(xToolkit, modalBaseDialog);
+    XWindowPeer testPeer = dialogControl.getPeer();
+    testPeer.setBackground(backgroundColor);
 
-    boolean isSuccessfullySet = xFrameTest.setComponent(contXWindow, null);
+    boolean isSuccessfullySet = xFrame.setComponent(contXWindow, null);
 
     if (!isSuccessfullySet)
     {
       LOGGER.error(
           "UNODialogExample: createDialog: XFrame has not been set successfully.");
-      return;
+      return contXWindow;
     }
 
-    modalBaseDialogWindow.setEnable(true);
-    modalBaseDialogWindow.setVisible(true);
+    return contXWindow;
+  }
+  
+  public void showDialog() {
+    if(this.modalBaseDialogWindow == null) {
+      LOGGER.error("Es wurde kein exestierendes Dialog-Fenster gefunden. Ein Dialog muss zuvor erstellt werden.");
+      return;
+    }
+    
+    this.modalBaseDialogWindow.setEnable(true);
+    this.modalBaseDialogWindow.setVisible(true);
+  }
+  
+  public void closeDialog() {
+    if(this.modalBaseDialogWindow == null) {
+      LOGGER.error("Es wurde kein exestierendes Dialog-Fenster gefunden. Ein Dialog muss zuvor erstellt werden.");
+      return;
+    }
+    
+    //this.modalBaseDialogWindow.setEnable(false);
+    //this.modalBaseDialogWindow = null;
+    //this.modalBaseDialogWindow.dispose();
+    this.modalBaseDialogWindow.setVisible(false);
   }
 
   public static XTitle createTitle(String titleString)
@@ -108,16 +118,6 @@ public class UNODialogFactory
     return xtitle;
   }
 
-  public XControlContainer getControlContainer()
-  {
-    return this.contXContainer;
-  }
-
-  public XWindow getDialogWindow()
-  {
-    return this.modalBaseDialogWindow;
-  }
-
   private XWindowPeer createModalBaseDialog(XToolkit toolkit,
       XWindowPeer parentWindow, int width, int height)
   {
@@ -135,11 +135,11 @@ public class UNODialogFactory
     aWindow.Parent = parentWindow;
     aWindow.ParentIndex = -1;
     aWindow.Bounds = rect;
+
     aWindow.WindowAttributes = WindowAttribute.CLOSEABLE
         | WindowAttribute.SIZEABLE | WindowAttribute.MOVEABLE
         | WindowAttribute.BORDER;
 
     return toolkit.createWindow(aWindow);
   }
-
 }

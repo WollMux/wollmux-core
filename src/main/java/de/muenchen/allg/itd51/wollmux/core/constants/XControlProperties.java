@@ -1,4 +1,4 @@
-package de.muenchen.allg.itd51.wollmux.core.dialog;
+package de.muenchen.allg.itd51.wollmux.core.constants;
 
 public class XControlProperties
 {

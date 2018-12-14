@@ -1,4 +1,4 @@
-package de.muenchen.allg.itd51.wollmux.core.parser.test;
+package de.muenchen.allg.itd51.wollmux.core.parser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -8,7 +8,8 @@ import java.io.FileInputStream;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 
 import javax.xml.XMLConstants;
 import javax.xml.transform.Source;
@@ -45,7 +46,7 @@ public class TestWithoutInclude
    * Tokens expected by scan of scannerTest.conf.
    */
   private final Token[] tokens = {
-      new Token("src/test/resources/scannerTest.conf", TokenType.NEW_FILE),
+      new Token(getClass().getResource("scannerTest.conf").getFile(), TokenType.NEW_FILE),
       new Token("A", TokenType.KEY), new Token("'X\"\"Y'", TokenType.VALUE),
       new Token("B", TokenType.KEY), new Token("'X\"Y'", TokenType.VALUE),
       new Token("C", TokenType.KEY), new Token("\"X''Y\"", TokenType.VALUE),
@@ -100,8 +101,7 @@ public class TestWithoutInclude
   public void scanWithoutInclude() throws ScannerException,
       MalformedURLException
   {
-    final Scanner scanner = new Scanner(new URL(
-        "file:src/test/resources/scannerTest.conf"));
+    final Scanner scanner = new Scanner(getClass().getResource("scannerTest.conf"));
     int index = 0;
     while (scanner.hasNext())
     {
@@ -128,14 +128,10 @@ public class TestWithoutInclude
   public void generateWithoutInclude() throws XMLGeneratorException,
       SAXException, IOException
   {
-    final File in = new File("src/test/resources/scannerTest.conf");
-    final File out = new File("src/test/resources/tmp.conf");
-    // TODO: if jdk1.7 the file src/test/resources tmp.conf can
-    // be removed and this code can be used:
-    // Files
-    // .copy(in.toPath(), out.toPath(), StandardCopyOption.REPLACE_EXISTING);
-    final Document doc = new XMLGenerator(new FileInputStream(
-        "src/test/resources/tmp.conf")).generateXML();
+    final File in = new File(getClass().getResource("scannerTest.conf").getFile());
+    final File out = new File(in.getParentFile(), "tmp.conf");
+    Files.copy(in.toPath(), out.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    final Document doc = new XMLGenerator(new FileInputStream(out)).generateXML();
     final File schemaFile = new File("src/main/resources/configuration.xsd");
     final SchemaFactory schemaFactory = SchemaFactory
         .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -153,11 +149,10 @@ public class TestWithoutInclude
       assertFalse("No key 'NAME'", true);
     }
     ConfGenerator generator = new ConfGenerator(doc);
-    generator.generateConf(new FileOutputStream("src/test/resources/tmp.conf"),
-        0);
+    generator.generateConf(new FileOutputStream(out), 0);
     // Whitespace was replaced
     assertEquals("Different content length", in.length(), out.length() + 9);
-    // out.delete();
+    out.delete();
     assertEquals("wrong string", config, generator.generateConf("UTF-8"));
   }
 

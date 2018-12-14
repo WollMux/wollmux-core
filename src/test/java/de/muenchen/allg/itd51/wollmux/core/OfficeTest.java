@@ -1,4 +1,4 @@
-package de.muenchen.allg.itd51.wollmux.core.test;
+package de.muenchen.allg.itd51.wollmux.core;
 
 import org.junit.BeforeClass;
 import org.junit.experimental.categories.Category;

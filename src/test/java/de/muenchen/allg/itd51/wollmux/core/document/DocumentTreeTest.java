@@ -11,7 +11,7 @@ import org.junit.Test;
 import com.sun.star.text.XTextDocument;
 
 import de.muenchen.allg.afid.UNO;
-import de.muenchen.allg.itd51.wollmux.core.test.OfficeTest;
+import de.muenchen.allg.itd51.wollmux.core.OfficeTest;
 
 public class DocumentTreeTest extends OfficeTest
 {
@@ -20,8 +20,7 @@ public class DocumentTreeTest extends OfficeTest
   @Before
   public void setUp() throws Exception
   {
-    ClassLoader classLoader = ClassLoader.getSystemClassLoader();
-    URL file = classLoader.getResource("document/ExternerBriefkopf.odt");
+    URL file = getClass().getResource("ExternerBriefkopf.odt");
     UNO.loadComponentFromURL(file.toString(), false, false);
     xDoc = UNO.XTextDocument(UNO.desktop.getCurrentComponent());
   }

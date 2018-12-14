@@ -1,4 +1,4 @@
-package de.muenchen.allg.itd51.wollmux.core.parser.test;
+package de.muenchen.allg.itd51.wollmux.core.parser;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
@@ -7,9 +7,10 @@ import static org.junit.Assert.assertTrue;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.net.URISyntaxException;
+import java.nio.file.Files;
+import java.nio.file.StandardCopyOption;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.Map;
 import java.util.Map.Entry;
 
@@ -44,14 +45,14 @@ public class TestWithInclude
    * The tokens expeceted by the scan of includeTest.conf.
    */
   private final Token[] tokens = {
-      new Token("src/test/resources/includeTest.conf", TokenType.NEW_FILE),
+      new Token(getClass().getResource("includeTest.conf").getFile(), TokenType.NEW_FILE),
       new Token("file:inc/includeTest2.conf", TokenType.NEW_FILE),
       new Token("# includeTest2", TokenType.COMMENT),
       new Token("", TokenType.END_FILE),
-      new Token("file:../resources/inc/includeTest2.conf", TokenType.NEW_FILE),
+      new Token("file:../parser/inc/includeTest2.conf", TokenType.NEW_FILE),
       new Token("# includeTest2", TokenType.COMMENT),
       new Token("", TokenType.END_FILE),
-      new Token("../resources/inc/includeTest2.conf", TokenType.NEW_FILE),
+      new Token("../parser/inc/includeTest2.conf", TokenType.NEW_FILE),
       new Token("# includeTest2", TokenType.COMMENT),
       new Token("", TokenType.END_FILE),
       new Token("inc/includeTest3.conf", TokenType.NEW_FILE),
@@ -63,7 +64,7 @@ public class TestWithInclude
   /**
    * Map to store the file content mapping.
    */
-  private final Map<String, String> fileContentMap = new HashMap<String, String>();
+  private final Map<String, String> fileContentMap = new HashMap<>();
 
   /**
    * Test if the scanner works properly.
@@ -76,8 +77,7 @@ public class TestWithInclude
   @Test
   public void scanWithInclude() throws ScannerException, MalformedURLException
   {
-    final Scanner scanner = new Scanner(new URL(
-        "file:src/test/resources/includeTest.conf"));
+    final Scanner scanner = new Scanner(getClass().getResource("includeTest.conf"));
     int index = 0;
     while (scanner.hasNext())
     {
@@ -90,8 +90,7 @@ public class TestWithInclude
   }
 
   /**
-   * Generate a configuration out of a configuration. Scan it and than write it
-   * again.
+   * Generate a configuration out of a configuration. Scan it and than write it again.
    *
    * @throws XMLGeneratorException
    *           Generator problems.
@@ -99,23 +98,19 @@ public class TestWithInclude
    *           Malformed XML-document generated.
    * @throws IOException
    *           Couldn't read or write.
+   * @throws URISyntaxException
    */
   @Test
   public void generateWithInclude() throws XMLGeneratorException, SAXException,
-      IOException
+      IOException, URISyntaxException
   {
-    final File in = new File("src/test/resources/scannerTest.conf");
-    final File out = new File("src/test/resources/tmp.conf");
-    final File in2 = new File("src/test/resources/scannerTest2.conf");
-    final File out2 = new File("src/test/resources/tmp2.conf");
-    // TODO: if jdk1.7 the file src/test/resources tmp.conf and tmp2.conf can
-    // be removed and this code can be used:
-    // Files
-    // .copy(in.toPath(), out.toPath(), StandardCopyOption.REPLACE_EXISTING);
-    // Files.copy(in2.toPath(), out2.toPath(),
-    // StandardCopyOption.REPLACE_EXISTING);
-    final Document doc = new XMLGenerator(new URL(
-        "file:src/test/resources/tmp2.conf")).generateXML();
+    final File in = new File(getClass().getResource("scannerTest.conf").toURI());
+    final File out = new File(in.getParentFile(), "tmp.conf");
+    final File in2 = new File(getClass().getResource("scannerTest2.conf").toURI());
+    final File out2 = new File(in2.getParentFile(), "tmp2.conf");
+    Files.copy(in.toPath(), out.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    Files.copy(in2.toPath(), out2.toPath(), StandardCopyOption.REPLACE_EXISTING);
+    final Document doc = new XMLGenerator(out2.toURI().toURL()).generateXML();
     final File schemaFile = new File("src/main/resources/configuration.xsd");
     final SchemaFactory schemaFactory = SchemaFactory
         .newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -130,18 +125,16 @@ public class TestWithInclude
     assertEquals("Different content length 2", in2.length(), out2.length());
     // out.delete();
     // out2.delete();
-    fileContentMap.put("src/test/resources/tmp2.conf",
+    fileContentMap.put(getClass().getResource("tmp2.conf").getFile(),
         "%include \"tmp.conf\"\n\n");
     fileContentMap
         .put(
-            "src/test/resources/tmp.conf",
+            getClass().getResource("tmp.conf").getFile(),
             "A 'X\"\"Y'\nB 'X\"Y'\nC \"X''Y\"\nD \"X'Y\"\nGUI (\n  Dialoge (\n    Dialog1 (\n      (TYPE \"textbox\" LABEL \"Name\")\n    )\n  )\n)\nAnredevarianten (\"Herr\", \"Frau\", \"Pinguin\")\n(\"Dies\", \"ist\", \"eine\", \"unbenannte\", \"Liste\")\nNAME \"WollMux%%%n\" # FARBSCHEMA \"Ekelig\"\n\n");
     Map<String, String> map = generator.generateConfMap("UTF-8");
     assertEquals("Different number of files", fileContentMap.size(), map.size());
-    Iterator<Entry<String, String>> iter = map.entrySet().iterator();
-    while (iter.hasNext())
+    for (Entry<String, String> entry : map.entrySet())
     {
-      Entry<String, String> entry = iter.next();
       assertTrue("Unknown file " + entry.getKey(),
           fileContentMap.containsKey(entry.getKey()));
       assertEquals("Different content", fileContentMap.get(entry.getKey()),

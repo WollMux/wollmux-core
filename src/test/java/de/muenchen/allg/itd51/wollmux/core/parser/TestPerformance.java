@@ -1,9 +1,8 @@
-package de.muenchen.allg.itd51.wollmux.core.parser.test;
+package de.muenchen.allg.itd51.wollmux.core.parser;
 
 import static org.junit.Assert.assertTrue;
 
 import java.io.IOException;
-import java.net.URL;
 
 import org.junit.Test;
 
@@ -29,8 +28,7 @@ public class TestPerformance
   @Test
   public void performance() throws IOException, XMLGeneratorException
   {
-    final XMLGenerator generator = new XMLGenerator(new URL(
-        "file:src/test/resources/performance.conf"));
+    final XMLGenerator generator = new XMLGenerator(getClass().getResource("performance.conf"));
     final long start = System.currentTimeMillis();
     generator.generateXML();
     final long time = System.currentTimeMillis() - start;

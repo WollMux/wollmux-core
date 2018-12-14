@@ -308,6 +308,42 @@ public class FormModel
   }
 
   /**
+   * Liefert den Wert des Formularelementes mit der Id id.
+   * 
+   * @param id
+   *          Die Id des Formularelementes.
+   * @return Der Wert des Formularelementes.
+   * @throws FormModelException
+   *           Ein Formularelement mit der Id id existiert nicht.
+   */
+  public String getValue(final String id) throws FormModelException
+  {
+    if (formControls.containsKey(id))
+    {
+      return formControls.get(id).getValue();
+    }
+    throw new FormModelException("Unbekanntes Formularelement " + id);
+  }
+
+  /**
+   * Liefert den Status (Plausi) des Formularelementes mit der Id id.
+   * 
+   * @param id
+   *          Die Id des Formularelementes.
+   * @return Der Status des Formularelementes.
+   * @throws FormModelException
+   *           Ein Formularelement mit der Id id existiert nicht.
+   */
+  public boolean getStatus(final String id) throws FormModelException
+  {
+    if (formControls.containsKey(id))
+    {
+      return formControls.get(id).isOkay();
+    }
+    throw new FormModelException("Unbekanntes Formularelement " + id);
+  }
+
+  /**
    * Setzt für die Controls, die vom Dialog dialogName abhängigen, die Werte entsprechend ihrer
    * Autofill-Funktion.
    * 

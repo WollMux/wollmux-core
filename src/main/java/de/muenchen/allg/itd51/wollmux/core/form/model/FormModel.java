@@ -186,8 +186,8 @@ public class FormModel
         tabs.put(tab.getId(), tab);
         for (Control control : tab.getControls())
         {
-          addFormField(control);
           control.addFormModelChangedListener(listener);
+          addFormField(control);
           storeAutofillFunctionDialogDeps(control);
         }
       }

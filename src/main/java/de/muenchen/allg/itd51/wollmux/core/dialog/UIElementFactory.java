@@ -161,7 +161,7 @@ public class UIElementFactory
       /*
        * Den richtigen type aus dem context bestimmen.
        */
-      String type = context.getMappedType(FormType.getString(control.getType()));
+      String type = context.getMappedType(control.getType().toString());
 
       Object layoutConstraints = context.getLayoutConstraints(type);
       Object labelLayoutConstraints = context.getLabelLayoutConstraints(type);

@@ -415,18 +415,24 @@ public class Control
         LOGGER.error(L.m("Fehlerhaftes Element des Typs \"combobox\""), x);
       }
     }
-    control.plausi = Optional.ofNullable(model.createFunction(controlConf.query("PLAUSI")));
-
-    control.autofill = Optional.ofNullable(model.createFunction(controlConf.query("AUTOFILL")));
-    ConfigThingy groupsConf = controlConf.query("GROUPS");
-    for (ConfigThingy groups : groupsConf)
+    if (model != null)
     {
-      for (ConfigThingy group : groups)
+      control.plausi = Optional.ofNullable(model.createFunction(controlConf.query("PLAUSI")));
+      control.autofill = Optional.ofNullable(model.createFunction(controlConf.query("AUTOFILL")));
+      ConfigThingy groupsConf = controlConf.query("GROUPS");
+      for (ConfigThingy groups : groupsConf)
       {
-        String groupId = group.toString();
-        VisibilityGroup g = model.getGroup(groupId);
-        control.groups.add(g);
+        for (ConfigThingy group : groups)
+        {
+          String groupId = group.toString();
+          VisibilityGroup g = model.getGroup(groupId);
+          control.groups.add(g);
+        }
       }
+    } else
+    {
+      control.plausi = Optional.ofNullable(null);
+      control.autofill = Optional.ofNullable(null);
     }
     return control;
   }

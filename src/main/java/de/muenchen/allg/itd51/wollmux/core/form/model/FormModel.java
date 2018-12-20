@@ -285,8 +285,15 @@ public class FormModel
    */
   public Function createFunction(ConfigThingy func)
   {
-    return FunctionFactory.parseGrandchildren(func, getFuncLib(), getDialogLib(),
+    try
+    {
+      return FunctionFactory.parseGrandchildren(func, getFuncLib(), getDialogLib(),
         getFunctionContext());
+    } catch (ConfigurationErrorException e)
+    {
+      LOGGER.info("Funktion konnte nicht geparst werden.", e);
+      return null;
+    }
   }
 
   /**

@@ -64,7 +64,11 @@ public enum FormType
   /**
    * Eine Listbox.
    */
-  LISTBOX;
+  LISTBOX,
+  /**
+   * Default-Type
+   */
+  DEFAULT;
 
   /**
    * Ordnet einem String den entsprechende FormType zu.

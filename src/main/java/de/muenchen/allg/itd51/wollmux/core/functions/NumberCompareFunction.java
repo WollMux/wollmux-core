@@ -50,7 +50,6 @@ public class NumberCompareFunction extends NumberFunction
    * 
    * @throws ConfigurationErrorException
    *           falls nicht mindestens 2 Unterfunktionen in conf enthalten sind.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public NumberCompareFunction(int cmp1, int cmp2, String result,
       ConfigThingy conf, FunctionLibrary funcLib, DialogLibrary dialogLib,

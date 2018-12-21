@@ -34,14 +34,10 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 import java.util.Map;
 import java.util.Set;
 
-import de.muenchen.allg.itd51.wollmux.core.db.ColumnNotFoundException;
-import de.muenchen.allg.itd51.wollmux.core.db.NoBackingStoreException;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
 
 /**
  * Basisklasse für DJDataset-Implementierungen.
- * 
- * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public abstract class DJDatasetBase implements DJDataset
 {
@@ -95,8 +91,6 @@ public abstract class DJDatasetBase implements DJDataset
 
   /**
    * Liefert die Map, die dem Konstruktor als backingStore Argument übergeben wurde.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public Map<String, String> getBS()
   {
@@ -105,8 +99,6 @@ public abstract class DJDatasetBase implements DJDataset
 
   /**
    * Liefert die Map, die dem Konstruktor als overrideStore Argument übergeben wurde.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public Map<String, String> getLOS()
   { // TESTED

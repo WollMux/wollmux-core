@@ -29,8 +29,6 @@ import de.muenchen.allg.itd51.wollmux.core.db.QueryPart;
 /**
  * Ein DatasetChecker überprüft, ob für ein Dataset eine bestimmte Bedingung erfüllt
  * ist.
- * 
- * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public interface DatasetChecker
 {
@@ -45,7 +43,6 @@ public interface DatasetChecker
    *          kann für Präfix/Suffix/Teilstringsuche
    * @return ein DatasetChecker, der Datensätze überprüft darauf, ob sie in Spalte
    *         columnName den Suchstring query stehen haben.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public static DatasetChecker makeChecker(String columnName, String query)
   {
@@ -73,7 +70,6 @@ public interface DatasetChecker
    * 
    * @param query
    *          Liste von QueryParts.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public static DatasetChecker makeChecker(List<QueryPart> query)
   {
@@ -89,8 +85,6 @@ public interface DatasetChecker
 
   /**
    * Liefert true, wenn die Bedingung dieses Checkers auf ds zutrifft.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public boolean matches(Dataset ds);
 
@@ -99,8 +93,6 @@ public interface DatasetChecker
    * die Bedingung von check2 prüft. Die matches() Funktion des zurückgelieferten
    * Checkers liefert nur true, wenn die matches() Methoden von beiden Checkern true
    * liefern.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public default DatasetChecker and(DatasetChecker check2)
   {
@@ -112,8 +104,6 @@ public interface DatasetChecker
    * die Bedingung von check2 prüft. Die matches() Funktion des zurückgelieferten
    * Checkers liefert true, wenn die matches() Methode von mindestens einem der
    * beiden Checker true liefert.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public default DatasetChecker or(DatasetChecker check2)
   {

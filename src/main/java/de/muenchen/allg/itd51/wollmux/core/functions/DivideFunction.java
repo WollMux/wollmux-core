@@ -23,8 +23,6 @@ public class DivideFunction implements Function
 
   /**
    * Wenn divisorFunction null ist wird 1 angenommen.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1) TESTED
    */
   public DivideFunction(Function dividendFunction, Function divisorFunction,
       int minScale, int maxScale)

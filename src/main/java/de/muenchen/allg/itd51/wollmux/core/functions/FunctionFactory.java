@@ -86,8 +86,6 @@ public class FunctionFactory
 
   /**
    * Liefert eine Funktion, die immer true liefert.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public static Function alwaysTrueFunction()
   {
@@ -116,7 +114,6 @@ public class FunctionFactory
    * @throws ConfigurationErrorException
    *           falls conf keine korrekte Funktionsbeschreibung ist oder die Funktion
    *           einen context benötigt aber null übergeben wurde.
-   * @author Matthias Benkmann (D-III-ITD 5.1) TESTED
    */
   public static Function parseGrandchildren(ConfigThingy conf,
       FunctionLibrary funcLib, DialogLibrary dialogLib, Map<Object, Object> context)
@@ -165,7 +162,6 @@ public class FunctionFactory
    * @throws ConfigurationErrorException
    *           falls conf keine korrekte Funktionsbeschreibung ist oder die Funktion
    *           einen context benötigt aber null übergeben wurde.
-   * @author Matthias Benkmann (D-III-ITD 5.1) TESTED
    */
   public static Function parseChildren(ConfigThingy conf, FunctionLibrary funcLib,
       DialogLibrary dialogLib, Map<Object, Object> context)
@@ -208,8 +204,6 @@ public class FunctionFactory
    * @throws ConfigurationErrorException
    *           falls conf keine korrekte Funktionsbeschreibung ist oder die Funktion
    *           einen context benötigt aber null übergeben wurde.
-   * 
-   *           TESTED
    */
   public static Function parse(ConfigThingy conf, FunctionLibrary funcLib,
       DialogLibrary dialogLib, Map<Object, Object> context)
@@ -357,8 +351,6 @@ public class FunctionFactory
   /**
    * Liefert "Text an der Fehlerstelle: " + die ersten 100 Zeichen der
    * Stringdarstellung von conf
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private static String outputErrorPosition(ConfigThingy conf)
   {
@@ -736,8 +728,6 @@ public class FunctionFactory
    * @param baselib
    *          falls nicht-null wird diese als Fallback verlinkt, um Funktionen zu
    *          liefern, die anderweitig nicht gefunden werden.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public static FunctionLibrary parseFunctions(ConfigThingy conf,
       DialogLibrary dialogLib, Map<Object, Object> context, FunctionLibrary baselib)
@@ -755,13 +745,7 @@ public class FunctionFactory
    *          (insbesondere DIALOG-Funktionen). ACHTUNG! Hier werden Werte
    *          gespeichert, es ist nicht nur ein Schlüssel.
    * 
-   * @param baselib
-   *          falls nicht-null wird diese als Fallback verlinkt, um Funktionen zu
-   *          liefern, die anderweitig nicht gefunden werden.
-   * 
    * @return funcs
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public static FunctionLibrary parseFunctions(FunctionLibrary funcs,
       ConfigThingy conf, String section, DialogLibrary dialogLib,

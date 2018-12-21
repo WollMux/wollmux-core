@@ -45,8 +45,6 @@ import de.muenchen.allg.itd51.wollmux.core.db.checker.DatasetChecker;
 
 /**
  * Oberklasse für Datasources, die ihre Daten vollständig im Speicher halten
- * 
- * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public class RAMDatasource implements Datasource
 {
@@ -93,8 +91,6 @@ public class RAMDatasource implements Datasource
    * Führt die Initialisierungsaktionen des Konstruktors mit den gleichen Parametern
    * aus. Diese Methode sollte von abgeleiteten Klassen verwendet werden, wenn sie
    * den Konstruktor ohne Argumente verwenden.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   protected void init(String name, Set<String> schema, List<Dataset> data)
   {

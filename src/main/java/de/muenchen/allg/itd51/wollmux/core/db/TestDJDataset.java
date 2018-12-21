@@ -42,8 +42,6 @@ import java.util.Set;
  * TestDJDataset ist, dass es für Spalten, für die kein Wert gesetzt ist den
  * Spaltennamen als Antwort auf get()-Anfragen liefern kann, so dass alle Spalten von
  * aussen betrachtet belegt sind.
- * 
- * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public class TestDJDataset extends DJDatasetBase
 {
@@ -91,8 +89,6 @@ public class TestDJDataset extends DJDatasetBase
 
   /**
    * Liefert die Map, die dem Konstruktor als backingStore Argument übergeben wurde.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   @Override
   public Map<String, String> getBS()

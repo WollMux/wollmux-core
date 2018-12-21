@@ -97,8 +97,6 @@ public class ConfClassLoader extends URLClassLoader
   /**
    * Liefert einen ClassLoader, der die in wollmux.conf gesetzten CLASSPATH-Direktiven
    * berücksichtigt.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public static ConfClassLoader getClassLoader()
   {

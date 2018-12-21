@@ -39,8 +39,6 @@ import de.muenchen.allg.itd51.wollmux.core.util.L;
 
 /**
  * Eine simple Implementierung des Interfaces Dataset.
- * 
- * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public class SimpleDataset implements Dataset
 {
@@ -56,7 +54,6 @@ public class SimpleDataset implements Dataset
    *          enthält die Namen aller zu kopierenden Spalten
    * @param ds
    *          der zu kopierende Datensatz.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    * @throws ColumnNotFoundException
    *           falls eine Spalte aus schema dem Datensatz ds nicht bekannt ist
    */
@@ -76,8 +73,6 @@ public class SimpleDataset implements Dataset
    * Map data geliefert werden. Das Schema wird implizit durch die Schlüssel
    * bestimmt, die data kennt (d.h. wenn data.containsKey(column), dann ist column im
    * Schema). ACHTUNG! Sowohl schema als auch data werden per Referenz eingebunden.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public SimpleDataset(String key, Map<String, String> data)
   {

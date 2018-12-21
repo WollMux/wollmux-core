@@ -35,8 +35,7 @@ public class Textarea extends UIElementBase
    * Da getComponent das Panel zurückliefert, in dem sich die Textarea befindet,
    * gibt diese Funktion das eigentliche JTextArea-Objekt zurück.
    * 
-   * @return
-   * @author Andor Ertsey (D-III-ITD-D101)
+   * @return Das JTextArea-Objekt.
    */
   public JTextArea getTextArea()
   {

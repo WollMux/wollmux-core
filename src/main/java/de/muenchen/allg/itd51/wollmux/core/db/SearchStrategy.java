@@ -42,8 +42,6 @@ import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
  * Eine Suchstrategie liefert für eine gegebene Wortzahl eine Liste von Templates für
  * Suchanfragen, die der Reihe nach mit den Wörtern probiert werden sollen bis ein
  * Ergebnis gefunden ist.
- * 
- * @author Matthias Benkmann (D-III-ITD-D101)
  */
 public class SearchStrategy
 {
@@ -70,7 +68,6 @@ public class SearchStrategy
    * @param conf
    *          das {@link ConfigThingy}, dessen "Suchstrategie"-Abschnitt geparst
    *          werden soll.
-   * @author Matthias Benkmann (D-III-ITD 5.1) TESTED
    */
   public static SearchStrategy parse(ConfigThingy conf)
   {
@@ -123,7 +120,6 @@ public class SearchStrategy
    * 
    * @return <code>null</code> falls keine Strategie für den gegebenen wordcount
    *         vorhanden ist.
-   * @author Matthias Benkmann (D-III-ITD 5.1) TESTED
    */
   public List<Query> getTemplate(int wordcount)
   {

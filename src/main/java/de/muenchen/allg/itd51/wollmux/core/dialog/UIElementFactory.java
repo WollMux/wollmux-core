@@ -107,8 +107,6 @@ import de.muenchen.allg.itd51.wollmux.core.util.L;
 
 /**
  * Erzeugt zu ConfigThingys passende UI Elemente.
- * 
- * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public class UIElementFactory
 {
@@ -130,8 +128,6 @@ public class UIElementFactory
 
   /**
    * Erzeugt eine Factory.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public UIElementFactory()
   {
@@ -140,8 +136,6 @@ public class UIElementFactory
 
   /**
    * Setzt die Breite für erzeugte Textfields und Textareas auf anzahlZeichen.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public void setTextfieldWidth(int anzahlZeichen)
   {
@@ -204,7 +198,6 @@ public class UIElementFactory
    * @return niemals null.
    * @throws ConfigurationErrorException
    *           falls irgendein Fehler in der Beschreibung des UI Elements gefunden wird.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public UIElement createUIElement(UIElementContext context, Control control)
   {
@@ -494,11 +487,6 @@ public class UIElementFactory
    *          wird als erstes Element des args Arrays an die Funktion
    *          {@link UIElementEventHandler#processUiElementEvent(UIElement, String, Object[])}
    *          übergeben.
-   * @param conf
-   *          Manche ACTIONs erfordern zusätzliche Angaben (z.B. WINDOW Attribut für die ACTION
-   *          "switchWindow"). Damit diese ausgewertet und an handler übergeben werden können muss
-   *          hier das ConfigThingy des UI Elements übergeben werden (also der Knoten, der TYPE als
-   *          Kind hat).
    * @param handler
    *          der {@link UIElementEventHandler} an den die Events weitergereicht werden sollen.
    * @param supportedActions
@@ -506,7 +494,6 @@ public class UIElementFactory
    * @return einen ActionListener, den man auf uiElement registrieren kann, damit er dessen Actions
    *         an handler weiterreicht. Im Falle eines Fehlers (z.B. fehlende Zusatzangaben für ACTION
    *         die dieses erfordert) wird null geliefert.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private ActionListener getAction(UIElement uiElement, Control control,
       UIElementEventHandler handler, Set<String> supportedActions)
@@ -588,8 +575,6 @@ public class UIElementFactory
   /**
    * Wird als FocusListener auf UI Elemente registriert, um die auftretenden Events
    * an einen {@link UIElementEventHandler} weiterzureichen.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private static class UIElementFocusListener implements FocusListener
   {
@@ -624,8 +609,6 @@ public class UIElementFactory
   /**
    * Wird als ActionListener auf UI Elemente registriert, um die auftretenden Events
    * an einen {@link UIElementEventHandler} weiterzureichen.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private static class UIElementActionListener implements ActionListener
   {
@@ -663,8 +646,6 @@ public class UIElementFactory
   /**
    * Wird als DocumentListener auf UI Elemente registriert, um die auftretenden
    * Events an einen {@link UIElementEventHandler} weiterzureichen.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private static class UIElementDocumentListener implements DocumentListener
   {
@@ -707,8 +688,6 @@ public class UIElementFactory
   /**
    * Wird als ItemListener auf UI Elemente registriert, um die auftretenden Events an
    * einen {@link UIElementEventHandler} weiterzureichen.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private static class UIElementItemListener implements ItemListener
   {
@@ -741,8 +720,6 @@ public class UIElementFactory
   /**
    * Wird als ListSelectionListener auf UI Elemente registriert, um die auftretenden
    * Events an einen {@link UIElementEventHandler} weiterzureichen.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private static class UIElementListSelectionListener implements
       ListSelectionListener
@@ -774,8 +751,6 @@ public class UIElementFactory
   /**
    * Wartet auf Doppelklick in eine JList und führt dann die actionPerformed()
    * Methode eines ActionListeners aus.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private static class MyActionMouseListener extends MouseAdapter
   {

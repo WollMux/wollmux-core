@@ -35,7 +35,6 @@ import java.util.Collection;
 
 /**
  * Eine Funktion, die einen Wert in Abhängigkeit von Parametern berechnet.
- * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public interface Function
 {
@@ -57,7 +56,7 @@ public interface Function
    * handelt, wird der String "true" oder "false" zurückgeliefert.
    * Falls während der Ausführung ein Fehler auftritt, wird möglicherweise (dies
    * hängt von der Funktion ab) das String-Objekt
-   * {@link #ERROR} (== vergleichbar) zurückgeliefert.
+   * {@link FunctionLibrary#ERROR} (== vergleichbar) zurückgeliefert.
    * @param parameters sollte zu jedem der von {@link #parameters()} gelieferten
    *        Namen einen String-Wert enthalten.
    */

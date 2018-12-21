@@ -50,8 +50,6 @@
  * 30.01.2007 | BNK | Timeout nicht mehr statisch, sondern an Konstruktor übergeben.
  * 19.03.2010 | BED | +getContentsOfMainDatasource()
  * -------------------------------------------------------------------
- *
- * @author Matthias Benkmann (D-III-ITD 5.1)
  * 
  */
 package de.muenchen.allg.itd51.wollmux.core.db;
@@ -77,8 +75,6 @@ import de.muenchen.allg.itd51.wollmux.core.util.L;
 /**
  * Stellt eine virtuelle Datenbank zur Verfügung, die ihre Daten aus verschiedenen
  * Hintergrunddatenbanken zieht.
- * 
- * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public class DatasourceJoiner
 {
@@ -133,8 +129,6 @@ public class DatasourceJoiner
   
   /**
    * Repräsentiert den Status eines DatasourceJoiners.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public static class Status
   {
@@ -245,8 +239,7 @@ public class DatasourceJoiner
   /**
    * Liefert das Schema der Hauptdatenquelle zurück.
    * 
-   * @return
-   * @author Matthias Benkmann (D-III-ITD 5.1)
+   * @return Schema der Hauptdatenquelle.
    */
   public Set<String> getMainDatasourceSchema()
   { // TESTED
@@ -323,7 +316,6 @@ public class DatasourceJoiner
    * und-verknüpft wird.
    * 
    * @throws TimeoutException
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public QueryResults find(String spaltenName1, String suchString1,
       String spaltenName2, String suchString2) throws TimeoutException
@@ -354,7 +346,6 @@ public class DatasourceJoiner
    * @throws IllegalArgumentException
    *           falls eine Suchanfrage fehlerhaft ist, weil z.B. die entsprechende
    *           Datenquelle nicht existiert.
-   * @author Matthias Benkmann (D-III-ITD 5.1) TESTED
    */
   public QueryResults find(Query query) throws TimeoutException
   {
@@ -390,7 +381,6 @@ public class DatasourceJoiner
    * Die Ergebnisse sind {@link DJDataset}s!
    * 
    * @throws TimeoutException
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public QueryResults find(List<QueryPart> query) throws TimeoutException
   { // TESTED
@@ -421,7 +411,6 @@ public class DatasourceJoiner
    *           konnten.
    * @throws IllegalArgumentException
    *           falls die Datenquelle nicht existiert.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public QueryResults getContentsOf(String datasourceName) throws TimeoutException
   {
@@ -444,14 +433,13 @@ public class DatasourceJoiner
    * 
    * Die Ergebnisse sind DJDatasets!
    * 
-   * @return
+   * @return Datensätze aus der Datenquelle.
    * @throws TimeoutException
    *           falls ein Fehler auftritt oder die Anfrage nicht rechtzeitig beendet
    *           werden konnte. In letzterem Fall ist das Werfen dieser Exception
    *           jedoch nicht Pflicht und die Datenquelle kann stattdessen den Teil der
    *           Ergebnisse zurückliefern, die in der gegebenen Zeit gewonnen werden
    *           konnten.
-   * @author Daniel Benkmann (D-III-ITD-D101)
    */
   public QueryResults getContentsOfMainDatasource() throws TimeoutException
   {
@@ -471,8 +459,6 @@ public class DatasourceJoiner
 
   /**
    * Speichert den aktuellen LOS samt zugehörigem Cache in die Datei cacheFile.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public ConfigThingy saveCacheAndLOS(File cacheFile)
   {
@@ -515,7 +501,6 @@ public class DatasourceJoiner
    * 
    * @throws DatasetNotFoundException
    *           falls der LOS leer ist (ansonsten ist immer ein Datensatz selektiert).
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public DJDataset getSelectedDataset() throws DatasetNotFoundException
   {
@@ -528,7 +513,6 @@ public class DatasourceJoiner
    * 
    * @throws DatasetNotFoundException
    *           falls der LOS leer ist (ansonsten ist immer ein Datensatz selektiert).
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public int getSelectedDatasetSameKeyIndex() throws DatasetNotFoundException
   {
@@ -541,8 +525,6 @@ public class DatasourceJoiner
    * wird, wird die Transformation deaktiviert und
    * {@link #getSelectedDatasetTransformed()} liefert das selbe Ergebnis wie
    * {@link #getSelectedDataset()}.
-   * 
-   * @author Matthias Benkmann (D-III-ITD-D101)
    */
   public void setTransformer(ColumnTransformer columnTransformer)
   {
@@ -557,7 +539,6 @@ public class DatasourceJoiner
    * 
    * @throws DatasetNotFoundException
    *           falls der LOS leer ist (ansonsten ist immer ein Datensatz selektiert).
-   * @author Matthias Benkmann (D-III-ITD-D101)
    */
   public Dataset getSelectedDatasetTransformed() throws DatasetNotFoundException
   {
@@ -569,8 +550,7 @@ public class DatasourceJoiner
   }
 
   /**
-   * Liefert alle Datensätze des Lokalen Override Speichers (als
-   * {@link de.muenchen.allg.itd51.wollmux.db.DJDataset}).
+   * Liefert alle Datensätze des Lokalen Override Speichers (als {@link DJDataset}).
    */
   public QueryResults getLOS()
   {
@@ -581,8 +561,6 @@ public class DatasourceJoiner
    * Legt einen neuen Datensatz im LOS an, der nicht mit einer Hintergrunddatenbank
    * verknüpft ist und liefert ihn zurück. Alle Felder des neuen Datensatzes sind mit
    * dem Namen der entsprechenden Spalte initialisiert.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public DJDataset newDataset()
   {
@@ -594,8 +572,6 @@ public class DatasourceJoiner
    * Anfragen zurückgeliefert werden. Der Wrapper ist notwendig, um die auch für
    * Fremddatensätze sinnvollen DJDataset Funktionen anbieten zu können, allen voran
    * copy().
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private class DJDatasetWrapper implements DJDataset
   {

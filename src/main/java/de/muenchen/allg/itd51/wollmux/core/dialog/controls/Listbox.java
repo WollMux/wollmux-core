@@ -94,8 +94,6 @@ public class Listbox extends UIElementBase
   /**
    * Löscht alle alten Einträge dieser ListBox und ersetzt sie durch die Einträge
    * von newEntries (beliebige Objects).
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1) TESTED
    */
   public void setList(Collection<?> newEntries)
   {
@@ -109,8 +107,6 @@ public class Listbox extends UIElementBase
 
   /**
    * Liefert alle selektierten Objekte der Liste.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1) TESTED
    */
   public List<Object> getSelected()
   {
@@ -121,8 +117,6 @@ public class Listbox extends UIElementBase
    * Falls Mehrfachauswahl möglich ist werden alle gültigen Indizes (Numbers,
    * gezählt ab 0) aus indices selektiert, falls nur Einfachauswahl möglich wird
    * nur der erste gültige Index selektiert.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    * 
    */
   public void select(Collection<? extends Number> indices)

@@ -32,7 +32,6 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 
 /**
  * wird geworfen, wenn etwas nicht in einem gegebenen Zeitrahmen getan werden konnte.
- * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public class TimeoutException extends Exception
 {

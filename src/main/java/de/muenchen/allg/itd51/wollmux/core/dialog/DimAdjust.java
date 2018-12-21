@@ -36,8 +36,6 @@ import javax.swing.JComponent;
 
 /**
  * Statische Methoden zur Justierung der max.,pref.,min. Size einer JComponent.
- * 
- * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public class DimAdjust
 {
@@ -48,8 +46,6 @@ public class DimAdjust
 
   /**
    * Setzt die maximale Breite von compo auf unendlich und liefert compo zurück.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public static JComponent maxWidthUnlimited(JComponent compo)
   {
@@ -62,8 +58,6 @@ public class DimAdjust
   /**
    * Setzt die maximale Breite von compo auf unendlich, die maximale Höhe auf die
    * bevorzugte Höhe und liefert compo zurück.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public static JComponent maxHeightIsPrefMaxWidthUnlimited(JComponent compo)
   {
@@ -76,8 +70,6 @@ public class DimAdjust
 
   /**
    * Nagelt die preferred size von compo auf den aktuellen Wert fest.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public static JComponent fixedPreferredSize(JComponent compo)
   {
@@ -89,8 +81,6 @@ public class DimAdjust
   /**
    * Nagelt die preferred und die max size von compo auf den aktuellen preferred size
    * Wert fest.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public static JComponent fixedSize(JComponent compo)
   {
@@ -103,8 +93,6 @@ public class DimAdjust
   /**
    * Legt die maximale Größe von compo auf die preferred size zuzüglich eines
    * Zusatzplatzes addX und addY fest.
-   * 
-   * @author Christoph Lutz (D-III-ITD 5.1)
    */
   public static JComponent fixedMaxSize(JComponent compo, int addX, int addY)
   {
@@ -117,8 +105,6 @@ public class DimAdjust
 
   /**
    * Liefert das Maximum der beiden Werte w und der preferred-width von compo zurück.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public static int maxWidth(int w, JComponent compo)
   {

@@ -37,8 +37,6 @@ import java.util.Vector;
 
 /**
  * Speichert den Namen einer Datenquelle sowie eine Suchanfrage darauf.
- *
- * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public class Query implements Iterable<QueryPart>
 {
@@ -65,14 +63,12 @@ public class Query implements Iterable<QueryPart>
   }
   
   /**
-   * Liefert den Namen der Datenquelle auf der die Suche erfolgen soll. 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
+   * Liefert den Namen der Datenquelle auf der die Suche erfolgen soll.
    */
   public String getDatasourceName() {return dbName;}
   
   /**
    * Iteriert über die QueryParts, die diese Suchanfrage ausmachen.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   @Override
   public Iterator<QueryPart> iterator() {return listOfQueryParts.iterator();}

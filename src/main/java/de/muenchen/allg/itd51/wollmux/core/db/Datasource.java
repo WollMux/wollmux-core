@@ -66,15 +66,11 @@ import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
  * Argumente gegen Datasource-Typ "override": - (korrekte) Suche nur schwierig und
  * ineffizient zu implementieren - würde vermutlich dazu führen, dass Daten im LDAP
  * schlechter gepflegt werden, weil es einfacher ist, einen Override einzuführen
- * 
- * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public interface Datasource
 {
   /**
    * Liefert ein Set, das die Titel aller Spalten der Datenquelle enthält.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public Set<String> getSchema();
 
@@ -89,7 +85,6 @@ public interface Datasource
    *          zurückkehrt.
    * @throws TimeoutException,
    *           falls die Anfrage nicht rechtzeitig beendet werden konnte.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public QueryResults getDatasetsByKey(Collection<String> keys, long timeout)
       throws TimeoutException;
@@ -105,7 +100,6 @@ public interface Datasource
    *          zurückkehrt.
    * @throws TimeoutException,
    *           falls die Anfrage nicht rechtzeitig beendet werden konnte.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public QueryResults find(List<QueryPart> query, long timeout)
       throws TimeoutException;
@@ -123,14 +117,11 @@ public interface Datasource
    *           jedoch nicht Pflicht und die Datenquelle kann stattdessen den Teil der
    *           Ergebnisse zurückliefern, die in der gegebenen Zeit gewonnen werden
    *           konnten.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public QueryResults getContents(long timeout) throws TimeoutException;
 
   /**
    * Liefert den Namen dieser Datenquelle.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public String getName();
 

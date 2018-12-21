@@ -196,7 +196,6 @@ public class ThingyDatasource extends RAMDatasource
    *          die Schlüsselspalten
    * @throws ConfigurationErrorException
    *           im Falle von Verstössen gegen diverse Regeln.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private Dataset createDataset(ConfigThingy dsDesc, Set<String> schema, String[] schemaOrdered, String[] keyCols)
   { // TESTED
@@ -225,7 +224,6 @@ public class ThingyDatasource extends RAMDatasource
    * 
    * @throws ConfigurationErrorException
    *           bei verstössen gegen diverse Regeln
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private Dataset createDatasetUnordered(ConfigThingy dsDesc, Set<String> schema, String[] keyCols)
   { // TESTED
@@ -249,7 +247,6 @@ public class ThingyDatasource extends RAMDatasource
    * 
    * @throws ConfigurationErrorException
    *           bei verstössen gegen diverse Regeln
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private Dataset createDatasetOrdered(ConfigThingy dsDesc, Set<String> schema, String[] schemaOrdered, String[] keyCols)
   { // TESTED
@@ -299,7 +296,6 @@ public class ThingyDatasource extends RAMDatasource
      * 
      * @param keyCols
      *          die Namen der Schlüsselspalten
-     * @author Matthias Benkmann (D-III-ITD 5.1)
      */
     private void initKey(String[] keyCols)
     { // TESTED

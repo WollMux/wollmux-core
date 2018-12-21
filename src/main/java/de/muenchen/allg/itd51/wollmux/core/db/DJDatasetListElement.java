@@ -53,8 +53,6 @@ public class DJDatasetListElement extends DatasetListElement
    *          gibt an, wie die Personen in den Listen angezeigt werden sollen.
    *          %{Spalte}-Syntax um entsprechenden Wert des Datensatzes einzufügen,
    *          z.B. "%{Nachname}, %{Vorname}" für die Anzeige "Meier, Hans" etc.
-   * 
-   * @author Daniel Benkmann (D-III-ITD-D101)
    */
   public DJDatasetListElement(DJDataset ds, String displayTemplate)
   {
@@ -74,8 +72,6 @@ public class DJDatasetListElement extends DatasetListElement
    * @param icon
    *          das Icon, das in der Liste für das Element verwendet werden soll. Falls
    *          kein Icon vorhanden ist, kann <code>null</code> übergeben werden.
-   * 
-   * @author Daniel Benkmann (D-III-ITD-D101)
    */
   public DJDatasetListElement(DJDataset ds, String displayTemplate, Icon icon)
   {
@@ -87,8 +83,6 @@ public class DJDatasetListElement extends DatasetListElement
    * Liefert den DJDataset dieses DJDatasetListElements.
    * 
    * @return den DJDataset dieses DJDatasetListElements.
-   * 
-   * @author Christoph Lutz (D-III-ITD 5.1)
    */
   @Override
   public DJDataset getDataset()

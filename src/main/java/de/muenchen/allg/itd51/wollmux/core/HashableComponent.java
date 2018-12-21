@@ -41,8 +41,6 @@ import de.muenchen.allg.afid.UNO;
  * Vergleich zweier HashableComponents mit equals(...) verwendet dazu den sicheren
  * UNO-Vergleich UnoRuntime.areSame(...). Die Methode hashCode verwendet die sichere
  * Oid, die UnoRuntime.generateOid(...) liefert.
- * 
- * @author lut
  */
 public class HashableComponent
 {
@@ -64,8 +62,6 @@ public class HashableComponent
 
   /**
    * Liefert die Komponente, die durch diese {@link HashableComponent} gewrappt ist.
-   * 
-   * @author Matthias Benkmann (D-III-ITD-D101)
    */
   public XInterface getComponent()
   {

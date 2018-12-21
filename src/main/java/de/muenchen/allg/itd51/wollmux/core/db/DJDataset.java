@@ -29,22 +29,13 @@
  *                  | set() wirft jetzt IllegalArgumentException, wenn
  *                  | versucht wird, die Spalte mit null zu overriden
  * -------------------------------------------------------------------
- *
- * @author Matthias Benkmann (D-III-ITD 5.1)
- * @version 1.0
  * 
  */
 package de.muenchen.allg.itd51.wollmux.core.db;
 
-import de.muenchen.allg.itd51.wollmux.core.db.ColumnNotFoundException;
-import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
-import de.muenchen.allg.itd51.wollmux.core.db.NoBackingStoreException;
-
 /**
  * Ein vom DJ gelieferter Datensatz, der zu den Methoden von Dataset noch
  * DJ-spezifische Methoden anbietet.
- * 
- * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public interface DJDataset extends Dataset
 {
@@ -61,7 +52,6 @@ public interface DJDataset extends Dataset
    *           falls dieser Datensatz nicht aus dem LOS kommt.
    * @throws IllegalArgumentException,
    *           falls als newValue null übergeben wird.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public void set(String columnName, String newValue)
       throws ColumnNotFoundException;
@@ -75,7 +65,6 @@ public interface DJDataset extends Dataset
    * 
    * @throws ColumnNotFoundException
    *           falls keine Spalte namens columnName existiert.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public boolean hasLocalOverride(String columnName) throws ColumnNotFoundException;
 
@@ -83,8 +72,6 @@ public interface DJDataset extends Dataset
    * Liefert true, falls zu diesem Datensatz eine Hintergrunddatenbank existiert, mit
    * der einige seiner Spalten verknüpft sind, oder über
    * {@link #discardLocalOverride(String)} verknüpft werden können.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public boolean hasBackingStore();
 
@@ -95,15 +82,11 @@ public interface DJDataset extends Dataset
    * denen alle Spalten noch mit der Hintergrunddatenbank verknüpft sind. Zum
    * Beispiel wird ein Datensatz nicht automatisch aus dem LOS entfernt, wenn für
    * alle Spalten discardLocalOverride() aufgerufen wird.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public boolean isFromLOS();
 
   /**
    * Liefert true, falls this der momentan im LOS ausgewählte Datensatz ist.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public boolean isSelectedDataset();
 
@@ -112,7 +95,6 @@ public interface DJDataset extends Dataset
    * 
    * @throws UnsupportedOperationException
    *           falls this nicht aus dem LOS kommt.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public void select();
 
@@ -130,7 +112,6 @@ public interface DJDataset extends Dataset
    *           Keine Exception wird geworfen, falls der die entsprechende Spalte
    *           bereits mit einer Hintergrunddatenbank verknüpft ist (z.B. weil der
    *           Datensatz gar nicht aus dem LOS kommt).
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public void discardLocalOverride(String columnName)
       throws ColumnNotFoundException, NoBackingStoreException;
@@ -141,8 +122,6 @@ public interface DJDataset extends Dataset
    * verändert wird.
    * 
    * @return die neue Kopie.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public DJDataset copy();
 
@@ -153,7 +132,6 @@ public interface DJDataset extends Dataset
    * 
    * @throws UnsupportedOperationException
    *           falls dieser Datensatz nicht aus dem LOS kommt.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public void remove();
 }

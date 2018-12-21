@@ -47,8 +47,6 @@ import de.muenchen.allg.itd51.wollmux.core.functions.Value;
 
 /**
  * Interface das von den konkreten UI Elementen (Combobox etc.) abstrahiert.
- * 
- * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public interface UIElement extends Value
 {
@@ -73,8 +71,8 @@ public interface UIElement extends Value
 
   /**
    * Liefert die Information, ob das UI Element ein zusätzliches Label links
-   * oder rechts bekommen soll. Mögliche Werte sind {@link #LabelPosition#LEFT},
-   * {@link #LabelPosition#RIGHT} und {@link #LabelPosition#NONE}.
+   * oder rechts bekommen soll. Mögliche Werte sind {@link LabelPosition#LEFT},
+   * {@link LabelPosition#RIGHT} und {@link LabelPosition#NONE}.
    */
   public LabelPosition getLabelType();
 
@@ -95,8 +93,6 @@ public interface UIElement extends Value
    * Liefert das empfohlene zweite Argument für
    * {@link java.awt.Container#add(java.awt.Component, java.lang.Object)} für die
    * funktionale Komponente dieses UI Elements.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public Object getLayoutConstraints();
 
@@ -105,8 +101,6 @@ public interface UIElement extends Value
    * {@link java.awt.Container#add(java.awt.Component, java.lang.Object)} für das
    * Zusatz-Label dieses UIElements. Nur definiert, falls getLabelType() nicht
    * LABEL_NONE ist.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public Object getLabelLayoutConstraints();
 
@@ -119,8 +113,6 @@ public interface UIElement extends Value
    * (Checkbox, Radio Button) handelt, wird im angeschalteten Fall der String "true",
    * im ungesetzten Fall "false" zurückgeliefert. Im Falle eines Buttons oder eines
    * anderen Elements das keinen sinnvollen Wert hat, wird immer "false" geliefert.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   @Override
   public String getString();
@@ -131,8 +123,6 @@ public interface UIElement extends Value
    * Text-Elementen wird true geliefert, falls der aktuelle Wert nicht der leere
    * String ist. Im Falle eines Buttons oder eines anderen Elements das keinen
    * sinnvollen Wert hat, wird immer false geliefert.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   @Override
   public boolean getBoolean();
@@ -142,15 +132,11 @@ public interface UIElement extends Value
    * sich um ein boolesches Element (Checkbox etc) handelt, so wird der String "true"
    * (ohne Berücksichtigung von Gross-/Kleinschreibung) als true und jeder andere
    * String als false betrachtet.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public void setString(String str);
 
   /**
    * Liefert die ID dieses UIElements oder "" wenn nicht gesetzt.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public String getId();
 
@@ -163,30 +149,22 @@ public interface UIElement extends Value
 
   /**
    * Setzt die Sichtbarkeit der Komponente und ihres Zusatzlabels (falls vorhanden).
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public void setVisible(boolean vis);
 
   /**
    * Liefert true, wenn das Element keine Änderungen erlaubt (z,B, ein Separator oder
    * ein Label).
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public boolean isStatic();
 
   /**
    * Liefert true, wenn dieses UIElement im Moment den Eingabefokus hat.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public boolean hasFocus();
 
   /**
    * Sagt dem UIElement, es soll versuchen, den Eingabefokus zu übernehmen.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public void takeFocus();
 }

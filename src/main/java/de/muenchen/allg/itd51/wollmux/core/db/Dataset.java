@@ -34,8 +34,6 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 
 /**
  * Interface für Datensätze einer Tabelle.
- * 
- * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public interface Dataset
 {
@@ -47,15 +45,12 @@ public interface Dataset
    *           falls die Spalte nicht existiert. Man beachte, dass dies eine
    *           Eigenschaft des Datenbankschemas ist und nichts damit zu tun hat, ob
    *           der Wert des Datensatzes in der entsprechenden Spalte gesetzt ist.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public String get(String columnName) throws ColumnNotFoundException;
 
   /**
    * Liefert den Schlüsselwert dieses Datensatzes. Dieser sollte den Datensatz in
    * seiner Datenbank eindeutig identifizieren muss es aber nicht.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public String getKey();
 }

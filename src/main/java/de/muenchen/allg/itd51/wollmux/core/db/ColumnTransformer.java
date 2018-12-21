@@ -24,7 +24,6 @@
  * 21.10.2008 | BNK | Erstellung
  * -------------------------------------------------------------------
  *
- * @author Matthias Benkmann (D-III-ITD D.10)
  * @version 1.0
  * 
  */
@@ -48,8 +47,6 @@ import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 /**
  * Nimmt ein Dataset und stellt mit Hilfe von WollMux-Funktionen aus dessen Spalten
  * berechnete Pseudo-Spalten zur Verfügung.
- * 
- * @author Matthias Benkmann (D-III-ITD-D101)
  */
 public class ColumnTransformer
 {
@@ -86,11 +83,6 @@ public class ColumnTransformer
    * IMMER auf die untransformierten Spalten des zu übersetzenden {@link Dataset}s,
    * NIEMALS auf Pseudospalten. Wird der selbe NameX mehrfach verwendet, so gilt nur
    * die letzte Definition.
-   * 
-   * @see #ColumnTransformer(ConfigThingy, FunctionLibrary, DialogLibrary, Map)
-   * 
-   * @author Matthias Benkmann (D-III-ITD-D101)
-   * 
    */
   public ColumnTransformer(Map<String, Function> trafos)
   {
@@ -101,8 +93,6 @@ public class ColumnTransformer
    * Erzeugt einen ColumnTransformer ohne Pseudospalten. Dieser reicht
    * {@link #get(String, Dataset)} Abfragen einfach zum entsprechenden Datensatz
    * durch.
-   * 
-   * @author Matthias Benkmann (D-III-ITD-D101)
    */
   public ColumnTransformer()
   {}
@@ -111,8 +101,6 @@ public class ColumnTransformer
    * Liefert true gdw eine Pseudospalte namens name definiert ist, d,h, wenn
    * {@link #get(String, Dataset)} für diesen Namen einen berechneten Wert und nicht
    * direkt den Wert des {@link Dataset}s zurückliefert.
-   * 
-   * @author Matthias Benkmann (D-III-ITD-D101)
    */
   public boolean hasPseudoColumn(String name)
   {
@@ -132,10 +120,6 @@ public class ColumnTransformer
    * Liefert die Menge aller Namen von Pseudospalten, die definiert sind, d,h, alle
    * Namen für die {@link #get(String, Dataset)} einen berechneten Wert und nicht
    * direkt den Wert des {@link Dataset}s zurückliefert.
-   * 
-   * @author Matthias Benkmann (D-III-ITD-D101)
-   * 
-   * TESTED
    */
   public Set<String> getSchema()
   {
@@ -151,10 +135,6 @@ public class ColumnTransformer
    * @throws ColumnNotFoundException
    *           falls weder eine Umsetzungsregel für columnName definiert ist noch ds
    *           eine Spalte mit diesem Namen besitzt.
-   * 
-   * @author Matthias Benkmann (D-III-ITD-D101)
-   * 
-   * TESTED
    */
   public String get(String columnName, Dataset ds) throws ColumnNotFoundException
   {
@@ -166,13 +146,9 @@ public class ColumnTransformer
   }
 
   /**
-   * Liefert ein {@link Dataset}, das eine transformierte Sicht von ds darstellt.
-   * ACHTUNG! Die Berechnung der Spalten wird on-demand durchgeführt, d.h. spätere
-   * Aufrufe von
-   * {@link #addTrafos(ConfigThingy, FunctionLibrary, DialogLibrary, Map)} wirken
-   * sich auf das zurückgelieferte {@link Dataset} aus.
-   * 
-   * @author Matthias Benkmann (D-III-ITD-D101)
+   * Liefert ein {@link Dataset}, das eine transformierte Sicht von ds darstellt. ACHTUNG! Die
+   * Berechnung der Spalten wird on-demand durchgeführt, d.h. spätere Aufrufe von
+   * {@link #addTrafos(Map)} wirken sich auf das zurückgelieferte {@link Dataset} aus.
    */
   public Dataset transform(Dataset ds)
   {
@@ -180,15 +156,9 @@ public class ColumnTransformer
   }
 
   /**
-   * Liefert {@link QueryResults}, die eine transformierte Sicht von qres
-   * darstellen. ACHTUNG! Die Berechnung der {@link Dataset}s wird on-demand
-   * durchgeführt, d.h. spätere Aufrufe von
-   * {@link #addTrafos(ConfigThingy, FunctionLibrary, DialogLibrary, Map)} wirken
-   * sich auf die {@link Dataset}s der {@link QueryResults} aus.
-   * 
-   * @author Matthias Benkmann (D-III-ITD-D101)
-   * 
-   * TESTED
+   * Liefert {@link QueryResults}, die eine transformierte Sicht von qres darstellen. ACHTUNG! Die
+   * Berechnung der {@link Dataset}s wird on-demand durchgeführt, d.h. spätere Aufrufe von
+   * {@link #addTrafos(Map)} wirken sich auf die {@link Dataset}s der {@link QueryResults} aus.
    */
   public QueryResults transform(QueryResults qres)
   {
@@ -197,8 +167,6 @@ public class ColumnTransformer
 
   /**
    * Stellt die Spalten eines Datasets als Values zur Verfügung.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private static class DatasetValues implements Values
   {
@@ -250,8 +218,6 @@ public class ColumnTransformer
   /**
    * Wendet Spaltenumsetzungen auf QueryResults an und stellt das Ergebnis wieder als
    * QueryResults zur Verfügung.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private class TranslatedQueryResults implements QueryResults
   {

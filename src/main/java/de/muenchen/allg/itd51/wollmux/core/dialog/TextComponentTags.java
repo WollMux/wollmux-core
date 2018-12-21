@@ -64,8 +64,6 @@ import de.muenchen.allg.itd51.wollmux.core.util.L;
 /**
  * Erweiterte eine JTextComponent um die Fähigkeit, Tags, die als
  * &quot;&lt;tag&gt;&quot; angezeigt werden, wie atomare Elemente zu behandeln.
- * 
- * @author Christoph Lutz (D-III-ITD-5.1)
  */
 public class TextComponentTags
 {
@@ -136,8 +134,6 @@ public class TextComponentTags
    * @param tag
    *          Der Name des tags, das in dieser JTextComponent an der
    *          Cursorposition eingefügt und angezeigt werden soll.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public void insertTag(String tag)
   {
@@ -154,8 +150,6 @@ public class TextComponentTags
 
   /**
    * Liefert die JTextComponent, die durch diesen Wrapper erweitert wird.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public JTextComponent getJTextComponent()
   {
@@ -166,8 +160,6 @@ public class TextComponentTags
    * Liefert eine Liste von {@link ContentElement}-Objekten, die den aktuellen
    * Inhalt der JTextComponent repräsentiert und dabei enthaltenen Text und
    * evtl. enthaltene Tags als eigene Objekte kapselt.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public List<ContentElement> getContent()
   {
@@ -202,8 +194,6 @@ public class TextComponentTags
    * @see #CAT_VALUE_SYNTAX
    * @throws IllegalArgumentException
    *           falls der syntaxType nicht existiert.
-   * 
-   * @author Matthias Benkmann (D-III-ITD D.10) TESTED
    */
   public ConfigThingy getContent(int syntaxType)
   {
@@ -242,8 +232,6 @@ public class TextComponentTags
    *          die Tags enthält.
    * @return Inhalt der TextComponentTag als String mit aufgelösten Tags (soweit
    *         möglich).
-   * 
-   * @author Christoph Lutz (D-III-ITD-D101)
    */
   public String getContent(Map<String, String> mapTagToValue)
   {
@@ -269,8 +257,6 @@ public class TextComponentTags
    * 
    * @throws IllegalArgumentException
    *           wenn syntaxType illegal oder ein Fehler in conf ist.
-   * 
-   * @author Matthias Benkmann (D-III-ITD D.10)
    */
   public void setContent(int syntaxType, ConfigThingy conf)
   {
@@ -304,8 +290,6 @@ public class TextComponentTags
   /**
    * Liefert zur String-Liste fieldNames eine Liste von Actions, die die
    * entsprechenden Strings in text einfügen.
-   * 
-   * @author Matthias Benkmann (D-III-ITD D.10) TESTED
    */
   public static List<Action> makeInsertFieldActions(List<String> fieldNames, final TextComponentTags text)
   {
@@ -336,8 +320,6 @@ public class TextComponentTags
    * 
    * @return true, wenn der Inhalt gültig ist und false, wenn der Inhalt nicht
    *         gültig ist.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public boolean isContentValid()
   {
@@ -349,8 +331,6 @@ public class TextComponentTags
    * ein eingefügtes Tag oder ein normaler String sein. Auskunft über den Typ
    * des Elements erteilt die Methode isTag(), auf den String-Wert kann über die
    * toString()-Methode zugegriffen werden.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   public static class ContentElement
   {
@@ -373,8 +353,6 @@ public class TextComponentTags
     /**
      * Liefert true, wenn dieses Element ein Tag ist oder false, wenn es sich um
      * normalen Text handelt.
-     * 
-     * @author Christoph Lutz (D-III-ITD-5.1)
      */
     public boolean isTag()
     {
@@ -386,8 +364,6 @@ public class TextComponentTags
    * Immer wenn der Cursor mit der Maus in einen Bereich innerhalb eines Tags
    * gesetzt wird, sorgt der hier registrierte caret Listener dafür, dass der
    * Bereich auf das gesamte Tag ausgedehnt wird.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   private void changeCaretHandling()
   {
@@ -419,8 +395,6 @@ public class TextComponentTags
   /**
    * Der FocusLostListener wird hier registriert, damit nach einem FocusLost ein
    * evtl. gesetztes Extra-Highlight aufgehoben werden kann.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   private void changeFocusLostHandling()
   {
@@ -438,8 +412,6 @@ public class TextComponentTags
    * Implementiert die Aktionen für die Tastendrücke Cursor-links,
    * Cursor-rechts, Delete und Backspace neu und berücksichtigt dabei die
    * atomaren Tags.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   private void changeInputMap()
   {
@@ -476,8 +448,6 @@ public class TextComponentTags
    * Textänderung geprüft wird, ob der Inhalt der JTextComponent noch gültig ist
    * und im Fehlerfall mit der Hintergrundfarbe invalidEntryBGColor eingefärbt
    * wird.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   private void changeDocumentUpdateHandling()
   {
@@ -526,8 +496,6 @@ public class TextComponentTags
   /**
    * Macht das selbe wie getCaret().setDot(pos), aber nur wenn pos >= 0 und pos
    * <= getText().length() gilt.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   private void caretSetDot(int pos)
   {
@@ -540,8 +508,6 @@ public class TextComponentTags
   /**
    * Macht das selbe wie getCaret().setDot(pos), aber nur wenn pos >= 0 und pos
    * <= getText().length() gilt.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   private void caretMoveDot(int pos)
   {
@@ -554,8 +520,6 @@ public class TextComponentTags
   /**
    * Diese Klasse beschreibt die Position eines Tags innerhalb des Textes der
    * JTextComponent.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   static class TagPos
   {
@@ -576,8 +540,6 @@ public class TextComponentTags
   /**
    * Liefert einen Iterator von TagPos-Elementen, die beschreiben an welcher
    * Position im aktuellen Text Tags gefunden werden.
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   private List<TagPos> getTagPos()
   {
@@ -591,9 +553,7 @@ public class TextComponentTags
   }
 
   /**
-   * Deaktiviert die Anzeige des Extra-Highlights
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
+   * Deaktiviert die Anzeige des Extra-Highlights.
    */
   private void extraHighlightOff()
   {
@@ -610,8 +570,6 @@ public class TextComponentTags
    * 
    * @param pos1
    * @param pos2
-   * 
-   * @author Christoph Lutz (D-III-ITD-5.1)
    */
   private void extraHighlight(int pos1, int pos2)
   {
@@ -777,8 +735,6 @@ public class TextComponentTags
     /**
      * Löscht einen Teil des aktuellen Texts zwischen den zwei Positionen pos1
      * und pos2. pos1 kann größer, kleiner oder gleich pos2 sein.
-     * 
-     * @author Christoph Lutz (D-III-ITD-5.1)
      */
     private void deleteAPartOfTheText(int pos1, int pos2)
     {

@@ -22,7 +22,7 @@ public interface Container
   }
 
   /**
-   * Liefert die Art des Knotens, z,B, {@link #PARAGRAPH_TYPE}.
+   * Liefert die Art des Knotens, z,B, {@link Type#PARAGRAPH}.
    */
   public Type getType();
 }

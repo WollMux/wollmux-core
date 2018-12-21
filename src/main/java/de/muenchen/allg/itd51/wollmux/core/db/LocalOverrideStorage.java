@@ -20,22 +20,17 @@ public interface LocalOverrideStorage extends Iterable<Dataset>
    *          wenn mehrere mit gleichem Schlüssel vorhanden sind. Sollte
    *          sameKeyIndex zu hoch sein, wird der letzte Datensatz mit dem
    *          entsprechenden Schlüssel ausgewählt.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public void selectDataset(String selectKey, int sameKeyIndex);
 
   /**
    * Erzeugt einen neuen Datensatz, der nicht mit Hintergrundspeicher verknüpft
    * ist.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public DJDataset newDataset();
 
   /**
    * Erzeugt eine Kopie im LOS vom Datensatz ds, der nicht aus dem LOS kommen darf.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public DJDataset copyNonLOSDataset(Dataset ds);
 
@@ -44,7 +39,6 @@ public interface LocalOverrideStorage extends Iterable<Dataset>
    * 
    * @throws DatasetNotFoundException
    *           falls der LOS leer ist (sonst ist immer ein Datensatz selektiert).
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public DJDataset getSelectedDataset() throws DatasetNotFoundException;
 
@@ -55,7 +49,6 @@ public interface LocalOverrideStorage extends Iterable<Dataset>
    * @throws DatasetNotFoundException
    *           falls der LOS leer ist (ansonsten ist immer ein Datensatz
    *           selektiert).
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public int getSelectedDatasetSameKeyIndex() throws DatasetNotFoundException;
 
@@ -67,22 +60,17 @@ public interface LocalOverrideStorage extends Iterable<Dataset>
    * @param status
    *          hiervon wird das Feld lostDatasets geupdatet.
    * @throws TimeoutException
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public List<Dataset> refreshFromDatabase(Datasource database, long timeout, Status status) throws TimeoutException;
 
   /**
    * Liefert null, falls bislang kein Schema vorhanden (weil das Laden der
    * Cache-Datei im Konstruktur fehlgeschlagen ist).
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public Set<String> getSchema(); // TESTED
+  public Set<String> getSchema();
 
   /**
    * Fügt conf die Beschreibung der Datensätze im LOS als Kinder hinzu.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public void dumpData(ConfigThingy conf);
 
@@ -90,22 +78,16 @@ public interface LocalOverrideStorage extends Iterable<Dataset>
    * Ändert das Datenbankschema. Spalten des alten Schemas, die im neuen nicht mehr
    * vorhanden sind werden aus den Datensätzen gelöscht. Im neuen Schema
    * hinzugekommene Spalten werden in den Datensätzen als unbelegt betrachtet.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public void setSchema(Set<String> schema);
 
   /**
    * Liefert die Anzahl der Datensätze im LOS.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public int size();
 
   /**
    * true, falls der LOS leer ist.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public boolean isEmpty();
 

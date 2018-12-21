@@ -67,8 +67,6 @@ import de.muenchen.allg.itd51.wollmux.core.util.L;
 
 /**
  * Stellt eine OOo-Datenquelle als WollMux-Datenquelle zur Verfügung.
- * 
- * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public class OOoDatasource implements Datasource
 {
@@ -195,8 +193,6 @@ public class OOoDatasource implements Datasource
   /**
    * Wie {@link #OOoDatasource(Map, ConfigThingy, URL, boolean)}, wobei noKey==false
    * übergeben wird.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public OOoDatasource(Map<String, Datasource> nameToDatasource, ConfigThingy sourceDesc, URL context)
   {
@@ -393,8 +389,6 @@ public class OOoDatasource implements Datasource
   /**
    * Parst das erste Kind von conf (das existieren und ein Schluessel-Knoten sein
    * muss) und setzt {@link #keyColumns} entsprechend.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    * @throws ConfigurationErrorException
    *           falls eine Schluessel-Spalte nicht im {@link #schema} ist. Es wird
    *           *keine* Exception geworfen, wenn der Schluessel-Abschnitt leer ist.
@@ -537,7 +531,6 @@ public class OOoDatasource implements Datasource
    *          falls true wird im Falle des überschreitens des Timeouts eine
    *          TimeoutException geworfen, ansonsten wird die unvollständige
    *          Ergebnisliste zurückgeliefert.
-   * @author bettina.bauer, Matthias Benkmann
    */
   private QueryResults sqlQuery(String query, long timeout, boolean throwOnTimeout)
       throws TimeoutException
@@ -666,8 +659,6 @@ public class OOoDatasource implements Datasource
    * Liefert eine Abbildung der Spaltennamen aus {@link #schema} auf Integer-Indizes,
    * die die Spaltennummern für XRow(results)::getString() sind. Falls eine Spalte
    * nicht existiert, ist ihr index <= 0.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1) TESTED
    */
   private Map<String, Integer> getColumnMapping(XResultSet results)
   {
@@ -694,8 +685,6 @@ public class OOoDatasource implements Datasource
   /**
    * Liefert abhängig von {@link #sqlSyntax} den "richtigen" Namen der
    * lower()-Funktion.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private String sqlLower()
   {
@@ -712,7 +701,6 @@ public class OOoDatasource implements Datasource
    * 
    * @param str
    *          beginnt und endet immer mit einem Apostroph.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private static String sqlLiteral(String str)
   {
@@ -725,7 +713,6 @@ public class OOoDatasource implements Datasource
    * 
    * @param str
    *          beginnt und endet immer mit einem Doublequote.
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private String sqlIdentifier(String str)
   {
@@ -740,8 +727,6 @@ public class OOoDatasource implements Datasource
   /**
    * Ersetzt das * Wildcard so dass ein SQL-Suchmuster entsteht und escapet Zeichen,
    * die für SQL eine Bedeutung haben mit "|".
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   private static String sqlSearchPattern(String str)
   {
@@ -772,7 +757,6 @@ public class OOoDatasource implements Datasource
      * 
      * @param keyCols
      *          die Namen der Schlüsselspalten
-     * @author Matthias Benkmann (D-III-ITD 5.1)
      */
     private void initKey(String[] keyCols)
     { // TESTED

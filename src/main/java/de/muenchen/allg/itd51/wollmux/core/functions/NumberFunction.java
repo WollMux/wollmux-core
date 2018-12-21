@@ -99,8 +99,6 @@ abstract class NumberFunction extends MultiFunction
 
   /**
    * Liefert eine Stringrepräsentation von num
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   protected String formatBigDecimal(BigDecimal num)
   {

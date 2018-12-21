@@ -45,8 +45,6 @@ import javax.swing.SwingUtilities;
 /**
  * Stellt einen Button dar mit einem Popup-Menü, das darauf vorbereitet ist,
  * sehr viele Elemente anzubieten.
- * 
- * @author Matthias Benkmann (D-III-ITD D.10)
  */
 @SuppressWarnings("squid:MaximumInheritanceDepth")
 public class JPotentiallyOverlongPopupMenuButton extends JButton
@@ -64,8 +62,6 @@ public class JPotentiallyOverlongPopupMenuButton extends JButton
    * {@link javax.swing.Action} oder {@link java.awt.Component} Objekte sein.
    * ACHTUNG! Bei jeder Betätigung des Buttons wird das Menü neu aufgebaut, d.h.
    * wenn sich die actions ändert, ändert sich das Menü.
-   * 
-   * @author Matthias Benkmann (D-III-ITD D.10)
    */
   public JPotentiallyOverlongPopupMenuButton(String label, final Iterable<?> actions)
   {

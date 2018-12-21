@@ -42,8 +42,6 @@ import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 /**
  * Diese Klasse stellt Methoden zur Verfügung um in Datenquellen Suchen
  * durchzuführen.
- * 
- * @author Daniel Benkmann (D-III-ITD-D101)
  */
 public class Search
 {
@@ -81,9 +79,6 @@ public class Search
    *           zurückliefern, die in der gegebenen Zeit gewonnen werden konnten.
    * @throws IllegalArgumentException
    *           falls eine Datenquelle, in der gesucht werden soll, nicht existiert
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
-   * @author Daniel Benkmann (D-III-ITD-D101)
    */
   public static QueryResults search(String queryString,
       SearchStrategy searchStrategy, DatasourceJoiner dj, boolean useDjMainDatasource)
@@ -165,7 +160,6 @@ public class Search
    * gefunden wurde.
    * 
    * @return die leere Liste falls keine Liste bestimmt werden konnte.
-   * @author Matthias Benkmann (D-III-ITD 5.1) TESTED
    */
   private static List<Query> parseQuery(SearchStrategy searchStrategy,
       String queryString)
@@ -226,8 +220,6 @@ public class Search
    * Nimmt ein Template für eine Suchanfrage entgegen (das Variablen der Form
    * "${suchanfrageX}" enthalten kann) und instanziiert es mit Wörtern aus words,
    * wobei nur die ersten wordcount Einträge von words beachtet werden.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1) TESTED
    */
   private static Query resolveTemplate(Query template, String[] words, int wordcount)
   {

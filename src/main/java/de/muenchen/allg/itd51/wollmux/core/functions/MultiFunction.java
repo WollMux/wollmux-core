@@ -47,8 +47,6 @@ public abstract class MultiFunction implements Function
    * {@link #getAdditionalParams()} und
    * {@link #getFunctionDialogReferences(Collection)} zu überschreiben, um die
    * zusätzlichen Funktionen aus dem behandelten Parameter zu behandeln.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   @SuppressWarnings("squid:S1172")
   protected boolean handleParam(ConfigThingy conf, FunctionLibrary funcLib,
@@ -61,8 +59,6 @@ public abstract class MultiFunction implements Function
    * Liefert die Namen der Parameter der zusätzlichen Funktionen, die von
    * {@link #handleParam(ConfigThingy, FunctionLibrary, DialogLibrary, Map)}
    * geparst wurden oder null, falls es keine gibt.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   protected String[] getAdditionalParams()
   {

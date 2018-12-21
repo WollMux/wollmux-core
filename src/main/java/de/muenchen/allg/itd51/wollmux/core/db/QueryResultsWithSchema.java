@@ -38,8 +38,6 @@ import java.util.Set;
 /**
  * Ein Container für Ergebnisse einer Datenbankafrage zusammen mit dem zugehörigen
  * Schema.
- * 
- * @author Matthias Benkmann (D-III-ITD D.10)
  */
 public class QueryResultsWithSchema implements QueryResults
 {
@@ -59,8 +57,6 @@ public class QueryResultsWithSchema implements QueryResults
   /**
    * Erzeugt ein neues QueryResultsWithSchema, das den Inhalt von res und das Schema
    * schema zusammenfasst. ACHTUNG! res und schema werden als Referenzen übernommen.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public QueryResultsWithSchema(QueryResults res, Set<String> schema)
   {

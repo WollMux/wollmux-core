@@ -62,8 +62,6 @@ public class QueryPart
 
   /**
    * Liefert den Name der zu testenden Spalten.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public String getColumnName()
   {
@@ -72,8 +70,6 @@ public class QueryPart
 
   /**
    * Liefert den Suchstring auf den getestet werden soll.
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public String getSearchString()
   {

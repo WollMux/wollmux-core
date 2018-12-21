@@ -35,8 +35,6 @@ import de.muenchen.allg.itd51.wollmux.core.dialog.controls.UIElement;
 /**
  * Interface für Klassen, die auf Events reagieren, die von UIElements verursacht
  * werden.
- * 
- * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public interface UIElementEventHandler
 {
@@ -68,8 +66,6 @@ public interface UIElementEventHandler
    *          String "lost", falls der Focus verloren wurde, oder "gained", falls das
    *          Element den Focus bekommen hat.</dd>
    *          </dl>
-   * 
-   * @author Matthias Benkmann (D-III-ITD 5.1)
    */
   public void processUiElementEvent(UIElement source, String eventType, Object[] args);
 }

@@ -53,8 +53,6 @@ import de.muenchen.allg.itd51.wollmux.core.util.L;
 /**
  * Eine durch ein ConfigThingy beschriebene externe (d,h, nicht als ConfigThingy
  * definierte) Funktion.
- *
- * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public class ExternalFunction
 {

@@ -89,10 +89,9 @@ public class UNODialogFactory
       return;
     }
     
-    //this.modalBaseDialogWindow.setEnable(false);
-    //this.modalBaseDialogWindow = null;
-    //this.modalBaseDialogWindow.dispose();
-    this.modalBaseDialogWindow.setVisible(false);
+    this.modalBaseDialogWindow.setEnable(false);
+    this.modalBaseDialogWindow.dispose();
+    this.modalBaseDialogWindow = null;
   }
 
   public static XTitle createTitle(String titleString)

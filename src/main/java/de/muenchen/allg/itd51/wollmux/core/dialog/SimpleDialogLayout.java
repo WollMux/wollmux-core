@@ -4,10 +4,10 @@ import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import com.sun.star.awt.MouseEvent;
 import com.sun.star.awt.PosSize;
 import com.sun.star.awt.Rectangle;
 import com.sun.star.awt.WindowEvent;
@@ -17,7 +17,6 @@ import com.sun.star.awt.XComboBox;
 import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlContainer;
 import com.sun.star.awt.XControlModel;
-import com.sun.star.awt.XMouseListener;
 import com.sun.star.awt.XProgressBar;
 import com.sun.star.awt.XRadioButton;
 import com.sun.star.awt.XTextComponent;
@@ -25,7 +24,6 @@ import com.sun.star.awt.XWindow;
 import com.sun.star.awt.XWindowListener;
 import com.sun.star.beans.PropertyVetoException;
 import com.sun.star.beans.XMultiPropertySet;
-import com.sun.star.beans.XPropertySet;
 import com.sun.star.lang.EventObject;
 import com.sun.star.lang.IllegalArgumentException;
 import com.sun.star.lang.WrappedTargetException;
@@ -33,7 +31,6 @@ import com.sun.star.uno.Exception;
 import com.sun.star.uno.UnoRuntime;
 
 import de.muenchen.allg.afid.UNO;
-import de.muenchen.allg.itd51.wollmux.core.dialog.ControlModel;
 import de.muenchen.allg.itd51.wollmux.core.dialog.ControlModel.Align;
 import de.muenchen.allg.itd51.wollmux.core.dialog.ControlModel.Dock;
 import de.muenchen.allg.itd51.wollmux.core.dialog.ControlModel.Orientation;

@@ -126,7 +126,10 @@ public class ControlModel
     SPINBUTTON("com.sun.star.awt.UnoControlSpinButton"),
     NUMERIC_FIELD("com.sun.star.awt.UnoControlNumericField"),
     FIXEDLINE("com.sun.star.awt.UnoControlFixedLine"),
-    GROUPBOX("com.sun.star.awt.UnoControlGroupBox");
+    GROUPBOX("com.sun.star.awt.UnoControlGroupBox"),
+    TAB_PAGE_CONTAINER("com.sun.star.awt.UnoControlTabPageContainer"),
+    TAB_PAGE("com.sun.star.awt.UnoControlTabPage"),
+    LIST_BOX("com.sun.star.awt.UnoControlListBox");
 
     private String controlType;
 

@@ -2,6 +2,7 @@ package de.muenchen.allg.itd51.wollmux.core.dialog;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 import com.sun.star.awt.Rectangle;
 import com.sun.star.awt.WindowAttribute;
 import com.sun.star.awt.WindowClass;
@@ -11,12 +12,11 @@ import com.sun.star.awt.XControlModel;
 import com.sun.star.awt.XToolkit;
 import com.sun.star.awt.XWindow;
 import com.sun.star.awt.XWindowPeer;
-import com.sun.star.chart2.XFormattedString;
-import com.sun.star.chart2.XTitle;
 import com.sun.star.frame.XFrame;
 import com.sun.star.frame.XFramesSupplier;
 import com.sun.star.uno.Exception;
 import com.sun.star.uno.UnoRuntime;
+
 import de.muenchen.allg.afid.UNO;
 
 public class UNODialogFactory
@@ -26,7 +26,7 @@ public class UNODialogFactory
 
   private XWindow modalBaseDialogWindow = null;
   
-  public XWindow createDialog(int width, int height, int backgroundColor) throws Exception
+  public XWindow createDialog(int width, int height, int backgroundColor)
   {
     Object cont = UNO.createUNOService("com.sun.star.awt.UnoControlContainer");
     XControl dialogControl = UnoRuntime.queryInterface(XControl.class, cont);
@@ -39,20 +39,37 @@ public class UNODialogFactory
 
     XWindow contXWindow = UNO.XWindow(dialogControl);
 
-    Object toolkit = UNO.xMCF.createInstanceWithContext(
-        "com.sun.star.awt.Toolkit", UNO.defaultContext);
-    XToolkit xToolkit = UnoRuntime.queryInterface(XToolkit.class, toolkit);
-
+    Object toolkit = null;
+    XToolkit xToolkit = null;
+    try
+    {
+      toolkit = UNO.xMCF.createInstanceWithContext(
+          "com.sun.star.awt.Toolkit", UNO.defaultContext);
+      xToolkit = UnoRuntime.queryInterface(XToolkit.class, toolkit);
+    } catch (Exception e)
+    {
+      LOGGER.error("", e);
+    }
+   
     XWindow currentWindow = UNO.desktop.getCurrentFrame().getContainerWindow();
     XWindowPeer currentWindowPeer = UNO.XWindowPeer(currentWindow);
     XWindowPeer modalBaseDialog = createModalBaseDialog(xToolkit,
         currentWindowPeer, width, height);
     this.modalBaseDialogWindow = UNO.XWindow(modalBaseDialog);
 
-    Object testFrame = UNO.xMCF.createInstanceWithContext(
-        "com.sun.star.frame.Frame", UNO.defaultContext);
+    Object testFrame;
+    XFrame xFrame = null;
+    try
+    {
+      testFrame = UNO.xMCF.createInstanceWithContext(
+          "com.sun.star.frame.Frame", UNO.defaultContext);
+      
+      xFrame = UNO.XFrame(testFrame);
+    } catch (Exception e)
+    {
+      LOGGER.error("", e);
+    }
 
-    XFrame xFrame = UNO.XFrame(testFrame);
     xFrame.initialize(this.modalBaseDialogWindow);
     XFramesSupplier creator = UNO.desktop.getCurrentFrame().getCreator();
     xFrame.setCreator(creator);
@@ -92,29 +109,6 @@ public class UNODialogFactory
     this.modalBaseDialogWindow.setEnable(false);
     this.modalBaseDialogWindow.dispose();
     this.modalBaseDialogWindow = null;
-  }
-
-  public static XTitle createTitle(String titleString)
-  {
-    XTitle xtitle = UnoRuntime.queryInterface(XTitle.class,
-        "com.sun.star.chart2.Title");
-
-    if (xtitle == null)
-    {
-      return null;
-    }
-
-    XFormattedString xtitleStr = UnoRuntime.queryInterface(
-        XFormattedString.class, "com.sun.star.chart2.FormattedString");
-    if (xtitleStr == null)
-    {
-      return null;
-    }
-    xtitleStr.setString(titleString);
-    XFormattedString[] titleArray = new XFormattedString[] { xtitleStr };
-    xtitle.setText(titleArray);
-
-    return xtitle;
   }
 
   private XWindowPeer createModalBaseDialog(XToolkit toolkit,

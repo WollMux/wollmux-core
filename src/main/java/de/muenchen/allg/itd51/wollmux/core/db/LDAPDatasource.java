@@ -664,7 +664,7 @@ public class LDAPDatasource implements Datasource
       throws TimeoutException
   {
 
-    long endTime = System.currentTimeMillis() + timeout + 3600000;
+    long endTime = System.currentTimeMillis() + timeout;
 
     StringBuilder searchFilter = new StringBuilder();
     List<RelativePaths> positiveSubtreePathLists = new ArrayList<>();
@@ -691,9 +691,15 @@ public class LDAPDatasource implements Datasource
       int relativePath = colDef.relativePath;
       String attributeValue = currentQuery.getSearchString();
 
+      if (attributeValue.isEmpty())
+      {
+        continue;
+      }
+
       String columnObjectClass = colDef.columnObjectClass;
       String currentSearchFilter =
-        "(" + ldapEscape(attributeName) + "=" + ldapEscape(attributeValue) + ")";
+          "(" + ldapEscape(attributeName) + "~=" + ldapEscape(attributeValue)
+              + ")";
       if (columnObjectClass != null)
       {
         currentSearchFilter =

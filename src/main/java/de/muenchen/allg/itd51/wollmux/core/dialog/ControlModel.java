@@ -52,6 +52,10 @@ public class ControlModel
   {
     return this.controls;
   }
+  
+  public void addControlToControlList(SimpleEntry<ControlProperties, XControl> control) {
+    this.controls.add(control);
+  }
 
   public enum Align
   {

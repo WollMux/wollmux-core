@@ -83,7 +83,7 @@ public interface Datasource
    * @param timeout
    *          die maximale Zeit in Millisekunden, die vergehen darf, bis die Funktion
    *          zurückkehrt.
-   * @throws TimeoutException,
+   * @throws TimeoutException
    *           falls die Anfrage nicht rechtzeitig beendet werden konnte.
    */
   public QueryResults getDatasetsByKey(Collection<String> keys, long timeout)
@@ -98,7 +98,7 @@ public interface Datasource
    * @param timeout
    *          die maximale Zeit in Millisekunden, die vergehen darf, bis die Funktion
    *          zurückkehrt.
-   * @throws TimeoutException,
+   * @throws TimeoutException
    *           falls die Anfrage nicht rechtzeitig beendet werden konnte.
    */
   public QueryResults find(List<QueryPart> query, long timeout)
@@ -111,7 +111,7 @@ public interface Datasource
    * Datensätze zurückgeliefert werden. Wenn sinnvoll sollte anstatt des Werfens
    * einer TimeoutException ein Teil der Daten zurückgeliefert werden.
    * 
-   * @throws TimeoutException,
+   * @throws TimeoutException
    *           falls ein Fehler auftritt oder die Anfrage nicht rechtzeitig beendet
    *           werden konnte. In letzterem Fall ist das Werfen dieser Exception
    *           jedoch nicht Pflicht und die Datenquelle kann stattdessen den Teil der

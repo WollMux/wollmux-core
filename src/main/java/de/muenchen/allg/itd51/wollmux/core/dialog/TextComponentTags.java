@@ -71,8 +71,8 @@ public class TextComponentTags
   private static final Logger LOGGER = LoggerFactory.getLogger(TextComponentTags.class);
 
   /**
-   * Syntax für {@link #getContent(int)}: CAT(... VALUE "&lt;tagname>" ... VALUE
-   * "&lt;tagname"> ...)
+   * Syntax für {@link #getContent(int)}: CAT(... VALUE "&lt;tagname&gt;" ... VALUE
+   * "&lt;tagname"&gt; ...)
    */
   public static final int CAT_VALUE_SYNTAX = 0;
 
@@ -225,7 +225,7 @@ public class TextComponentTags
    * Liefert den Inhalt der TextComponentTag als String mit aufgelösten Tags,
    * wobei an Stelle jedes Tags der entsprechende Inhalt eingesetzt wird, der in
    * mapTagToValue unter dem Schlüssel des Tagnamens gefunden wird oder der
-   * String "<tagname>", wenn das Tag nicht aufgelöst werden kann.
+   * String "&lt;tagname&gt;", wenn das Tag nicht aufgelöst werden kann.
    * 
    * @param mapTagToValue
    *          Map mit Schlüssel-/Wertpaaren, die die entsprechenden Werte für

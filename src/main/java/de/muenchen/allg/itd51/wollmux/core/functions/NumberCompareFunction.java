@@ -34,7 +34,7 @@ public class NumberCompareFunction extends NumberFunction
   /**
    * Die Unterfunktionen von conf werden als BigDecimals ausgewertet und jeweils
    * mit dem Ergebnis der ersten Funktion verglichen via compareTo, wobei falls
-   * MARGIN angegeben ist, dessen Abstand <= abs(MARGIN) ist als gleich angesehen
+   * MARGIN angegeben ist, dessen Abstand &lt;= abs(MARGIN) ist als gleich angesehen
    * wird (entspricht compareTo Ergebnis 0). cmp1 und cmp2 sind Abbruchergebnisse
    * dieses Vergleichs. Sobald ein compareTo cmp1 oder cmp2 liefert bricht die
    * Berechnung ab und es wird das Ergebnis "false" geliefert. Falls ein compareTo

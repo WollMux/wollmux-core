@@ -37,16 +37,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.Vector;
 
-import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
-import de.muenchen.allg.itd51.wollmux.core.db.Datasource;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryPart;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResults;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResultsList;
-import de.muenchen.allg.itd51.wollmux.core.db.TimeoutException;
-
 /**
  * Eine Dummy-Datenquelle, die im Schema keine Datensätze enthält und als QueryResult
- * bei getDatasetsByKey den String "<key>" zurück liefert.
+ * bei getDatasetsByKey den String "&lt;key&gt;" zurück liefert.
  * 
  * verwendet im  noConfig Modus.
  * 

@@ -48,9 +48,9 @@ public interface DJDataset extends Dataset
    * 
    * @throws ColumnNotFoundException
    *           falls keine Spalte namens columnName existiert.
-   * @throws UnsupportedOperationException,
+   * @throws UnsupportedOperationException
    *           falls dieser Datensatz nicht aus dem LOS kommt.
-   * @throws IllegalArgumentException,
+   * @throws IllegalArgumentException
    *           falls als newValue null übergeben wird.
    */
   public void set(String columnName, String newValue)

@@ -11,15 +11,9 @@ import org.slf4j.LoggerFactory;
 import com.sun.star.awt.PosSize;
 import com.sun.star.awt.Rectangle;
 import com.sun.star.awt.WindowEvent;
-import com.sun.star.awt.XButton;
-import com.sun.star.awt.XCheckBox;
-import com.sun.star.awt.XComboBox;
 import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlContainer;
 import com.sun.star.awt.XControlModel;
-import com.sun.star.awt.XProgressBar;
-import com.sun.star.awt.XRadioButton;
-import com.sun.star.awt.XTextComponent;
 import com.sun.star.awt.XWindow;
 import com.sun.star.awt.XWindowListener;
 import com.sun.star.beans.PropertyVetoException;
@@ -252,7 +246,6 @@ public class SimpleDialogLayout implements XWindowListener
         editModel);
 
     XControl xControl = UnoRuntime.queryInterface(XControl.class, control);
-    this.castControl(controlProperties, xControl);
     XWindow wnd = UnoRuntime.queryInterface(XWindow.class, xControl);
     wnd.setPosSize(0, 0, controlProperties.getControlWidth(),
         controlProperties.getControlHeight(), PosSize.SIZE);
@@ -281,41 +274,6 @@ public class SimpleDialogLayout implements XWindowListener
         }));
 
     return groupBoxHeight + 10;
-  }
-
-  private void castControl(ControlProperties controlProperties,
-      XControl xControl)
-  {
-    switch (controlProperties.getControlType())
-    {
-    case EDIT:
-      XTextComponent textComponent = UnoRuntime
-          .queryInterface(XTextComponent.class, xControl);
-      break;
-    case BUTTON:
-      XButton button = UnoRuntime.queryInterface(XButton.class, xControl);
-      button.setActionCommand(controlProperties.getButtonCommand());
-      break;
-    case PROGRESSBAR:
-      XProgressBar progressBar = UnoRuntime.queryInterface(XProgressBar.class,
-          xControl);
-      progressBar.getValue();
-      break;
-    case CHECKBOX:
-      XCheckBox checkbox = UnoRuntime.queryInterface(XCheckBox.class, xControl);
-      break;
-    case RADIO:
-      XRadioButton radioButton = UnoRuntime.queryInterface(XRadioButton.class,
-          xControl);
-      break;
-    case COMBOBOX:
-      XComboBox comboBox = UnoRuntime.queryInterface(XComboBox.class, xControl);
-      break;
-    case SPINBUTTON:
-      break;
-    default:
-      break;
-    }
   }
 
   private int getBottomYOffset(Rectangle windowRect, int controlHeight)

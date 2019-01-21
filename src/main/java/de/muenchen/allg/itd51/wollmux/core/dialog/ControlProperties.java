@@ -13,7 +13,6 @@ public class ControlProperties
   private int controlPercentHeight;
   private int marginBetweenControls;
   private int marginLeft;
-  private String buttonCommand;
   private String controlName;
   private SimpleEntry<String[], Object[]> propertySet;
 
@@ -53,16 +52,6 @@ public class ControlProperties
   public String getControlName()
   {
     return this.controlName;
-  }
-
-  public void setButtonCommand(String buttonCommand)
-  {
-    this.buttonCommand = buttonCommand;
-  }
-
-  public String getButtonCommand()
-  {
-    return this.buttonCommand;
   }
 
   public ControlType getControlType()

@@ -68,6 +68,7 @@ import de.muenchen.allg.afid.UNO;
 import de.muenchen.allg.itd51.wollmux.core.document.commands.DocumentCommand.InsertFormValue;
 import de.muenchen.allg.itd51.wollmux.core.document.commands.DocumentCommands;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
+import de.muenchen.allg.itd51.wollmux.core.util.Utils;
 
 /**
  * Repräsentiert eine Fabrik, die an der Stelle von WM('insertFormValue'...)-Bookmark
@@ -236,7 +237,7 @@ public final class FormFieldFactory
       }
 
       String textPortionType =
-        (String) UNO.getProperty(textPortion, "TextPortionType");
+          (String) Utils.getProperty(textPortion, "TextPortionType");
       if (textPortionType == null)
       {
         continue;
@@ -706,7 +707,7 @@ public final class FormFieldFactory
       if (inputField != null && doc != null)
       {
         // Neuen Inhalt in inputField schreiben
-        UNO.setProperty(inputField, "Content", value);
+        Utils.setProperty(inputField, "Content", value);
 
         // Refresh auf alle Textfelder im Dokument, damit neuer Inhalt angezeigt wird
         XEnumerationAccess textFields = UNO.XTextFieldsSupplier(doc).getTextFields();
@@ -723,7 +724,7 @@ public final class FormFieldFactory
     {
       if (inputField != null)
       {
-        Object content = UNO.getProperty(inputField, "Content");
+        Object content = Utils.getProperty(inputField, "Content");
         if (content != null) {
           return content.toString();
         }
@@ -897,7 +898,7 @@ public final class FormFieldFactory
       this.dropdownField = dropdownField;
 
       if (dropdownField != null)
-        origItemList = (String[]) UNO.getProperty(dropdownField, "Items");
+        origItemList = (String[]) Utils.getProperty(dropdownField, "Items");
 
     }
 
@@ -915,7 +916,7 @@ public final class FormFieldFactory
       if (dropdownField != null && doc != null)
       {
         extendItemsList(value);
-        UNO.setProperty(dropdownField, "SelectedItem", value);
+        Utils.setProperty(dropdownField, "SelectedItem", value);
 
         // Refresh auf alle Textfelder im Dokument, damit neuer Inhalt angezeigt wird
         XEnumerationAccess textFields = UNO.XTextFieldsSupplier(doc).getTextFields();
@@ -956,7 +957,7 @@ public final class FormFieldFactory
           for (int i = 0; i < origItemList.length; i++)
             extendedItems[i] = origItemList[i];
           extendedItems[origItemList.length] = value;
-          UNO.setProperty(dropdownField, "Items", extendedItems);
+          Utils.setProperty(dropdownField, "Items", extendedItems);
         }
       }
     }
@@ -966,7 +967,7 @@ public final class FormFieldFactory
     {
       if (dropdownField != null)
       {
-        Object content = UNO.getProperty(dropdownField, "SelectedItem");
+        Object content = Utils.getProperty(dropdownField, "SelectedItem");
         if (content != null) {
           return content.toString();
         }
@@ -1023,7 +1024,7 @@ public final class FormFieldFactory
     @Override
     public void setValue(String value)
     {
-      UNO.setProperty(checkbox, "State",
+      Utils.setProperty(checkbox, "State",
         Boolean.parseBoolean(value) ? Short.valueOf((short) 1) : Short.valueOf((short) 0));
     }
 
@@ -1037,7 +1038,7 @@ public final class FormFieldFactory
     @Override
     public String getFormElementValue()
     {
-      Object state = UNO.getProperty(checkbox, "State");
+      Object state = Utils.getProperty(checkbox, "State");
       if (state != null && state.equals(Short.valueOf((short) 1)))
         return "true";
       else
@@ -1100,16 +1101,16 @@ public final class FormFieldFactory
       if (value == null) {
         return;
       }
-      UNO.setProperty(textfield, "Content", value);
-      UNO.setProperty(textfield, "CurrentPresentation", value);
+      Utils.setProperty(textfield, "Content", value);
+      Utils.setProperty(textfield, "CurrentPresentation", value);
     }
 
     @Override
     public String getValue()
     {
-      String cont = (String) UNO.getProperty(textfield, "Content");
+      String cont = (String) Utils.getProperty(textfield, "Content");
       if (cont == null)
-        cont = (String) UNO.getProperty(textfield, "CurrentPresentation");
+        cont = (String) Utils.getProperty(textfield, "CurrentPresentation");
       if (cont != null) {
         return cont;
       }
@@ -1235,7 +1236,7 @@ public final class FormFieldFactory
     {
       if (value != null && textfield != null && doc != null)
       {
-        UNO.setProperty(master, "Content", value);
+        Utils.setProperty(master, "Content", value);
 
         // Refresh auf alle Textfelder im Dokument, damit neuer Inhalt angezeigt wird
         XEnumerationAccess textFields = UNO.XTextFieldsSupplier(doc).getTextFields();
@@ -1251,7 +1252,7 @@ public final class FormFieldFactory
     public String getTrafoName()
     {
       return TextDocumentModel.getFunctionNameForUserFieldName(""
-        + UNO.getProperty(textfield, "Content"));
+          + Utils.getProperty(textfield, "Content"));
     }
 
     @Override
@@ -1260,7 +1261,7 @@ public final class FormFieldFactory
       if (master == null) {
         return "";
       }
-      return "" + UNO.getProperty(master, "Content");
+      return "" + Utils.getProperty(master, "Content");
     }
 
     @Override

@@ -30,6 +30,7 @@ import de.muenchen.allg.itd51.wollmux.core.document.commands.DocumentCommand.Set
 import de.muenchen.allg.itd51.wollmux.core.document.commands.DocumentCommand.SetType;
 import de.muenchen.allg.itd51.wollmux.core.document.commands.DocumentCommand.UpdateFields;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
+import de.muenchen.allg.itd51.wollmux.core.util.Utils;
 
 /**
  * Implementiert einen leer-Executor, von dem abgeleitet werden kann, um konkrete
@@ -205,8 +206,8 @@ public abstract class AbstractExecutor implements DocumentCommand.Executor
     }
 
     // Text fett und rot machen:
-    UNO.setProperty(insCursor, "CharColor", Integer.valueOf(0xff0000));
-    UNO.setProperty(insCursor, "CharWeight", Float.valueOf(FontWeight.BOLD));
+    Utils.setProperty(insCursor, "CharColor", Integer.valueOf(0xff0000));
+    Utils.setProperty(insCursor, "CharWeight", Float.valueOf(FontWeight.BOLD));
 
     // Ein Annotation-Textfield erzeugen und einfügen:
     try

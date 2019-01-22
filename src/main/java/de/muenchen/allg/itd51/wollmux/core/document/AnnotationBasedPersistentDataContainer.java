@@ -26,6 +26,7 @@ import com.sun.star.text.XTextFramesSupplier;
 
 import de.muenchen.allg.afid.UNO;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
+import de.muenchen.allg.itd51.wollmux.core.util.Utils;
 
 /**
  * Implementiert die alte Zugriffsmethode auf persistente Daten in Notizen.
@@ -93,7 +94,7 @@ public class AnnotationBasedPersistentDataContainer implements
     StringBuilder buffy = new StringBuilder();
     while (iter.hasNext())
     {
-      buffy.append((String) UNO.getProperty(iter.next(), "Content"));
+      buffy.append((String) Utils.getProperty(iter.next(), "Content"));
     }
     return buffy.toString();
   }
@@ -241,14 +242,14 @@ public class AnnotationBasedPersistentDataContainer implements
   @Override
   public void setData(DataID dataId, String dataValue)
   {
-    Object recordChanges = UNO.getProperty(doc, RECORD_CHANGES);
-    UNO.setProperty(doc, RECORD_CHANGES, false);
+    Object recordChanges = Utils.getProperty(doc, RECORD_CHANGES);
+    Utils.setProperty(doc, RECORD_CHANGES, false);
     List<Object> textfields =
       getWollMuxTextFields(dataId.getDescriptor(), true, dataValue.length());
     if (textfields.isEmpty())
     {
       LOGGER.error(L.m("Konnte WollMux-Textfeld(er) \"%1\" nicht anlegen", dataId));
-      UNO.setProperty(doc, RECORD_CHANGES, recordChanges);
+      Utils.setProperty(doc, RECORD_CHANGES, recordChanges);
       return;
     }
 
@@ -269,9 +270,9 @@ public class AnnotationBasedPersistentDataContainer implements
         start += blocksize;
       }
 
-      UNO.setProperty(iter.next(), "Content", str);
+      Utils.setProperty(iter.next(), "Content", str);
     }
-    UNO.setProperty(doc, RECORD_CHANGES, recordChanges);
+    Utils.setProperty(doc, RECORD_CHANGES, recordChanges);
   }
 
   /**
@@ -280,8 +281,8 @@ public class AnnotationBasedPersistentDataContainer implements
   @Override
   public void removeData(DataID dataId)
   {
-    Object recordChanges = UNO.getProperty(doc, RECORD_CHANGES);
-    UNO.setProperty(doc, RECORD_CHANGES, false);
+    Object recordChanges = Utils.getProperty(doc, RECORD_CHANGES);
+    Utils.setProperty(doc, RECORD_CHANGES, false);
     List<Object> textfields =
       getWollMuxTextFields(dataId.getDescriptor(), false, 0);
     if (!textfields.isEmpty())
@@ -300,7 +301,7 @@ public class AnnotationBasedPersistentDataContainer implements
         }
       }
     }
-    UNO.setProperty(doc, RECORD_CHANGES, recordChanges);
+    Utils.setProperty(doc, RECORD_CHANGES, recordChanges);
     modifiedDataIDs.remove(dataId);
   }
 

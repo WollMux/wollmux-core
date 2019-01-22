@@ -43,6 +43,8 @@ import com.sun.star.uno.AnyConverter;
 import com.sun.star.uno.UnoRuntime;
 
 import de.muenchen.allg.afid.UNO;
+import de.muenchen.allg.afid.UnoHelperException;
+import de.muenchen.allg.itd51.wollmux.core.util.Utils;
 
 /**
  * Diese Klasse repräsentiert einen Textbereich (TextSection), dessen Namen um den
@@ -120,8 +122,15 @@ public class TextSection implements VisibilityElement
   @Override
   public void setVisible(boolean visible)
   {
-    UNO.setProperty(section, "IsVisible", Boolean.valueOf(visible));
-    UNO.hideTextRange(section.getAnchor(), !visible);
+    try
+    {
+      Utils.setProperty(section, "IsVisible", Boolean.valueOf(visible));
+      UNO.hideTextRange(section.getAnchor(), !visible);
+    }
+    catch (UnoHelperException e)
+    {
+      LOGGER.error("Sichtbarkeit konnte nicht geändert werden.", e);
+    }
   }
 
   /*

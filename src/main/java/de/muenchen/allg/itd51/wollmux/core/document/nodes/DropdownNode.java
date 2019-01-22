@@ -10,6 +10,7 @@ import com.sun.star.text.XTextRange;
 import de.muenchen.allg.afid.UNO;
 import de.muenchen.allg.itd51.wollmux.core.document.Bookmark;
 import de.muenchen.allg.itd51.wollmux.core.document.DocumentTreeVisitor;
+import de.muenchen.allg.itd51.wollmux.core.util.Utils;
 
 public class DropdownNode extends TextFieldNode implements
     DropdownFormControl
@@ -25,7 +26,7 @@ public class DropdownNode extends TextFieldNode implements
   @Override
   public String[] getItems()
   {
-    return (String[]) UNO.getProperty(textfield, "Items");
+    return (String[]) Utils.getProperty(textfield, "Items");
   }
 
   public String getSelectedItem()

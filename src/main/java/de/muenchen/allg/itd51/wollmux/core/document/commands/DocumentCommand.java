@@ -56,6 +56,7 @@ import com.sun.star.text.XTextCursor;
 import com.sun.star.text.XTextRange;
 
 import de.muenchen.allg.afid.UNO;
+import de.muenchen.allg.afid.UnoHelperException;
 import de.muenchen.allg.itd51.wollmux.core.document.Bookmark;
 import de.muenchen.allg.itd51.wollmux.core.document.VisibilityElement;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
@@ -702,7 +703,14 @@ public abstract class DocumentCommand
     XTextCursor cursor = getTextCursor();
     if (cursor != null)
     {
-      UNO.hideTextRange(cursor, !visible);
+      try
+      {
+        UNO.hideTextRange(cursor, !visible);
+      }
+      catch (UnoHelperException e)
+      {
+        LOGGER.error("Sichtbarkeit konnte nicht geändert werden.", e);
+      }
     }
   }
 

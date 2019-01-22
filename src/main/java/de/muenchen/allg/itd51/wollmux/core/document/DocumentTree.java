@@ -70,6 +70,7 @@ import de.muenchen.allg.itd51.wollmux.core.document.nodes.ParagraphNode;
 import de.muenchen.allg.itd51.wollmux.core.document.nodes.TextRangeNode;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
+import de.muenchen.allg.itd51.wollmux.core.util.Utils;
 
 /**
  * Stellt die interessanten Teile eines Textdokuments als Baum zur Verfügung.
@@ -250,7 +251,7 @@ public class DocumentTree
       }
 
       String textPortionType =
-        (String) UNO.getProperty(textPortion, "TextPortionType");
+          (String) Utils.getProperty(textPortion, "TextPortionType");
       if ("Bookmark".equals(textPortionType))
       {
         handleBookmark(textPortion, textPortions, doc);

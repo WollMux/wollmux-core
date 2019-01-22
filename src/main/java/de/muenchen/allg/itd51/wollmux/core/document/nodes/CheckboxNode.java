@@ -12,6 +12,7 @@ import com.sun.star.text.XTextRange;
 import de.muenchen.allg.afid.UNO;
 import de.muenchen.allg.itd51.wollmux.core.document.Bookmark;
 import de.muenchen.allg.itd51.wollmux.core.document.DocumentTreeVisitor;
+import de.muenchen.allg.itd51.wollmux.core.util.Utils;
 
 public class CheckboxNode implements FormControl, Node
 {
@@ -36,7 +37,7 @@ public class CheckboxNode implements FormControl, Node
 
   public boolean isChecked()
   {
-    return CHECKED_STATE.equals(UNO.getProperty(model, "State"));
+    return CHECKED_STATE.equals(Utils.getProperty(model, "State"));
   }
 
   @Override

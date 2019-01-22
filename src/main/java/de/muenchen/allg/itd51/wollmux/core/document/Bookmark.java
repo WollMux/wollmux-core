@@ -64,6 +64,7 @@ import com.sun.star.uno.AnyConverter;
 import de.muenchen.allg.afid.UNO;
 import de.muenchen.allg.afid.UnoService;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
+import de.muenchen.allg.itd51.wollmux.core.util.Utils;
 
 /**
  * Diese Klasse repräsentiert ein Bookmark in OOo und bietet Methoden für den
@@ -456,21 +457,25 @@ public class Bookmark
           while (xEnum2.hasMoreElements())
           {
             Object textPortion = xEnum2.nextElement();
-            if ("Bookmark".equals(UNO.getProperty(textPortion, "TextPortionType")))
+            if ("Bookmark"
+                .equals(Utils.getProperty(textPortion, "TextPortionType")))
             {
               String portionName =
-                UNO.XNamed(UNO.getProperty(textPortion, "Bookmark")).getName();
+                  UNO.XNamed(Utils.getProperty(textPortion, "Bookmark"))
+                      .getName();
               if (name.equals(portionName))
               {
                 kill =
-                  ((Boolean) UNO.getProperty(textPortion, "IsStart")).booleanValue();
+                    ((Boolean) Utils.getProperty(textPortion, "IsStart"))
+                        .booleanValue();
               }
               else
                 collateral.add(portionName);
             }
 
             if (kill
-              && "Text".equals(UNO.getProperty(textPortion, "TextPortionType")))
+                && "Text"
+                    .equals(Utils.getProperty(textPortion, "TextPortionType")))
             {
               victims.add(textPortion);
             }

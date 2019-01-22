@@ -85,6 +85,7 @@ import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 import de.muenchen.allg.itd51.wollmux.core.parser.NodeNotFoundException;
 import de.muenchen.allg.itd51.wollmux.core.parser.SyntaxErrorException;
 import de.muenchen.allg.itd51.wollmux.core.util.L;
+import de.muenchen.allg.itd51.wollmux.core.util.Utils;
 
 /**
  * Diese Klasse repräsentiert das Modell eines aktuell geöffneten TextDokuments und
@@ -1540,11 +1541,11 @@ public class TextDocumentModel
         }
 
         // InputUser-Textfelder verarbeiten
-        XTextField tf = UNO.XTextField(UNO.getProperty(portion, "TextField"));
+        XTextField tf = UNO.XTextField(Utils.getProperty(portion, "TextField"));
         if (tf != null
             && UNO.supportsService(tf, "com.sun.star.text.TextField.InputUser"))
         {
-          String varName = "" + UNO.getProperty(tf, "Content");
+          String varName = "" + Utils.getProperty(tf, "Content");
           String t = getFunctionNameForUserFieldName(varName);
           if (t != null)
           {
@@ -1553,7 +1554,7 @@ public class TextDocumentModel
         }
 
         // Dokumentkommandos (derzeit insertFormValue) verarbeiten
-        XNamed bm = UNO.XNamed(UNO.getProperty(portion, "Bookmark"));
+        XNamed bm = UNO.XNamed(Utils.getProperty(portion, "Bookmark"));
         if (bm != null)
         {
           String name = "" + bm.getName();
@@ -1563,9 +1564,9 @@ public class TextDocumentModel
           try
           {
             boolean isCollapsed = AnyConverter
-                .toBoolean(UNO.getProperty(portion, "IsCollapsed"));
+                .toBoolean(Utils.getProperty(portion, "IsCollapsed"));
             isStart = AnyConverter
-                .toBoolean(UNO.getProperty(portion, "IsStart"))
+                .toBoolean(Utils.getProperty(portion, "IsStart"))
                 || isCollapsed;
             isEnd = !isStart || isCollapsed;
           }
@@ -1836,7 +1837,7 @@ public class TextDocumentModel
       }
     }
 
-    Object textField = UNO.getProperty(element, "TextField");
+    Object textField = Utils.getProperty(element, "TextField");
     if (textField != null
         && UNO.supportsService(textField,
             "com.sun.star.text.TextField.Annotation"))

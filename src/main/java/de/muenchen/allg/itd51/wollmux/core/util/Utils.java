@@ -11,6 +11,7 @@ import com.sun.star.lang.WrappedTargetException;
 import com.sun.star.lang.XMultiServiceFactory;
 
 import de.muenchen.allg.afid.UNO;
+import de.muenchen.allg.afid.UnoHelperException;
 import de.muenchen.allg.afid.UnoProps;
 
 public class Utils
@@ -65,4 +66,29 @@ public class Utils
     return oooVersion;
   }
 
+  public static Object getProperty(Object o, String propName)
+  {
+    try
+    {
+      return UNO.getProperty(o, propName);
+    }
+    catch (UnoHelperException e)
+    {
+      LOGGER.debug("", e);
+      return null;
+    }
+  }
+
+  public static Object setProperty(Object o, String propName, Object propVal)
+  {
+    try
+    {
+      return UNO.setProperty(o, propName, propVal);
+    }
+    catch (UnoHelperException e)
+    {
+      LOGGER.debug("", e);
+      return null;
+    }
+  }
 }

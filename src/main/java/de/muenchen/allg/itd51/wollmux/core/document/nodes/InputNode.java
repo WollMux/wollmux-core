@@ -7,6 +7,7 @@ import com.sun.star.text.XTextRange;
 import de.muenchen.allg.afid.UNO;
 import de.muenchen.allg.itd51.wollmux.core.document.Bookmark;
 import de.muenchen.allg.itd51.wollmux.core.document.DocumentTreeVisitor;
+import de.muenchen.allg.itd51.wollmux.core.util.Utils;
 
 public class InputNode extends TextFieldNode implements FormControl
 {
@@ -17,7 +18,7 @@ public class InputNode extends TextFieldNode implements FormControl
 
   public String getContent()
   {
-    return (String) UNO.getProperty(textfield, "Content");
+    return (String) Utils.getProperty(textfield, "Content");
   }
 
   @Override

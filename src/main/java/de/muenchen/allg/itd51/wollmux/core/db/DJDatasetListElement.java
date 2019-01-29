@@ -32,32 +32,17 @@
  */
 package de.muenchen.allg.itd51.wollmux.core.db;
 
-import javax.swing.Icon;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DJDatasetListElement extends DatasetListElement
 {
-
+  private static final Logger LOGGER = LoggerFactory.getLogger(DJDatasetListElement.class);
+  
   /**
    * Enthält das DJDataset-Element.
    */
   private DJDataset ds;
-
-  /**
-   * Erzeugt ein neues DJDatasetListElement für die Darstellung in einer Liste (ohne
-   * Icon).
-   * 
-   * @param ds
-   *          Das DJDatasetElement das über das DJDatasetListElement dargestellt
-   *          werden soll.
-   * @param displayTemplate
-   *          gibt an, wie die Personen in den Listen angezeigt werden sollen.
-   *          %{Spalte}-Syntax um entsprechenden Wert des Datensatzes einzufügen,
-   *          z.B. "%{Nachname}, %{Vorname}" für die Anzeige "Meier, Hans" etc.
-   */
-  public DJDatasetListElement(DJDataset ds, String displayTemplate)
-  {
-    this(ds, displayTemplate, null);
-  }
 
   /**
    * Erzeugt ein neues DJDatasetListElement für die Darstellung in einer Liste.
@@ -73,9 +58,9 @@ public class DJDatasetListElement extends DatasetListElement
    *          das Icon, das in der Liste für das Element verwendet werden soll. Falls
    *          kein Icon vorhanden ist, kann <code>null</code> übergeben werden.
    */
-  public DJDatasetListElement(DJDataset ds, String displayTemplate, Icon icon)
+  public DJDatasetListElement(DJDataset ds)
   {
-    super(ds, displayTemplate, icon);
+    super(ds);
     this.ds = ds;
   }
 
@@ -89,4 +74,34 @@ public class DJDatasetListElement extends DatasetListElement
   {
     return ds;
   }
+  
+  /**
+   * Liefert den in der Listbox anzuzeigenden String.
+   */
+  @Override
+  public String toString()
+  {
+    StringBuilder stringBuilder = new StringBuilder();
+    
+    try
+    {
+      String rolle = ds.get("Rolle");
+      String nachname = ds.get("Nachname");
+      String vorname = ds.get("Vorname");
+      String orgaKurz = ds.get("OrgaKurz");
+      
+      stringBuilder.append(rolle == null || rolle.isEmpty() ? "" : " (" + rolle + ")");
+      stringBuilder.append(nachname == null || nachname.isEmpty() ? "" : nachname);
+      stringBuilder.append(", ");
+      stringBuilder.append(vorname == null || vorname.isEmpty() ? "" : vorname);
+      stringBuilder.append(" ");
+      stringBuilder.append(orgaKurz == null || orgaKurz.isEmpty() ? "" : orgaKurz);
+    } catch (ColumnNotFoundException e)
+    {
+      LOGGER.error("", e);
+    }
+    
+    return stringBuilder.toString();
+  }
+  
 }

@@ -33,52 +33,18 @@
  */
 package de.muenchen.allg.itd51.wollmux.core.db;
 
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
-
-import javax.swing.Icon;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DatasetListElement implements Comparable<DatasetListElement>
 {
-
-  private static final Logger LOGGER = LoggerFactory.getLogger(DatasetListElement.class);
-
-  /**
-   * Gibt an, wie die Personen in den Listen angezeigt werden sollen.
-   * %{Spalte}-Syntax um entsprechenden Wert des Datensatzes einzufügen, z.B.
-   * "%{Nachname}, %{Vorname}" für die Anzeige "Meier, Hans" etc.
-   */
-  private String displayTemplate;
-
+  private static final Logger LOGGER = LoggerFactory
+      .getLogger(DatasetListElement.class);
+  
   /**
    * Enthält das Dataset-Element.
    */
   private Dataset ds;
-
-  /**
-   * Optionales Icon, das in der Liste angezeigt werden soll.
-   */
-  private Icon icon;
-
-  /**
-   * Erzeugt ein neues DatasetListElement für die Darstellung in einer Liste (ohne
-   * Icon).
-   * 
-   * @param ds
-   *          Das DatasetElement das über das DatasetListElement dargestellt werden
-   *          soll.
-   * @param displayTemplate
-   *          gibt an, wie die Personen in den Listen angezeigt werden sollen.
-   *          %{Spalte}-Syntax um entsprechenden Wert des Datensatzes einzufügen,
-   *          z.B. "%{Nachname}, %{Vorname}" für die Anzeige "Meier, Hans" etc.
-   */
-  public DatasetListElement(Dataset ds, String displayTemplate)
-  {
-    this(ds, displayTemplate, null);
-  }
 
   /**
    * Erzeugt ein neues DatasetListElement für die Darstellung in einer Liste.
@@ -86,28 +52,10 @@ public class DatasetListElement implements Comparable<DatasetListElement>
    * @param ds
    *          das DatasetElement das über das DatasetListElement dargestellt werden
    *          soll.
-   * @param displayTemplate
-   *          gibt an, wie die Personen in den Listen angezeigt werden sollen.
-   *          %{Spalte}-Syntax um entsprechenden Wert des Datensatzes einzufügen,
-   *          z.B. "%{Nachname}, %{Vorname}" für die Anzeige "Meier, Hans" etc.
-   * @param icon
-   *          das Icon, das in der Liste für das Element verwendet werden soll. Falls
-   *          kein Icon vorhanden ist, kann <code>null</code> übergeben werden.
    */
-  public DatasetListElement(Dataset ds, String displayTemplate, Icon icon)
+  public DatasetListElement(Dataset ds)
   {
     this.ds = ds;
-    this.displayTemplate = displayTemplate;
-    this.icon = icon;
-  }
-
-  /**
-   * Liefert den in der Listbox anzuzeigenden String.
-   */
-  @Override
-  public String toString()
-  {
-    return getDisplayString(ds);
   }
 
   /**
@@ -121,54 +69,6 @@ public class DatasetListElement implements Comparable<DatasetListElement>
   }
 
   /**
-   * Liefert das Icon dieses DatasetListElements zurück.
-   * 
-   * @return das Icon dieses DatasetListElements. Falls kein Icon vorhanden ist, wird
-   *         <code>null</code> zurückgeliefert.
-   */
-  public Icon getIcon()
-  {
-    return this.icon;
-  }
-
-  /**
-   * Liefert zu einem Datensatz den in einer Listbox anzuzeigenden String.
-   */
-  private String getDisplayString(Dataset ds)
-  {
-    return substituteVars(displayTemplate, ds);
-  }
-
-  /**
-   * Ersetzt "%{SPALTENNAME}" in str durch den Wert der entsprechenden Spalte im
-   * datensatz.
-   */
-  private static String substituteVars(String str, Dataset datensatz)
-  {
-    Pattern p = Pattern.compile("%\\{([a-zA-Z0-9]+)\\}");
-    Matcher m = p.matcher(str);
-    while (m.find())
-    {
-      String spalte = m.group(1);
-      String wert = spalte;
-      try
-      {
-        String wert2 = datensatz.get(spalte);
-        if (wert2 != null) {
-          wert = wert2.replaceAll("%", "");
-        }
-      }
-      catch (ColumnNotFoundException e)
-      {
-        LOGGER.error("", e);
-      }
-      str = str.substring(0, m.start()) + wert + str.substring(m.end());
-      m = p.matcher(str);
-    }
-    return str;
-  }
-
-  /**
    * Vergleicht die String-Repräsentation ({@link #toString()}) zweier Listenelemente
    * über die compareTo()-Methode der Klasse String.
    * 
@@ -179,7 +79,28 @@ public class DatasetListElement implements Comparable<DatasetListElement>
   @Override
   public int compareTo(DatasetListElement o)
   {
-    return this.toString().compareTo(o.toString());
+    try
+    {
+      String dbRolle = this.getDataset().get("Rolle") == null || this.getDataset().get("Rolle").isEmpty() ? "" : this.getDataset().get("Rolle");
+      String dbNachname = this.getDataset().get("Nachname") == null ? "" : this.getDataset().get("Nachname");
+      String dbVorname = this.getDataset().get("Vorname") == null ? "" : this.getDataset().get("Vorname");
+      String dbOrgaKurz = this.getDataset().get("OrgaKurz") == null ? "" : this.getDataset().get("OrgaKurz");
+      
+      String dbRolleO = o.getDataset().get("Rolle") == null || o.getDataset().get("Rolle").isEmpty() ? "" : o.getDataset().get("Rolle");
+      String dbNachnameO = o.getDataset().get("Nachname") == null ? "" : o.getDataset().get("Nachname");
+      String dbVornameO = o.getDataset().get("Vorname") == null ? "" : o.getDataset().get("Vorname");
+      String dbOrgaKurzO = o.getDataset().get("OrgaKurz") == null ? "" : o.getDataset().get("OrgaKurz");
+      
+      return dbRolle.compareTo(dbRolleO)
+	  + dbNachname.compareTo(dbNachnameO)
+	  + dbVorname.compareTo(dbVornameO)
+	  + dbOrgaKurz.compareTo(dbOrgaKurzO);
+    } catch (ColumnNotFoundException e)
+    {
+      LOGGER.error("", e);
+    }
+    
+    return 0;
   }
 
   /**
@@ -204,6 +125,22 @@ public class DatasetListElement implements Comparable<DatasetListElement>
   @Override
   public int hashCode()
   {
-    return this.toString().hashCode();
+    try
+    {
+      String dbRolle = this.getDataset().get("Rolle") == null || this.getDataset().get("Rolle").isEmpty() ? "" : this.getDataset().get("Rolle");
+      String dbNachname = this.getDataset().get("Nachname") == null ? "" : this.getDataset().get("Nachname");
+      String dbVorname = this.getDataset().get("Vorname") == null ? "" : this.getDataset().get("Vorname");
+      String dbOrgaKurz = this.getDataset().get("OrgaKurz") == null ? "" : this.getDataset().get("OrgaKurz");
+      
+      return dbRolle.hashCode()
+	  + dbNachname.hashCode() 
+	  + dbVorname.hashCode()
+	  + dbOrgaKurz.hashCode();
+    } catch (ColumnNotFoundException e)
+    {
+      LOGGER.error("", e);
+    }
+    
+    return 0;
   }
 }

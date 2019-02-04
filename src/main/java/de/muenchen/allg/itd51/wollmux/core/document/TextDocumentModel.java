@@ -39,8 +39,14 @@
  */
 package de.muenchen.allg.itd51.wollmux.core.document;
 
+import java.io.File;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.io.PrintWriter;
 import java.io.StringReader;
+import java.io.StringWriter;
+import java.nio.file.Files;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -54,6 +60,7 @@ import java.util.Vector;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.apache.commons.lang3.text.translate.CharSequenceTranslator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -549,6 +556,21 @@ public class TextDocumentModel
     }
   }
 
+  public void exportFormValues(OutputStream out) 
+  {
+    String data = persistentData.getData(DataID.FORMULARWERTE);
+    try (PrintWriter pw = new PrintWriter(out))
+    {
+      pw.print(data);
+    }
+  }
+  
+  public void importFormValues(File f) throws IOException
+  {
+    String data = new String(Files.readAllBytes(f.toPath()));
+    parseFormValues(data);
+  }
+  
   /**
    * Wertet werteStr aus (das von der Form "WM(FormularWerte(...))" sein muss und
    * überträgt die gefundenen Werte nach formFieldValues.

@@ -15,7 +15,6 @@ import com.sun.star.awt.XControl;
 import com.sun.star.awt.XControlContainer;
 import com.sun.star.awt.XControlModel;
 import com.sun.star.awt.XWindow;
-import com.sun.star.awt.XWindowListener;
 import com.sun.star.beans.PropertyVetoException;
 import com.sun.star.beans.XMultiPropertySet;
 import com.sun.star.lang.EventObject;
@@ -28,8 +27,9 @@ import de.muenchen.allg.afid.UNO;
 import de.muenchen.allg.itd51.wollmux.core.dialog.ControlModel.Align;
 import de.muenchen.allg.itd51.wollmux.core.dialog.ControlModel.Dock;
 import de.muenchen.allg.itd51.wollmux.core.dialog.ControlModel.Orientation;
+import de.muenchen.allg.itd51.wollmux.core.dialog.adapter.AbstractWindowListener;
 
-public class SimpleDialogLayout implements XWindowListener
+public class SimpleDialogLayout extends AbstractWindowListener
 {
   private static final Logger LOGGER = LoggerFactory
       .getLogger(SimpleDialogLayout.class);
@@ -376,24 +376,6 @@ public class SimpleDialogLayout implements XWindowListener
     }
 
     return this.containerWindow;
-  }
-
-  @Override
-  public void disposing(EventObject arg0)
-  {
-    // ...
-  }
-
-  @Override
-  public void windowHidden(EventObject arg0)
-  {
-    // ...
-  }
-
-  @Override
-  public void windowMoved(WindowEvent arg0)
-  {
-    // ...
   }
 
   @Override

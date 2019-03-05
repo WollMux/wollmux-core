@@ -1,11 +1,8 @@
 package de.muenchen.allg.itd51.wollmux.core.dialog;
 
-import java.util.AbstractMap.SimpleEntry;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-
-import com.sun.star.awt.XControl;
 
 public class ControlModel
 {
@@ -13,10 +10,10 @@ public class ControlModel
   private Align alignment;
   private Optional<Dock> dock;
   private int lineBreakHeight = 40; //default
-  private List<SimpleEntry<ControlProperties, XControl>> controls = new ArrayList<>();
+  private List<ControlProperties> controls = new ArrayList<>();
 
   public ControlModel(Orientation horizontal, Align right,
-      List<SimpleEntry<ControlProperties, XControl>> controls,
+      List<ControlProperties> controls,
       Optional<Dock> dock)
   {
     this.orientation = horizontal;
@@ -48,12 +45,12 @@ public class ControlModel
     return this.dock;
   }
 
-  public List<SimpleEntry<ControlProperties, XControl>> getControls()
+  public List<ControlProperties> getControls()
   {
     return this.controls;
   }
   
-  public void addControlToControlList(SimpleEntry<ControlProperties, XControl> control) {
+  public void addControlToControlList(ControlProperties control) {
     this.controls.add(control);
   }
 

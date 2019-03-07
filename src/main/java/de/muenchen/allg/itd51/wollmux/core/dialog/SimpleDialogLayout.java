@@ -16,6 +16,7 @@ import com.sun.star.awt.XWindow;
 import com.sun.star.lang.EventObject;
 import com.sun.star.uno.UnoRuntime;
 
+import de.muenchen.allg.afid.UNO;
 import de.muenchen.allg.itd51.wollmux.core.dialog.ControlModel.Align;
 import de.muenchen.allg.itd51.wollmux.core.dialog.ControlModel.Dock;
 import de.muenchen.allg.itd51.wollmux.core.dialog.ControlModel.Orientation;
@@ -23,8 +24,7 @@ import de.muenchen.allg.itd51.wollmux.core.dialog.adapter.AbstractWindowListener
 
 public class SimpleDialogLayout extends AbstractWindowListener
 {
-  private static final Logger LOGGER = LoggerFactory
-      .getLogger(SimpleDialogLayout.class);
+  private static final Logger LOGGER = LoggerFactory.getLogger(SimpleDialogLayout.class);
   private XControlContainer controlContainer;
   private XWindow containerWindow;
   private int marginBetweenControls = 5;
@@ -35,22 +35,25 @@ public class SimpleDialogLayout extends AbstractWindowListener
   private int marginRight = 0;
   private int marginLeft = 0;
   private int windowBottomMargin = 0;
+  private List<ControlModel> cachedBindings = new ArrayList<>();
+  private int yOffsetBinding = 0;
 
   public SimpleDialogLayout(XWindow dialogWindow)
   {
     this.containerWindow = dialogWindow;
     this.containerWindow.addWindowListener(this);
-    this.controlContainer = UnoRuntime.queryInterface(XControlContainer.class,
-        dialogWindow);
+    this.controlContainer = UnoRuntime.queryInterface(XControlContainer.class, dialogWindow);
   }
 
   public void draw()
   {
     Rectangle windowRect = this.getContainerWindow().getPosSize();
-    
+    this.cachedBindings.clear();
+
     this.yOffset = this.getMarginTop() > 0 ? this.getMarginTop() : 0;
     this.xOffset = this.getMarginLeft() > 0 ? this.getMarginLeft() : 0;
     this.xOffsetRight = windowRect.Width / 2;
+    this.xOffsetBinding = 0;
 
     for (ControlModel entry : this.getControlList())
     {
@@ -58,117 +61,147 @@ public class SimpleDialogLayout extends AbstractWindowListener
 
       if (entry.getOrientation() == Orientation.HORIZONTAL)
       {
-        for (ControlProperties control : entry
-            .getControls())
+        if (entry.getBindToControlControlWidthAndXOffset() == null)
         {
-          XControl controlByControlContainer = this.controlContainer
-              .getControl(control.getControlName());
-          if (controlByControlContainer != null)
+          for (ControlProperties control : entry.getControls())
           {
-            modifyHorizontalControl(windowRect, controlByControlContainer,
-                control, entry.getAlignment(),
-                entry.getControls().size());
-          } else
-          {
-            this.modifyHorizontalControl(windowRect, control.getXControl(),
-                control, entry.getAlignment(),
-                entry.getControls().size());
+            XControl controlByControlContainer = this.controlContainer
+                .getControl(control.getControlName());
+            if (controlByControlContainer != null)
+            {
+              modifyHorizontalControl(windowRect, controlByControlContainer, control,
+                  entry.getAlignment(), entry.getControls().size());
+            } else
+            {
+              this.modifyHorizontalControl(windowRect, control.getXControl(), control,
+                  entry.getAlignment(), entry.getControls().size());
 
-            this.addControlToControlContainer(control.getControlName(),
-                control.getXControl());
+              this.addControlToControlContainer(control.getControlName(), control.getXControl());
+            }
           }
+        } else
+        {
+          this.yOffsetBinding = this.yOffset; 
+          cachedBindings.add(entry);
         }
       } else if (entry.getOrientation() == Orientation.VERTICAL)
       {
-        for (ControlProperties control : entry
-            .getControls())
+        for (ControlProperties control : entry.getControls())
         {
           XControl controlByControlContainer = this.controlContainer
               .getControl(control.getControlName());
           if (controlByControlContainer != null)
           {
-            this.modifyVerticalControl(windowRect, control.getXControl(),
-                control, entry.getAlignment());
+            this.modifyVerticalControl(windowRect, control.getXControl(), control,
+                entry.getAlignment());
           } else
           {
-            this.modifyVerticalControl(windowRect, control.getXControl(),
-                control, entry.getAlignment());
+            this.modifyVerticalControl(windowRect, control.getXControl(), control,
+                entry.getAlignment());
 
-            this.addControlToControlContainer(control.getControlName(),
-                control.getXControl());
+            this.addControlToControlContainer(control.getControlName(), control.getXControl());
           }
         }
       }
 
       this.newLine(entry);
     }
+
+    for (ControlModel controlModel : cachedBindings)
+    {
+      applyControlBinding(controlModel);
+    }
   }
 
-  private Optional<ControlProperties> getMaxControlHeightByControlList(
-      ControlModel controlModel)
+  private Optional<ControlProperties> getMaxControlHeightByControlList(ControlModel controlModel)
   {
-    return controlModel.getControls().stream()
-        .max((v1, v2) -> Integer.compare(v1.getControlSize().getHeight(),
-            v2.getControlSize().getHeight()));
+    return controlModel.getControls().stream().max((v1, v2) -> Integer
+        .compare(v1.getControlSize().getHeight(), v2.getControlSize().getHeight()));
   }
 
-  private void setDock(Rectangle windowRect, ControlModel controlModel,
-      Dock dock)
+  private void setDock(Rectangle windowRect, ControlModel controlModel, Dock dock)
   {
     if (dock == Dock.BOTTOM)
     {
       Optional<ControlProperties> maxControlHeight = this
           .getMaxControlHeightByControlList(controlModel);
       this.yOffset = this.getBottomYOffset(windowRect,
-          maxControlHeight.isPresent()
-              ? maxControlHeight.get().getControlPercentSize().getHeight()
+          maxControlHeight.isPresent() ? maxControlHeight.get().getControlPercentSize().getHeight()
               : 0);
     }
   }
 
   private int xOffsetRight = 0;
-  
+  private int xOffsetBinding = 0;
+
   private void modifyHorizontalControl(Rectangle windowRect, XControl control,
       ControlProperties controlProperties, Align alignment, int controlCount)
   {
     XWindow wnd = UnoRuntime.queryInterface(XWindow.class, control);
 
-    int calculatedControlWidth = controlProperties.getControlPercentSize().getWidth() > 0
-        ? ((windowRect.Width / 100)
-            * controlProperties.getControlPercentSize().getWidth())
-            - (this.getMarginLeft() / controlCount)
-            - (this.getMarginRight() / controlCount)
-        : (windowRect.Width - (controlCount * 10)) / controlCount;  
-
     if (alignment == Align.RIGHT)
     {
       int calculatedControlWidthRight = controlProperties.getControlPercentSize().getWidth() > 0
-          ? ((windowRect.Width / 100 / 2)
-              * controlProperties.getControlPercentSize().getWidth())
-          : (windowRect.Width - (controlCount * 10)) / controlCount;  
-              
-      wnd.setPosSize(xOffsetRight, yOffset,
-          calculatedControlWidthRight, controlProperties.getControlPercentSize().getHeight(),
-          (short) (PosSize.POSSIZE));
-      
+          ? ((windowRect.Width / 100 / 2) * controlProperties.getControlPercentSize().getWidth())
+          : (windowRect.Width - (controlCount * 10)) / controlCount;
+
+      wnd.setPosSize(xOffsetRight, yOffset, calculatedControlWidthRight,
+          controlProperties.getControlPercentSize().getHeight(), (PosSize.POSSIZE));
+
       xOffsetRight += calculatedControlWidthRight + controlProperties.getMarginBetweenControls();
     } else if (alignment == Align.LEFT)
     {
-      int calculatedControlWidthLeft = (windowRect.Width / 2
-          - (controlCount * 5)) / controlCount;
+      int calculatedControlWidthLeft = (windowRect.Width / 2 - (controlCount * 5)) / controlCount;
       wnd.setPosSize(xOffset, yOffset, calculatedControlWidthLeft,
-          controlProperties.getControlPercentSize().getHeight(), (short) (PosSize.POSSIZE));
+          controlProperties.getControlPercentSize().getHeight(), (PosSize.POSSIZE));
     } else
     {
-      xOffset = controlProperties.getMarginLeft() > 0
-          ? controlProperties.getMarginLeft()
-          : xOffset;
+      xOffset = controlProperties.getMarginLeft() > 0 ? controlProperties.getMarginLeft() : xOffset;
+
+      int calculatedControlWidth = controlProperties.getControlPercentSize().getWidth() > 0
+          ? ((windowRect.Width / 100) * controlProperties.getControlPercentSize().getWidth())
+              - (this.getMarginLeft() / controlCount) - (this.getMarginRight() / controlCount)
+          : (windowRect.Width - (controlCount * 10)) / controlCount;
 
       // full width
       wnd.setPosSize(xOffset, yOffset, calculatedControlWidth,
-          controlProperties.getControlPercentSize().getHeight(), (short) (PosSize.POSSIZE));
-      
+          controlProperties.getControlPercentSize().getHeight(), (PosSize.POSSIZE));
+
       xOffset += calculatedControlWidth + this.getMarginBetweenControls();
+    }
+  }
+
+  private void applyControlBinding(ControlModel controlModel)
+  {
+    XControl sourceControl = this.getControlContainer()
+        .getControl(controlModel.getBindToControlControlWidthAndXOffset());
+
+    if (sourceControl == null)
+      return;
+
+    XWindow wndXControl = UNO.XWindow(sourceControl);
+    Rectangle rect = wndXControl.getPosSize();
+
+    for (ControlProperties controlProperties : controlModel.getControls())
+    {
+      int calculatedControlWidthBinding = ((rect.Width / 100)
+          * controlProperties.getControlPercentSize().getWidth());
+
+      XControl targetControl = this.getControlContainer()
+          .getControl(controlProperties.getControlName());
+
+      if (targetControl == null)
+      {
+        this.addControlToControlContainer(controlProperties.getControlName(),
+            controlProperties.getXControl());
+        targetControl = controlProperties.getXControl();
+      }
+
+      XWindow xWindow = UNO.XWindow(targetControl);
+      xWindow.setPosSize(rect.X + xOffsetBinding, yOffsetBinding, calculatedControlWidthBinding,
+          controlProperties.getControlPercentSize().getHeight(), (PosSize.POSSIZE));
+
+      xOffsetBinding += calculatedControlWidthBinding + this.getMarginBetweenControls();
     }
   }
 
@@ -182,24 +215,22 @@ public class SimpleDialogLayout extends AbstractWindowListener
     if (alignment == Align.RIGHT)
     {
       wnd.setPosSize(windowRect.Width / 2, yOffset, windowRect.Width / 2,
-          controlProperties.getControlPercentSize().getHeight(), (short) (PosSize.POSSIZE));
+          controlProperties.getControlPercentSize().getHeight(), (PosSize.POSSIZE));
     } else if (alignment == Align.LEFT)
     {
       wnd.setPosSize(0, yOffset, windowRect.Width / 2,
-          controlProperties.getControlPercentSize().getHeight(), (short) (PosSize.POSSIZE));
+          controlProperties.getControlPercentSize().getHeight(), (PosSize.POSSIZE));
     } else
     {
       int xOffsetTemp = 0;
 
-      xOffsetTemp = this.getMarginLeft() > 0 ? this.getMarginLeft()
-          : xOffsetTemp;
-      xOffsetTemp = controlProperties.getMarginLeft() > 0
-          ? controlProperties.getMarginLeft()
+      xOffsetTemp = this.getMarginLeft() > 0 ? this.getMarginLeft() : xOffsetTemp;
+      xOffsetTemp = controlProperties.getMarginLeft() > 0 ? controlProperties.getMarginLeft()
           : xOffsetTemp;
 
       // full width
       wnd.setPosSize(xOffsetTemp, yOffset, windowRect.Width,
-          controlProperties.getControlPercentSize().getHeight(), (short) (PosSize.POSSIZE));
+          controlProperties.getControlPercentSize().getHeight(), (PosSize.POSSIZE));
     }
 
     yOffset += cr.Height + (controlProperties.getMarginBetweenControls() > 0
@@ -215,8 +246,7 @@ public class SimpleDialogLayout extends AbstractWindowListener
 
   int groupBoxHeight;
 
-  public int calcGroupBoxHeightByControlProperties(
-      List<ControlModel> controlModels)
+  public int calcGroupBoxHeightByControlProperties(List<ControlModel> controlModels)
   {
     if (controlModels.isEmpty())
     {
@@ -225,8 +255,8 @@ public class SimpleDialogLayout extends AbstractWindowListener
 
     groupBoxHeight = 0;
 
-    controlModels.parallelStream().forEach(controlModel -> controlModel
-        .getControls().parallelStream().forEach(controlProperty -> {
+    controlModels.parallelStream().forEach(
+        controlModel -> controlModel.getControls().parallelStream().forEach(controlProperty -> {
           groupBoxHeight += controlProperty.getControlSize().getHeight()
               + controlProperty.getMarginBetweenControls();
         }));
@@ -318,8 +348,7 @@ public class SimpleDialogLayout extends AbstractWindowListener
   {
     if (this.controlContainer == null)
     {
-      LOGGER.error(
-          "BaseLayout: getControlContainer(): controlContainer is NULL.");
+      LOGGER.error("BaseLayout: getControlContainer(): controlContainer is NULL.");
     }
 
     return this.controlContainer;
@@ -329,8 +358,7 @@ public class SimpleDialogLayout extends AbstractWindowListener
   {
     if (this.containerWindow == null)
     {
-      LOGGER
-          .error("BaseLayout: getContainerWindow(): containerWindow is NULL.");
+      LOGGER.error("BaseLayout: getContainerWindow(): containerWindow is NULL.");
     }
 
     return this.containerWindow;

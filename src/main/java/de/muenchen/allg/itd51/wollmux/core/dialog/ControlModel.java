@@ -10,6 +10,7 @@ public class ControlModel
   private Align alignment;
   private Optional<Dock> dock;
   private int lineBreakHeight = 40; //default
+  private String bindingControlName;
   private List<ControlProperties> controls = new ArrayList<>();
 
   public ControlModel(Orientation horizontal, Align right,
@@ -20,6 +21,14 @@ public class ControlModel
     this.alignment = right;
     this.dock = dock;
     this.controls = controls;
+  }
+  
+  public void setBindToControlWidthAndXOffset(String controlName) {
+    this.bindingControlName = controlName;
+  }
+  
+  public String getBindToControlControlWidthAndXOffset() {
+    return this.bindingControlName;
   }
   
   public int getLinebreakHeight() {

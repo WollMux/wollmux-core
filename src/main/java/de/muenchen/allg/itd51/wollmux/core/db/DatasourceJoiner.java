@@ -57,6 +57,7 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
@@ -124,6 +125,10 @@ public class DatasourceJoiner
    * gefunden wurde und deshalb nicht aktualisiert werden konnte.
    */
   protected List<Dataset> lostDatasets = new ArrayList<>(0);
+  
+  private QueryResults cachedQueryResults = null;
+
+  private Dataset cachedDataset = null;
 
   public static final long DATASOURCE_TIMEOUT = 10000;
   
@@ -555,6 +560,54 @@ public class DatasourceJoiner
   public QueryResults getLOS()
   {
     return new QueryResultsList(myLOS.iterator(), myLOS.size());
+  }
+  
+  public void setCachedLdapResults(QueryResults results)
+  {
+    this.cachedQueryResults = results;
+  }
+  
+  public QueryResults getCachedLdapResults()
+  {
+    return this.cachedQueryResults;
+  }
+  
+  public Dataset getCachedLdapResultByOID(String oid)
+  {
+    if (this.cachedQueryResults == null)
+      return null;
+
+    for (Dataset ds : this.cachedQueryResults)
+    {
+      try
+      {
+        if (ds.get("OID").equals(oid))
+        {
+          cachedDataset = ds;
+          break;
+        }
+      } catch (ColumnNotFoundException e)
+      {
+        LOGGER.error("", e);
+      }
+    }
+
+    return cachedDataset;
+  }
+
+  public Set<String> getOIDsFromLOS() {
+    Set<String> oids = new HashSet<>();
+    for (Dataset dataset : myLOS) {
+      try
+      {
+        oids.add(dataset.get("OID"));
+      } catch (ColumnNotFoundException e)
+      {
+        LOGGER.error("", e);
+      }
+    }
+    
+    return oids;
   }
 
   /**

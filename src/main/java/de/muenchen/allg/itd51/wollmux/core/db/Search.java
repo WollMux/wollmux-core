@@ -32,19 +32,28 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionException;
 import java.util.stream.Stream;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 
 /**
- * Diese Klasse stellt Methoden zur Verfügung um in Datenquellen Suchen
- * durchzuführen.
+ * Diese Klasse stellt Methoden zur Verfügung um in Datenquellen Suchen durchzuführen.
  */
 public class Search
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger(Search.class);
+
+  private static Map<String, String> resultSearchQuery = new HashMap<>();
+  private static DatasourceJoiner dj = null;
 
   private Search()
   {
@@ -52,39 +61,37 @@ public class Search
   }
 
   /**
-   * Führt die übergebene Suchanfrage gemäß der übergebenen Suchstrategie aus und
-   * liefert die Ergebnisse in einem {@link QueryResults}-Objekt zurück. Falls einer
-   * der übergebenen Parameter <code>null</code> ist oder falls der queryString leer
-   * ist, wird <code>null</code> zurückgeliefert.
+   * Führt die übergebene Suchanfrage gemäß der übergebenen Suchstrategie aus und liefert die
+   * Ergebnisse in einem {@link QueryResults}-Objekt zurück. Falls einer der übergebenen Parameter
+   * <code>null</code> ist oder falls der queryString leer ist, wird <code>null</code>
+   * zurückgeliefert.
    * 
    * @param queryString
    *          die Suchanfrage
    * @param searchStrategy
    *          die zu verwendende Suchstrategie
    * @param dj
-   *          die virtuelle Datenbank (siehe {@link DatasourceJoiner}), in der
-   *          gesucht werden soll
+   *          die virtuelle Datenbank (siehe {@link DatasourceJoiner}), in der gesucht werden soll
    * @param useDjMainDatasource
-   *          gibt an, ob unabhängig von den eventuell in der Suchstrategie
-   *          festgelegten Datenquellen auf jeden Fall immer in der Hauptdatenquelle
-   *          von dj gesucht werden soll. Wenn hier <code>true</code> übergeben wird,
-   *          enthalten die als Ergebnis der Suche zurückgelieferten QueryResults auf
-   *          jeden Fall {@link DJDataset}s.
+   *          gibt an, ob unabhängig von den eventuell in der Suchstrategie festgelegten
+   *          Datenquellen auf jeden Fall immer in der Hauptdatenquelle von dj gesucht werden soll.
+   *          Wenn hier <code>true</code> übergeben wird, enthalten die als Ergebnis der Suche
+   *          zurückgelieferten QueryResults auf jeden Fall {@link DJDataset}s.
    * 
    * @throws TimeoutException
-   *           falls ein Fehler beim Bearbeiten der Suche auftritt oder die Anfrage
-   *           nicht rechtzeitig beendet werden konnte. In letzterem Fall ist das
-   *           Werfen dieser Exception jedoch nicht Pflicht und die bei der Suche
-   *           verwendete Datenquelle kann stattdessen den Teil der Ergebnisse
-   *           zurückliefern, die in der gegebenen Zeit gewonnen werden konnten.
+   *           falls ein Fehler beim Bearbeiten der Suche auftritt oder die Anfrage nicht
+   *           rechtzeitig beendet werden konnte. In letzterem Fall ist das Werfen dieser Exception
+   *           jedoch nicht Pflicht und die bei der Suche verwendete Datenquelle kann stattdessen
+   *           den Teil der Ergebnisse zurückliefern, die in der gegebenen Zeit gewonnen werden
+   *           konnten.
    * @throws IllegalArgumentException
    *           falls eine Datenquelle, in der gesucht werden soll, nicht existiert
    */
-  public static QueryResults search(String queryString,
-      SearchStrategy searchStrategy, DatasourceJoiner dj, boolean useDjMainDatasource)
-      throws TimeoutException
+  public static QueryResults search(String queryString, SearchStrategy searchStrategy,
+      DatasourceJoiner dj, boolean useDjMainDatasource) throws TimeoutException
   {
-    if (queryString == null || searchStrategy == null || dj == null) {
+    if (queryString == null || searchStrategy == null || dj == null)
+    {
       return null;
     }
 
@@ -97,7 +104,8 @@ public class Search
     {
       if (query.numberOfQueryParts() == 0)
       {
-        results = (useDjMainDatasource ? dj.getContentsOfMainDatasource() : dj.getContentsOf(query.getDatasourceName()));
+        results = (useDjMainDatasource ? dj.getContentsOfMainDatasource()
+            : dj.getContentsOf(query.getDatasourceName()));
       } else
       {
         results = (useDjMainDatasource ? dj.find(query.getQueryParts()) : dj.find(query));
@@ -107,8 +115,8 @@ public class Search
     return mergeListOfQueryResultsList(listOfQueryResultsList);
   }
 
-  public static QueryResults search(Map<String, String> query,
-      DatasourceJoiner dj) throws TimeoutException
+  public static QueryResults search(Map<String, String> query, DatasourceJoiner dj)
+      throws TimeoutException
   {
     List<QueryPart> parts = new ArrayList<>();
 
@@ -121,9 +129,68 @@ public class Search
     return dj.find(parts);
   }
 
+  public static boolean hasLDAPDataChanged(Dataset dataset, Dataset ldapDataset)
+  {
+    boolean hasChanged = false;
+
+    if (dj == null || dataset == null || ldapDataset == null)
+      return hasChanged;
+
+    for (String columnName : dj.getMainDatasourceSchema())
+    {
+      try
+      {
+        String ldapDSValue = ldapDataset.get(columnName);
+        String datasetValue = dataset.get(columnName);
+        if (ldapDSValue != null && datasetValue != null && !ldapDSValue.equals(datasetValue))
+        {
+          hasChanged = true;
+          break;
+        }
+      } catch (ColumnNotFoundException e)
+      {
+        LOGGER.error("", e);
+      }
+    }
+
+    return hasChanged;
+  }
+
+  private static CompletableFuture<QueryResults> asyncLdapSearch = CompletableFuture
+      .supplyAsync(() -> {
+        QueryResults results = null;
+
+        try
+        {
+          if (resultSearchQuery == null || dj == null)
+            return null;
+
+          results = search(resultSearchQuery, dj);
+        } catch (TimeoutException | IllegalArgumentException e)
+        {
+          LOGGER.error("", e);
+        }
+
+        return results;
+      });
+
+  public static CompletableFuture<QueryResults> runLdapSearchAsync(Map<String, String> searchQuery,
+      DatasourceJoiner datasourceJoiner)
+  {
+    try
+    {
+      dj = datasourceJoiner;
+      resultSearchQuery = searchQuery;
+    } catch (CompletionException e)
+    {
+      LOGGER.error("", e);
+    }
+
+    return asyncLdapSearch;
+  }
+
   /**
-   * Führt die Ergenismengen zusammen. Dabei werden mehrfache Ergebnisse
-   * ausgefiltert.
+   * Führt die Ergenismengen zusammen. Dabei werden mehrfache Ergebnisse ausgefiltert.
    * 
    * @return bereinigte Ergebnisliste.
    */
@@ -152,17 +219,15 @@ public class Search
   }
 
   /**
-   * Liefert zur Anfrage queryString eine Liste von {@link Query}s, die der Reihe
-   * nach probiert werden sollten, gemäß der Suchstrategie searchStrategy (siehe
-   * {@link SearchStrategy#parse(ConfigThingy)}). Gibt es für die übergebene Anzahl
-   * Wörter keine Suchstrategie, so wird solange das letzte Wort entfernt bis
-   * entweder nichts mehr übrig ist oder eine Suchstrategie für die Anzahl Wörter
-   * gefunden wurde.
+   * Liefert zur Anfrage queryString eine Liste von {@link Query}s, die der Reihe nach probiert
+   * werden sollten, gemäß der Suchstrategie searchStrategy (siehe
+   * {@link SearchStrategy#parse(ConfigThingy)}). Gibt es für die übergebene Anzahl Wörter keine
+   * Suchstrategie, so wird solange das letzte Wort entfernt bis entweder nichts mehr übrig ist oder
+   * eine Suchstrategie für die Anzahl Wörter gefunden wurde.
    * 
    * @return die leere Liste falls keine Liste bestimmt werden konnte.
    */
-  private static List<Query> parseQuery(SearchStrategy searchStrategy,
-      String queryString)
+  private static List<Query> parseQuery(SearchStrategy searchStrategy, String queryString)
   {
     List<Query> queryList = new ArrayList<>();
 
@@ -173,7 +238,8 @@ public class Search
     // Suchstring zerlegen.
     Stream<String> queryStream = Arrays.stream(queryString.trim().split("\\p{Space}+"));
     // Formatieren und leere Wörter entfernen
-    String[] queryArray = queryStream.map(Search::formatQuery).filter(query -> query.length() != 0).toArray(String[]::new);
+    String[] queryArray = queryStream.map(Search::formatQuery).filter(query -> query.length() != 0)
+        .toArray(String[]::new);
 
     int count = queryArray.length;
 
@@ -182,7 +248,8 @@ public class Search
       --count;
 
     // keine Suchstrategie gefunden
-    if (count < 0) {
+    if (count < 0)
+    {
       return queryList;
     }
 
@@ -196,9 +263,9 @@ public class Search
   }
 
   /**
-   * Benutzerseitig wir nur ein einzelnes Sternchen am Ende eines Wortes
-   * akzeptiert. Deswegen entferne alle anderen Sternchen. Ein Punkt am Ende
-   * eines Wortes wird als Abkürzung interpretiert und durch Sternchen ersetzt.
+   * Benutzerseitig wir nur ein einzelnes Sternchen am Ende eines Wortes akzeptiert. Deswegen
+   * entferne alle anderen Sternchen. Ein Punkt am Ende eines Wortes wird als Abkürzung
+   * interpretiert und durch Sternchen ersetzt.
    */
   private static String formatQuery(String query)
   {
@@ -217,9 +284,9 @@ public class Search
   }
 
   /**
-   * Nimmt ein Template für eine Suchanfrage entgegen (das Variablen der Form
-   * "${suchanfrageX}" enthalten kann) und instanziiert es mit Wörtern aus words,
-   * wobei nur die ersten wordcount Einträge von words beachtet werden.
+   * Nimmt ein Template für eine Suchanfrage entgegen (das Variablen der Form "${suchanfrageX}"
+   * enthalten kann) und instanziiert es mit Wörtern aus words, wobei nur die ersten wordcount
+   * Einträge von words beachtet werden.
    */
   private static Query resolveTemplate(Query template, String[] words, int wordcount)
   {
@@ -233,9 +300,8 @@ public class Search
 
       for (int i = 0; i < wordcount; ++i)
       {
-        str =
-          str.replaceAll("\\$\\{suchanfrage" + (i + 1) + "\\}", words[i].replaceAll(
-            "\\$", "\\\\\\$"));
+        str = str.replaceAll("\\$\\{suchanfrage" + (i + 1) + "\\}",
+            words[i].replaceAll("\\$", "\\\\\\$"));
       }
 
       QueryPart part = new QueryPart(templatePart.getColumnName(), str);

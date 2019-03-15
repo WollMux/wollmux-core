@@ -32,12 +32,9 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionException;
 import java.util.stream.Stream;
 
 import org.slf4j.Logger;
@@ -51,9 +48,6 @@ import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 public class Search
 {
   private static final Logger LOGGER = LoggerFactory.getLogger(Search.class);
-
-  private static Map<String, String> resultSearchQuery = new HashMap<>();
-  private static DatasourceJoiner dj = null;
 
   private Search()
   {
@@ -129,7 +123,8 @@ public class Search
     return dj.find(parts);
   }
 
-  public static boolean hasLDAPDataChanged(Dataset dataset, Dataset ldapDataset)
+  public static boolean hasLDAPDataChanged(Dataset dataset, Dataset ldapDataset,
+      DatasourceJoiner dj)
   {
     boolean hasChanged = false;
 
@@ -154,39 +149,6 @@ public class Search
     }
 
     return hasChanged;
-  }
-
-  private static CompletableFuture<QueryResults> asyncLdapSearch = CompletableFuture
-      .supplyAsync(() -> {
-        QueryResults results = null;
-
-        try
-        {
-          if (resultSearchQuery == null || dj == null)
-            return null;
-
-          results = search(resultSearchQuery, dj);
-        } catch (TimeoutException | IllegalArgumentException e)
-        {
-          LOGGER.error("", e);
-        }
-
-        return results;
-      });
-
-  public static CompletableFuture<QueryResults> runLdapSearchAsync(Map<String, String> searchQuery,
-      DatasourceJoiner datasourceJoiner)
-  {
-    try
-    {
-      dj = datasourceJoiner;
-      resultSearchQuery = searchQuery;
-    } catch (CompletionException e)
-    {
-      LOGGER.error("", e);
-    }
-
-    return asyncLdapSearch;
   }
 
   /**

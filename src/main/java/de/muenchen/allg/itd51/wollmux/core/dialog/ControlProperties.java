@@ -150,6 +150,20 @@ public class ControlProperties
     }
   }
   
+  public void setEnabled(boolean isEnabled)
+  {
+    XPropertySet propertySet = UnoRuntime.queryInterface(XPropertySet.class, this.xControl.getModel());
+    
+    try
+    {
+      propertySet.setPropertyValue("Enabled", isEnabled);
+    } catch (UnknownPropertyException | IllegalArgumentException | PropertyVetoException
+        | WrappedTargetException e)
+    {
+      LOGGER.error("", e);
+    }
+  }
+  
   public void setBorder(short value) {
     XPropertySet propertySet = UnoRuntime.queryInterface(XPropertySet.class, this.xControl.getModel());
     try
@@ -203,6 +217,30 @@ public class ControlProperties
     try
     {
       propertySet.setPropertyValue(XNumericFieldProperties.DECIMAL_ACCURACY, value);
+    } catch (UnknownPropertyException | IllegalArgumentException | PropertyVetoException
+        | WrappedTargetException e)
+    {
+      LOGGER.error("", e);
+    }
+  }
+  
+  public void setComboBoxDropDown(boolean value) {
+    XPropertySet propertySet = UnoRuntime.queryInterface(XPropertySet.class, this.xControl.getModel());
+    try
+    {
+      propertySet.setPropertyValue("Dropdown", value);
+    } catch (UnknownPropertyException | IllegalArgumentException | PropertyVetoException
+        | WrappedTargetException e)
+    {
+      LOGGER.error("", e);
+    }
+  }
+  
+  public void enableToggleButton(boolean value) {
+    XPropertySet propertySet = UnoRuntime.queryInterface(XPropertySet.class, this.xControl.getModel());
+    try
+    {
+      propertySet.setPropertyValue("Toggle", value);
     } catch (UnknownPropertyException | IllegalArgumentException | PropertyVetoException
         | WrappedTargetException e)
     {

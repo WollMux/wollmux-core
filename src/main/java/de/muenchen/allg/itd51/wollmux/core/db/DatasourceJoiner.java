@@ -128,8 +128,6 @@ public class DatasourceJoiner
   
   private QueryResults cachedQueryResults = null;
 
-  private Dataset cachedDataset = null;
-
   public static final long DATASOURCE_TIMEOUT = 10000;
   
   /**
@@ -577,13 +575,15 @@ public class DatasourceJoiner
     if (this.cachedQueryResults == null)
       return null;
 
+    Dataset result = null;
+    
     for (Dataset ds : this.cachedQueryResults)
     {
       try
       {
         if (ds.get("OID").equals(oid))
         {
-          cachedDataset = ds;
+          result = ds;
           break;
         }
       } catch (ColumnNotFoundException e)
@@ -592,7 +592,7 @@ public class DatasourceJoiner
       }
     }
 
-    return cachedDataset;
+    return result;
   }
 
   public Set<String> getOIDsFromLOS() {

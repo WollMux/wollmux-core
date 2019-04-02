@@ -126,7 +126,7 @@ public class DatasourceJoiner
    */
   protected List<Dataset> lostDatasets = new ArrayList<>(0);
   
-  private QueryResults cachedQueryResults = null;
+  private List<Dataset> cachedQueryResults = new ArrayList<>();
 
   public static final long DATASOURCE_TIMEOUT = 10000;
   
@@ -562,10 +562,30 @@ public class DatasourceJoiner
   
   public void setCachedLdapResults(QueryResults results)
   {
-    this.cachedQueryResults = results;
+    results.forEach(ds -> this.cachedQueryResults.add(ds));
   }
   
-  public QueryResults getCachedLdapResults()
+  public void addCachedLdapResult(Dataset ds)
+  {
+    Iterator<Dataset> datasetIterator = this.cachedQueryResults.iterator();
+    
+    while (datasetIterator.hasNext()) {
+      Dataset dataset = datasetIterator.next();
+      try
+      {
+        if (dataset.get("OID").equals(ds.get("OID"))) {
+          datasetIterator.remove();
+        }
+      } catch (ColumnNotFoundException e)
+      {
+        LOGGER.error("", e);
+      }
+   }
+  
+    this.cachedQueryResults.add(ds);
+  }
+  
+  public List<Dataset> getCachedLdapResults()
   {
     return this.cachedQueryResults;
   }

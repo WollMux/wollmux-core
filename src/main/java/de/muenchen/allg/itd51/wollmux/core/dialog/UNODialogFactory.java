@@ -146,6 +146,10 @@ public class UNODialogFactory
     this.modalBaseDialogWindow.dispose();
     this.modalBaseDialogWindow = null;
   }
+  
+  public void setVisible(boolean value) {
+    this.modalBaseDialogWindow.setVisible(value);
+  }
 
   private XWindowPeer createModalBaseDialog(XToolkit toolkit, XWindowPeer parentWindow, int width,
       int height)

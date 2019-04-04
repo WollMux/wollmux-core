@@ -139,8 +139,7 @@ public class Search
         String datasetValue = dataset.get(columnName);
         
         if ((ldapDSValue == null && datasetValue != null && !datasetValue.isEmpty())
-            || ldapDSValue != null && datasetValue != null
-                && !ldapDSValue.equals(datasetValue))
+            || (ldapDSValue != null && datasetValue != null && !ldapDSValue.equals(datasetValue)))
         {
           hasChanged = true;
           break;

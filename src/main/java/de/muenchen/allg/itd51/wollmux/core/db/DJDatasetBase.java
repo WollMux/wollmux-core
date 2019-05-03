@@ -34,6 +34,9 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 import java.util.Map;
 import java.util.Set;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.muenchen.allg.itd51.wollmux.core.util.L;
 
 /**
@@ -41,6 +44,8 @@ import de.muenchen.allg.itd51.wollmux.core.util.L;
  */
 public abstract class DJDatasetBase implements DJDataset
 {
+  private static final Logger LOGGER = LoggerFactory.getLogger(DJDatasetBase.class);
+
   /**
    * Bildet Spaltennamen auf (String-)Werte ab. Die Daten in myLOS repräsentieren den
    * lokalen Override, die in myBS die (gecachten) Daten aus der
@@ -87,6 +92,29 @@ public abstract class DJDatasetBase implements DJDataset
     myBS = backingStore;
     myLOS = overrideStore;
     this.schema = schema;
+  }
+
+  @Override
+  public String toString()
+  {
+    StringBuilder stringBuilder = new StringBuilder();
+
+    try
+    {
+      String rolle = get("Rolle");
+      String nachname = get("Nachname");
+      String vorname = get("Vorname");
+
+      stringBuilder.append(rolle == null || rolle.isEmpty() ? "" : "(" + rolle + ") ");
+      stringBuilder.append(nachname == null || nachname.isEmpty() ? "" : nachname);
+      stringBuilder.append(", ");
+      stringBuilder.append(vorname == null || vorname.isEmpty() ? "" : vorname);
+    } catch (ColumnNotFoundException e)
+    {
+      LOGGER.error("", e);
+    }
+
+    return stringBuilder.toString();
   }
 
   /**

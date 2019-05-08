@@ -135,6 +135,4 @@ public interface DJDataset extends Dataset
    */
   public void remove();
 
-  //@Override
-  public String toString();
 }

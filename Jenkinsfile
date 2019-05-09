@@ -24,7 +24,7 @@ pipeline {
     stage('Quality Gate') {
       steps {
         script {
-          if (GIT_BRANCH == 'master') {
+          if (GIT_BRANCH == 'master' || GIT_BRANCH == 'wollmux-core-18.1') {
             withMaven(
               maven: 'mvn',
               mavenLocalRepo: '.repo',
@@ -57,7 +57,10 @@ pipeline {
     }
     stage('Artifactory Deploy') {
       when {
-        branch "master"
+        anyOf {
+          branch "master";
+          branch "wollmux-core-18.1"
+        }
       }
       steps {
         withMaven(

@@ -194,9 +194,9 @@ public class OOoDatasource implements Datasource
    * Wie {@link #OOoDatasource(Map, ConfigThingy, URL, boolean)}, wobei noKey==false
    * übergeben wird.
    */
-  public OOoDatasource(Map<String, Datasource> nameToDatasource, ConfigThingy sourceDesc, URL context)
+  public OOoDatasource(Map<String, Datasource> nameToDatasource, ConfigThingy sourceDesc)
   {
-    this(nameToDatasource, sourceDesc, context, false);
+    this(nameToDatasource, sourceDesc, false);
   }
 
   /**
@@ -209,9 +209,6 @@ public class OOoDatasource implements Datasource
    * @param sourceDesc
    *          der "Datenquelle"-Knoten, der die Beschreibung dieser OOoDatasource
    *          enthält.
-   * @param context
-   *          der Kontext relativ zu dem URLs aufgelöst werden sollen (zur Zeit nicht
-   *          verwendet).
    * @param noKey
    *          Falls true, so wird immer die erste Spalte als Schlüsselspalte
    *          verwendet. Diese Option sollte nur verwendet werden, wenn keine
@@ -226,7 +223,7 @@ public class OOoDatasource implements Datasource
    *           leer behandelt. TESTED
    */
   public OOoDatasource(Map<String, Datasource> nameToDatasource,
-      ConfigThingy sourceDesc, URL context, boolean noKey)
+      ConfigThingy sourceDesc, boolean noKey)
   {
     datasourceName = parseConfig(sourceDesc, "NAME", () -> L.m("NAME der Datenquelle fehlt"));
     oooDatasourceName = parseConfig(sourceDesc, "SOURCE", () -> L.m(

@@ -34,15 +34,7 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
-
-import de.muenchen.allg.itd51.wollmux.core.db.Dataset;
-import de.muenchen.allg.itd51.wollmux.core.db.Datasource;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryPart;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResults;
-import de.muenchen.allg.itd51.wollmux.core.db.QueryResultsList;
-import de.muenchen.allg.itd51.wollmux.core.db.TimeoutException;
 
 /**
  * Eine Datenquelle, die keine Datensätze enthält.
@@ -54,11 +46,11 @@ public class EmptyDatasource implements Datasource
   private static QueryResults emptyResults =
     new QueryResultsList(new Vector<Dataset>(0));
 
-  private Set<String> schema;
+  private List<String> schema;
 
   private String name;
 
-  public EmptyDatasource(Set<String> schema, String name)
+  public EmptyDatasource(List<String> schema, String name)
   {
     this.schema = schema;
     this.name = name;
@@ -70,7 +62,7 @@ public class EmptyDatasource implements Datasource
    * @see de.muenchen.allg.itd51.wollmux.db.Datasource#getSchema()
    */
   @Override
-  public Set<String> getSchema()
+  public List<String> getSchema()
   {
     return schema;
   }

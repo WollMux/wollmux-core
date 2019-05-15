@@ -31,8 +31,8 @@
  */
 package de.muenchen.allg.itd51.wollmux.core.db;
 
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,7 +66,7 @@ public abstract class DJDatasetBase implements DJDataset
    * Die Menge aller Spaltennamen, die dieser Datensatz kennt. Falls dieses Set nicht
    * null ist, werfen Versuche, auf unbekannte Spalten zuzugreifen eine Exception.
    */
-  protected Set<String> schema;
+  protected List<String> schema;
 
   /**
    * Erzeugt einen neuen Datensatz.
@@ -87,8 +87,8 @@ public abstract class DJDatasetBase implements DJDataset
    *          Namen, die nicht in schema sind Exceptions.
    */
   public DJDatasetBase(Map<String, String> backingStore,
-      Map<String, String> overrideStore, Set<String> schema)
-  { // TESTED
+      Map<String, String> overrideStore, List<String> schema)
+  {
     myBS = backingStore;
     myLOS = overrideStore;
     this.schema = schema;

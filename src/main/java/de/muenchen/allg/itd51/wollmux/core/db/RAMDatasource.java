@@ -35,10 +35,8 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 import de.muenchen.allg.itd51.wollmux.core.db.checker.DatasetChecker;
@@ -51,7 +49,7 @@ public class RAMDatasource implements Datasource
   /**
    * Das Schema dieser Datenquelle.
    */
-  private Set<String> schema;
+  private List<String> schema;
 
   /**
    * Liste aller Datasets, die in dieser Datasource gespeichert sind.
@@ -74,7 +72,7 @@ public class RAMDatasource implements Datasource
    * @param data
    *          die Datensätze der Datenquelle
    */
-  public RAMDatasource(String name, Set<String> schema, List<Dataset> data)
+  public RAMDatasource(String name, List<String> schema, List<Dataset> data)
   {
     init(name, schema, data);
   }
@@ -92,7 +90,7 @@ public class RAMDatasource implements Datasource
    * aus. Diese Methode sollte von abgeleiteten Klassen verwendet werden, wenn sie
    * den Konstruktor ohne Argumente verwenden.
    */
-  protected void init(String name, Set<String> schema, List<Dataset> data)
+  protected void init(String name, List<String> schema, List<Dataset> data)
   {
     this.schema = schema;
     this.data = data;
@@ -100,9 +98,9 @@ public class RAMDatasource implements Datasource
   }
 
   @Override
-  public Set<String> getSchema()
-  { // TESTED
-    return new HashSet<>(schema);
+  public List<String> getSchema()
+  {
+    return new ArrayList<>(schema);
   }
 
   @Override

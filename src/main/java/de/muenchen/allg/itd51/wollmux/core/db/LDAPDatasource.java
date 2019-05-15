@@ -49,12 +49,10 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Properties;
-import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
@@ -88,7 +86,7 @@ public class LDAPDatasource implements Datasource
 
   private static final Logger LOGGER = LoggerFactory.getLogger(LDAPDatasource.class);
 
-  private Set<String> schema;
+  private List<String> schema;
 
   private String datasourceName;
 
@@ -233,7 +231,7 @@ public class LDAPDatasource implements Datasource
       throw new ConfigurationErrorException(errorMessage()
         + L.m("Abschnitt 'Spalten' fehlt."));
 
-    schema = new HashSet<>();
+    schema = new ArrayList<>();
 
     // iteriere über alle Spalten-Relationen
     for (ConfigThingy spaltenDesc : spalten)
@@ -410,7 +408,7 @@ public class LDAPDatasource implements Datasource
    * @see de.muenchen.allg.itd51.wollmux.db.Datasource#getSchema()
    */
   @Override
-  public Set<String> getSchema()
+  public List<String> getSchema()
   {
     return schema;
   }

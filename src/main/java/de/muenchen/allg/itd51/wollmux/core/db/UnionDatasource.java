@@ -32,6 +32,7 @@
 package de.muenchen.allg.itd51.wollmux.core.db;
 
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashSet;
@@ -58,7 +59,7 @@ public class UnionDatasource implements Datasource
 
   private String source2Name;
 
-  private Set<String> schema;
+  private List<String> schema;
 
   private String name;
 
@@ -105,8 +106,8 @@ public class UnionDatasource implements Datasource
      * haben. Solange dafür keine Notwendigkeit ersichtlich ist, spare ich mir diesen
      * Aufwand.
      */
-    Set<String> schema1 = source1.getSchema();
-    Set<String> schema2 = source2.getSchema();
+    List<String> schema1 = source1.getSchema();
+    List<String> schema2 = source2.getSchema();
     if (!schema1.containsAll(schema2) || !schema2.containsAll(schema1))
     {
       Set<String> difference1 = new HashSet<>(schema1);
@@ -137,11 +138,11 @@ public class UnionDatasource implements Datasource
           source1Name, buf2, source2Name, buf1));
     }
 
-    schema = new HashSet<>(schema1);
+    schema = new ArrayList<>(schema1);
   }
 
   @Override
-  public Set<String> getSchema()
+  public List<String> getSchema()
   {
     return schema;
   }

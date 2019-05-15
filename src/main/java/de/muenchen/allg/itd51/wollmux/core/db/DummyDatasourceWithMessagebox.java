@@ -34,7 +34,6 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.Vector;
 
 /**
@@ -50,11 +49,11 @@ public class DummyDatasourceWithMessagebox implements Datasource
   private static QueryResults emptyResults = new QueryResultsList(
     new Vector<Dataset>(0));
 
-  private Set<String> schema;
+  private List<String> schema;
 
   private String name;
 
-  public DummyDatasourceWithMessagebox(Set<String> schema, String name)
+  public DummyDatasourceWithMessagebox(List<String> schema, String name)
   {
     this.schema = schema;
     this.name = name;
@@ -66,7 +65,7 @@ public class DummyDatasourceWithMessagebox implements Datasource
    * @see de.muenchen.allg.itd51.wollmux.db.Datasource#getSchema()
    */
   @Override
-  public Set<String> getSchema()
+  public List<String> getSchema()
   {
     return schema;
   }

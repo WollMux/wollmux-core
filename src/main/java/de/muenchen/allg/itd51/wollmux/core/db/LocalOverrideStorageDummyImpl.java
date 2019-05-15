@@ -1,10 +1,8 @@
 package de.muenchen.allg.itd51.wollmux.core.db;
 
 import java.util.ArrayList;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Set;
 
 import de.muenchen.allg.itd51.wollmux.core.db.DatasourceJoiner.Status;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
@@ -12,7 +10,7 @@ import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
 public class LocalOverrideStorageDummyImpl implements LocalOverrideStorage
 {
   DJDataset dummyDataset;
-  Set<String> schema = new HashSet<>();
+  List<String> schema = new ArrayList<>();
 
   public LocalOverrideStorageDummyImpl()
   {
@@ -128,7 +126,7 @@ public class LocalOverrideStorageDummyImpl implements LocalOverrideStorage
   }
 
   @Override
-  public Set<String> getSchema()
+  public List<String> getSchema()
   {
     if ( schema.isEmpty()){
       schema.add(DatasourceJoiner.NOCONFIG);
@@ -143,7 +141,7 @@ public class LocalOverrideStorageDummyImpl implements LocalOverrideStorage
   }
 
   @Override
-  public void setSchema(Set<String> schema)
+  public void setSchema(List<String> schema)
   {
     this.schema = schema;
   }

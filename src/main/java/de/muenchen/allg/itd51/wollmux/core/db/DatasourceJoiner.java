@@ -183,7 +183,7 @@ public class DatasourceJoiner
     }
 
     myLOS = los;
-    Set<String> schema = myLOS.getSchema();
+    List<String> schema = myLOS.getSchema();
 
     if (!nameToDatasource.containsKey(mainSourceName))
     {
@@ -244,8 +244,8 @@ public class DatasourceJoiner
    * 
    * @return Schema der Hauptdatenquelle.
    */
-  public Set<String> getMainDatasourceSchema()
-  { // TESTED
+  public List<String> getMainDatasourceSchema()
+  {
     return mainDatasource.getSchema();
   }
   
@@ -466,7 +466,7 @@ public class DatasourceJoiner
   public ConfigThingy saveCacheAndLOS(File cacheFile)
   {
     LOGGER.debug(L.m("Speichere Cache nach %1.", cacheFile));
-    Set<String> schema = myLOS.getSchema();
+    List<String> schema = myLOS.getSchema();
     if (schema == null)
     {
       LOGGER.error(L.m("Kann Cache nicht speichern, weil nicht initialisiert."));

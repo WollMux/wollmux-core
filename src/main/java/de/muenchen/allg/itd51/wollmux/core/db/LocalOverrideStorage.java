@@ -1,7 +1,6 @@
 package de.muenchen.allg.itd51.wollmux.core.db;
 
 import java.util.List;
-import java.util.Set;
 
 import de.muenchen.allg.itd51.wollmux.core.db.DatasourceJoiner.Status;
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
@@ -67,7 +66,7 @@ public interface LocalOverrideStorage extends Iterable<Dataset>
    * Liefert null, falls bislang kein Schema vorhanden (weil das Laden der
    * Cache-Datei im Konstruktur fehlgeschlagen ist).
    */
-  public Set<String> getSchema();
+  public List<String> getSchema();
 
   /**
    * Fügt conf die Beschreibung der Datensätze im LOS als Kinder hinzu.
@@ -79,7 +78,7 @@ public interface LocalOverrideStorage extends Iterable<Dataset>
    * vorhanden sind werden aus den Datensätzen gelöscht. Im neuen Schema
    * hinzugekommene Spalten werden in den Datensätzen als unbelegt betrachtet.
    */
-  public void setSchema(Set<String> schema);
+  public void setSchema(List<String> schema);
 
   /**
    * Liefert die Anzahl der Datensätze im LOS.

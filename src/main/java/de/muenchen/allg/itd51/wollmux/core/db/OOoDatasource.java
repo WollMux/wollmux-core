@@ -37,13 +37,12 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import org.slf4j.Logger;
@@ -170,7 +169,7 @@ public class OOoDatasource implements Datasource
   /**
    * Das Schema dieser Datenquelle.
    */
-  private Set<String> schema;
+  private List<String> schema;
 
   /**
    * Die Namen der Spalten, die den Primärschlüssel bilden.
@@ -200,7 +199,8 @@ public class OOoDatasource implements Datasource
   }
 
   /**
-   * Erzeugt eine neue OOoDatasource.
+   * Erzeugt eine neue OOoDatasource. Wenn kein SQL_SYNTAX Parameter in ConfigThingy
+   * gesetzt ist, wird 'mysql' als Standard verwendet.
    * 
    * @param nameToDatasource
    *          enthält alle bis zum Zeitpunkt der Definition dieser OOoDatasource
@@ -235,6 +235,9 @@ public class OOoDatasource implements Datasource
     password = sourceDesc.getString("PASSWORD", "");
 
     String sqlSyntaxStr = sourceDesc.getString("SQL_SYNTAX", "");
+    
+    sqlSyntaxStr = sqlSyntaxStr == null || sqlSyntaxStr.isEmpty() ? "mysql" : sqlSyntaxStr;
+    
     if ("ansi".equalsIgnoreCase(sqlSyntaxStr))
       sqlSyntax = SQL_SYNTAX_ANSI;
     else if ("oracle".equalsIgnoreCase(sqlSyntaxStr))
@@ -247,7 +250,7 @@ public class OOoDatasource implements Datasource
       throw new ConfigurationErrorException(L.m(
         "SQL_SYNTAX \"%1\" nicht unterstützt", sqlSyntaxStr));
 
-    schema = new HashSet<>();
+    schema = new ArrayList<>();
     ConfigThingy schemaConf = sourceDesc.query("Schema");
     if (schemaConf.count() != 0)
     {
@@ -322,8 +325,7 @@ public class OOoDatasource implements Datasource
           }
         }
         String[] colNames = columns.getElementNames();
-        for (int i = 0; i < colNames.length; ++i)
-          schema.add(colNames[i]);
+        Arrays.asList(colNames).forEach(colName -> schema.add(colName));
 
         if (schema.isEmpty())
           throw new ConfigurationErrorException(L.m(
@@ -414,7 +416,7 @@ public class OOoDatasource implements Datasource
   }
 
   @Override
-  public Set<String> getSchema()
+  public List<String> getSchema()
   {
     return schema;
   }

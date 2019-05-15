@@ -36,7 +36,6 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 
 import java.util.Collection;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Supplier;
 
 import de.muenchen.allg.itd51.wollmux.core.parser.ConfigThingy;
@@ -70,9 +69,9 @@ import de.muenchen.allg.itd51.wollmux.core.parser.ConfigurationErrorException;
 public interface Datasource
 {
   /**
-   * Liefert ein Set, das die Titel aller Spalten der Datenquelle enthält.
+   * Liefert eine Liste, die die Titel aller Spalten der Datenquelle enthält.
    */
-  public Set<String> getSchema();
+  public List<String> getSchema();
 
   /**
    * Liefert alle Datensätze, deren Schlüssel in der Collection keys enthalten sind.

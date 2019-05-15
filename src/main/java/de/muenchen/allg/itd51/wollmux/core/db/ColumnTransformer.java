@@ -29,9 +29,11 @@
  */
 package de.muenchen.allg.itd51.wollmux.core.db;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
@@ -118,9 +120,9 @@ public class ColumnTransformer
    * Namen für die {@link #get(String, Dataset)} einen berechneten Wert und nicht
    * direkt den Wert des {@link Dataset}s zurückliefert.
    */
-  public Set<String> getSchema()
+  public List<String> getSchema()
   {
-    return new HashSet<>(schema);
+    return new ArrayList<>(schema);
   }
 
   /**

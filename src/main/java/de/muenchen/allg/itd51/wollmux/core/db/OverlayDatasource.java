@@ -87,7 +87,7 @@ public class OverlayDatasource implements Datasource
 
   private Datasource source2;
 
-  private Set<String> schema;
+  private List<String> schema;
 
   private Set<String> schema1;
 
@@ -163,7 +163,7 @@ public class OverlayDatasource implements Datasource
     schema1 = new HashSet<>(source1.getSchema());
     schema2 = new HashSet<>(source2.getSchema());
 
-    schema = new HashSet<>(schema1);
+    schema = new ArrayList<>(schema1);
     schema.addAll(schema2);
 
     ConfigThingy matchesDesc = sourceDesc.query("MATCH");
@@ -217,7 +217,7 @@ public class OverlayDatasource implements Datasource
    * @see de.muenchen.allg.itd51.wollmux.db.Datasource#getSchema()
    */
   @Override
-  public Set<String> getSchema()
+  public List<String> getSchema()
   {
     return schema;
   }

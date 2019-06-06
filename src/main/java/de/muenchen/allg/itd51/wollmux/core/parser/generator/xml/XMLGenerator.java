@@ -1,10 +1,14 @@
 package de.muenchen.allg.itd51.wollmux.core.parser.generator.xml;
 
+import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.Deque;
 import java.util.LinkedList;
 
@@ -302,8 +306,24 @@ public class XMLGenerator
     }
     URL context = new URL("file:" + files.peek().getAttribute("filename"));
     String newFile = PathProcessor.processInclude(token.getContent());
+    Path path = Paths.get(newFile);
     element = document.createElement(XMLTags.FILE.getName());
-    element.setAttribute("filename", new URL(context, newFile).getPath());
+    boolean windowsOS = System.getProperty("os.name").toLowerCase().contains("windows");
+    if(windowsOS)
+    {
+      if(Files.exists(path))
+      {        
+        element.setAttribute("filename", new URL(context, "/" + newFile).getPath()); 
+      }
+      else
+      {
+        element.setAttribute("filename", new URL(context, newFile).getPath());
+      }
+    }
+    else
+    {
+      element.setAttribute("filename", new URL(context, newFile).getPath());  
+    }
     config.appendChild(element);
     files.push(element);
   }

@@ -121,24 +121,31 @@ public class TestWithInclude
     ConfGenerator generator = new ConfGenerator(doc);
     generator.generateConf();
     // Whitespace was replaced
-    assertEquals("Different content length", in.length(), out.length() + 9);
     assertEquals("Different content length 2", in2.length(), out2.length());
     // out.delete();
     // out2.delete();
-    fileContentMap.put(getClass().getResource("tmp2.conf").getFile(),
-        "%include \"tmp.conf\"\n\n");
-    fileContentMap
-        .put(
-            getClass().getResource("tmp.conf").getFile(),
-            "A 'X\"\"Y'\nB 'X\"Y'\nC \"X''Y\"\nD \"X'Y\"\nGUI (\n  Dialoge (\n    Dialog1 (\n      (TYPE \"textbox\" LABEL \"Name\")\n    )\n  )\n)\nAnredevarianten (\"Herr\", \"Frau\", \"Pinguin\")\n(\"Dies\", \"ist\", \"eine\", \"unbenannte\", \"Liste\")\nNAME \"WollMux%%%n\" # FARBSCHEMA \"Ekelig\"\n\n");
+    boolean windowsOS = System.getProperty("os.name").toLowerCase().contains("windows");
+    if(windowsOS)
+    {
+//    hier von 9 auf 8, weil Windows im Unterschied zu Linux (ein LineFeed) die Kombination CarriageReturn und LineFeed verwendet, also 2 Zeichen
+      assertEquals("Different content length", in.length(), out.length() + 8);
+      fileContentMap.put(getClass().getResource("tmp2.conf").getFile(), "%include \"tmp.conf\"\r\n\r\n");
+      fileContentMap.put(getClass().getResource("tmp.conf").getFile(), "A 'X\"\"Y'\r\nB 'X\"Y'\r\nC \"X''Y\"\r\nD \"X'Y\"\r\nGUI (\r\n  Dialoge (\r\n    Dialog1 (\r\n      (TYPE \"textbox\" LABEL \"Name\")\r\n    )\r\n  )\r\n)\r\nAnredevarianten (\"Herr\", \"Frau\", \"Pinguin\")\r\n(\"Dies\", \"ist\", \"eine\", \"unbenannte\", \"Liste\")\r\nNAME \"WollMux%%%n\" # FARBSCHEMA \"Ekelig\"\r\n\r\n");
+    }
+    else
+    {
+      assertEquals("Different content length", in.length(), out.length() + 9);
+      fileContentMap.put(getClass().getResource("tmp2.conf").getFile(), "%include \"tmp.conf\"\n\n");
+      fileContentMap.put(getClass().getResource("tmp.conf").getFile(), "A 'X\"\"Y'\nB 'X\"Y'\nC \"X''Y\"\nD \"X'Y\"\nGUI (\n  Dialoge (\n    Dialog1 (\n      (TYPE \"textbox\" LABEL \"Name\")\n    )\n  )\n)\nAnredevarianten (\"Herr\", \"Frau\", \"Pinguin\")\n(\"Dies\", \"ist\", \"eine\", \"unbenannte\", \"Liste\")\nNAME \"WollMux%%%n\" # FARBSCHEMA \"Ekelig\"\n\n");
+    }        
     Map<String, String> map = generator.generateConfMap("UTF-8");
     assertEquals("Different number of files", fileContentMap.size(), map.size());
     for (Entry<String, String> entry : map.entrySet())
     {
-      assertTrue("Unknown file " + entry.getKey(),
-          fileContentMap.containsKey(entry.getKey()));
-      assertEquals("Different content", fileContentMap.get(entry.getKey()),
-          entry.getValue());
+      assertTrue("Unknown file " + entry.getKey(), fileContentMap.containsKey(entry.getKey()));
+      String aa = fileContentMap.get(entry.getKey());
+      String bb =  entry.getValue();
+      assertEquals("Different content", fileContentMap.get(entry.getKey()), entry.getValue());
     }
   }
 

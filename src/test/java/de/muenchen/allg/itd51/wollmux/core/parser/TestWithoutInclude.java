@@ -88,6 +88,7 @@ public class TestWithoutInclude
    * The content of the file.
    */
   private final String config = "A 'X\"\"Y'\nB 'X\"Y'\nC \"X''Y\"\nD \"X'Y\"\nGUI (\n  Dialoge (\n    Dialog1 (\n      (TYPE \"textbox\" LABEL \"Name\")\n    )\n  )\n)\nAnredevarianten (\"Herr\", \"Frau\", \"Pinguin\")\n(\"Dies\", \"ist\", \"eine\", \"unbenannte\", \"Liste\")\nNAME \"WollMux%%%n\" # FARBSCHEMA \"Ekelig\"\n\n";
+  private final String config_win = "A 'X\"\"Y'\r\nB 'X\"Y'\r\nC \"X''Y\"\r\nD \"X'Y\"\r\nGUI (\r\n  Dialoge (\r\n    Dialog1 (\r\n      (TYPE \"textbox\" LABEL \"Name\")\r\n    )\r\n  )\r\n)\r\nAnredevarianten (\"Herr\", \"Frau\", \"Pinguin\")\r\n(\"Dies\", \"ist\", \"eine\", \"unbenannte\", \"Liste\")\r\nNAME \"WollMux%%%n\" # FARBSCHEMA \"Ekelig\"\r\n\r\n"; 
 
   /**
    * Scan a file and test whether the correct tokens occur.
@@ -151,9 +152,18 @@ public class TestWithoutInclude
     ConfGenerator generator = new ConfGenerator(doc);
     generator.generateConf(new FileOutputStream(out), 0);
     // Whitespace was replaced
-    assertEquals("Different content length", in.length(), out.length() + 9);
-    out.delete();
-    assertEquals("wrong string", config, generator.generateConf("UTF-8"));
+    boolean windowsOS = System.getProperty("os.name").toLowerCase().contains("windows");
+    if(windowsOS)
+    {
+      assertEquals("Different content length", in.length(), out.length() + 8);
+      assertEquals("wrong string", config_win, generator.generateConf("UTF-8"));
+    }
+    else
+    {
+      assertEquals("Different content length", in.length(), out.length() + 9);
+      assertEquals("wrong string", config, generator.generateConf("UTF-8"));
+    }    
+    out.delete();    
   }
 
 }

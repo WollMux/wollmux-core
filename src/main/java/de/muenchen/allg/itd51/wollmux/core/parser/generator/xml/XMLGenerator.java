@@ -1,17 +1,16 @@
 package de.muenchen.allg.itd51.wollmux.core.parser.generator.xml;
 
-import java.io.File;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.io.OutputStreamWriter;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.Deque;
 import java.util.LinkedList;
 
+import javax.xml.XMLConstants;
 import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.transform.OutputKeys;
@@ -297,6 +296,7 @@ public class XMLGenerator
    */
   private void createFile(final Token token) throws MalformedURLException
   {
+    final String FILE_NAME = "filename";
     Element element;
     if (!XMLTags.CONFIG.getName().equals(files.peek().getTagName()))
     {
@@ -304,25 +304,25 @@ public class XMLGenerator
       element.setTextContent(token.getContent());
       files.peek().appendChild(element);
     }
-    URL context = new URL("file:" + files.peek().getAttribute("filename"));
+    URL context = new URL("file:" + files.peek().getAttribute(FILE_NAME));
     String newFile = PathProcessor.processInclude(token.getContent());
     Path path = Paths.get(newFile);
     element = document.createElement(XMLTags.FILE.getName());
     boolean windowsOS = System.getProperty("os.name").toLowerCase().contains("windows");
     if(windowsOS)
     {
-      if(Files.exists(path))
+      if(path.toFile().exists())
       {        
-        element.setAttribute("filename", new URL(context, "/" + newFile).getPath()); 
+        element.setAttribute(FILE_NAME, new URL(context, "/" + newFile).getPath()); 
       }
       else
       {
-        element.setAttribute("filename", new URL(context, newFile).getPath());
+        element.setAttribute(FILE_NAME, new URL(context, newFile).getPath());
       }
     }
     else
     {
-      element.setAttribute("filename", new URL(context, newFile).getPath());  
+      element.setAttribute(FILE_NAME, new URL(context, newFile).getPath());  
     }
     config.appendChild(element);
     files.push(element);
@@ -342,6 +342,7 @@ public class XMLGenerator
       throws TransformerException
   {
     final TransformerFactory tf = TransformerFactory.newInstance();
+    tf.setFeature(XMLConstants.FEATURE_SECURE_PROCESSING, true);
     final Transformer transformer = tf.newTransformer();
     transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
     transformer.setOutputProperty(OutputKeys.METHOD, "xml");

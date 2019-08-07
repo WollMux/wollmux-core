@@ -646,13 +646,27 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
 
     public boolean isDifferentFromLdapDataset(String columnName, LOSDJDataset dataset)
     {
+      if (dataset.getLOS() == null || dataset.getBS() == null)
+        return false;
+
       String losValue = dataset.getLOS().get(columnName);
       String bsValue = dataset.getBS().get(columnName);
 
-      if (losValue == null || losValue.isEmpty() || bsValue == null || bsValue.isEmpty())
+      if (losValue == null)
+      {
+        if (bsValue == null || bsValue.isEmpty())
+          return false;
         return false;
-      else
-        return !losValue.equals(bsValue);
+      }
+
+      if (losValue.isEmpty())
+      {
+        if (bsValue == null || bsValue.isEmpty())
+          return false;
+        return true;
+      }
+
+      return !losValue.equals(bsValue);
     }
 
     /**

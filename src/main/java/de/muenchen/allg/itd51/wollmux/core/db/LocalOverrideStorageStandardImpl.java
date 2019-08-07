@@ -598,7 +598,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  private class LOSDJDataset extends DJDatasetBase
+  public class LOSDJDataset extends DJDatasetBase
   {
     /**
      * Der Schlüsselwert dieses Datensatzes.
@@ -642,6 +642,17 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
       {
         myBS.remove(columnName);
       }
+    }
+
+    public boolean isDifferentFromLdapDataset(String columnName, LOSDJDataset dataset)
+    {
+      String losValue = dataset.getLOS().get(columnName);
+      String bsValue = dataset.getBS().get(columnName);
+
+      if (losValue == null || losValue.isEmpty() || bsValue == null || bsValue.isEmpty())
+        return false;
+      else
+        return !losValue.equals(bsValue);
     }
 
     /**

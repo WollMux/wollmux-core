@@ -31,6 +31,9 @@
 package de.muenchen.allg.itd51.wollmux.core.functions;
 
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
+import java.util.Map.Entry;
 
 /**
  * Eine Menge benannter {@link de.muenchen.allg.itd51.wollmux.core.functions.Value}s.
@@ -91,9 +94,19 @@ public interface Values
    *
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  public static class SimpleMap implements Values
+  public static class SimpleMap implements Values, Iterable<Map.Entry<String, String>>
   {
-    private HashMap<String, String> values = new HashMap<>();
+    private final HashMap<String, String> values;
+
+    public SimpleMap()
+    {
+      values = new HashMap<>();
+    }
+
+    public SimpleMap(SimpleMap origin)
+    {
+      this.values = new HashMap<>(origin.values);
+    }
 
     /**
      * Fügt den Wert value hinzu, identifiziert mit id. Ein bereits vorhandener Wert
@@ -116,6 +129,17 @@ public interface Values
       values.remove(id);
     }
 
+    /**
+     * Fügt alle Werte aus der anderen SimpleMap dieser hinzu.
+     *
+     * @param map
+     *          Die andere SimpleMap, aus der die Werte übernommen werden sollen.
+     */
+    public void putAll(SimpleMap map)
+    {
+      values.putAll(map.values);
+    }
+
     @Override
     public boolean hasValue(String id)
     {
@@ -136,6 +160,12 @@ public interface Values
     public boolean getBoolean(String id)
     {
       return "true".equalsIgnoreCase(getString(id));
+    }
+
+    @Override
+    public Iterator<Entry<String, String>> iterator()
+    {
+      return values.entrySet().iterator();
     }
   }
 }

@@ -188,8 +188,11 @@ public class FormModel
         {
           control.addFormModelChangedListener(listener);
           addFormField(control);
-          storeAutofillFunctionDialogDeps(control);
         }
+      }
+      for (Control control : formControls.values())
+      {
+        storeDepsForFormField(control);
       }
     } catch (NodeNotFoundException e)
     {
@@ -261,7 +264,7 @@ public class FormModel
   /**
    * Liefert eine Sichtbarkeitsgruppe mit der ID groupId. Wenn die ID bisher nicht existiert, wird
    * eine neue Gruppe angelegt.
-   * 
+   *
    * @param groupId
    *          Die ID der Gruppe.
    * @return Die Sichtbarkeitsgruppe mit ID groupId.
@@ -278,7 +281,7 @@ public class FormModel
 
   /**
    * Parst die Funktion im Kontext dieses Models.
-   * 
+   *
    * @param func
    *          Die Funktionsbeschreibung.
    * @return Die Funktion.
@@ -299,7 +302,7 @@ public class FormModel
   /**
    * Setzt den Wert des Formularelementes mit ID id auf den Wert value und informiert die Listener
    * entsprechend.
-   * 
+   *
    * @param id
    *          Die ID des Formularelementes.
    * @param value
@@ -310,13 +313,20 @@ public class FormModel
     if (formControls.containsKey(id))
     {
       Control field = formControls.get(id);
-      field.setValue(value, idToValue());
+      SimpleMap modified = new SimpleMap();
+      field.computeNewValues(value, idToValue(), modified);
+      SimpleMap newValues = idToValue();
+      newValues.putAll(modified);
+      for (Map.Entry<String, String> changedEntries : modified)
+      {
+        formControls.get(changedEntries.getKey()).setValue(changedEntries.getValue(), newValues);
+      }
     }
   }
 
   /**
    * Liefert den Wert des Formularelementes mit der Id id.
-   * 
+   *
    * @param id
    *          Die Id des Formularelementes.
    * @return Der Wert des Formularelementes.
@@ -334,7 +344,7 @@ public class FormModel
 
   /**
    * Liefert den Status (Plausi) des Formularelementes mit der Id id.
-   * 
+   *
    * @param id
    *          Die Id des Formularelementes.
    * @return Der Status des Formularelementes.
@@ -353,7 +363,7 @@ public class FormModel
   /**
    * Setzt für die Controls, die vom Dialog dialogName abhängigen, die Werte entsprechend ihrer
    * Autofill-Funktion.
-   * 
+   *
    * @param dialogName
    *          Der Name des Dialogs.
    */
@@ -368,7 +378,7 @@ public class FormModel
 
   /**
    * Erzeugt aus den Werten eine Map für die Funktionen.
-   * 
+   *
    * @return Ein Map mit Werten die Funktionen als Parameter übergeben werden können.
    */
   private SimpleMap idToValue()
@@ -385,7 +395,7 @@ public class FormModel
    * Falls das Control einen Autofill hat, wird das Control für alle Funktionsdialoge, die der
    * Autofill referenziert in die entsprechende Liste in
    * {@link #mapDialogNameToListOfControlsWithDependingAutofill} beingetragen.
-   * 
+   *
    * @param contro
    *          Das Control mit dem Autofill.
    */
@@ -409,7 +419,7 @@ public class FormModel
   /**
    * Fügt diesem Model ein Formularelement hinzu und berechnet den initialen Wert so wie die
    * Abhängigkeiten.
-   * 
+   *
    * @param control
    *          Das neue Formularelement.
    */
@@ -423,9 +433,22 @@ public class FormModel
         LOGGER.error(L.m("ID \"%1\" mehrfach vergeben", control.getId()));
       }
       formControls.put(control.getId(), control);
-      storeDeps(control);
-      control.initValue(idToValue());
     }
+  }
+
+  /**
+   * Speichert für ein Formularelement die Abhängigkeiten zu anderen Formularelementen. Sollte erst
+   * aufgerufen werden, nachdem alle Formularelemente angelegt wruden.
+   *
+   * @param control
+   *          Das Formularelement, für das die Abhängigkeiten in anderen Formularelementen
+   *          eingetragen werden sollen.
+   */
+  private void storeDepsForFormField(Control control)
+  {
+    storeDeps(control);
+    control.setValue(control.computeValue(idToValue()), idToValue());
+    storeAutofillFunctionDialogDeps(control);
   }
 
   /**
@@ -487,16 +510,26 @@ public class FormModel
   /**
    * Falls ein Formularelement eine Plausi und/oder ein Autofill hat, werden entsprechende
    * Abhängigkeiten in den Maps erfasst.
-   * 
+   *
    * @param control
    *          Das zu betrachtende Formularelement.
    */
   private void storeDeps(Control control)
   {
     control.getAutofill().ifPresent(autofill -> Stream.of(autofill.parameters())
-        .map(formControls::get).forEach(f -> f.addDependingAutoFillFormField(control)));
+        .filter(id -> {
+          if (!formControls.containsKey(id))
+            LOGGER.warn("Unbekanntes Controlelement {} wird referenziert in {}", id,
+                control.getId());
+          return formControls.containsKey(id);
+        }).map(formControls::get).forEach(f -> f.addDependingAutoFillFormField(control)));
     control.getPlausi().ifPresent(plausi -> Stream.of(plausi.parameters())
-        .map(formControls::get).forEach(f -> f.addDependingPlausiFormField(control)));
+        .filter(id -> {
+          if (!formControls.containsKey(id))
+            LOGGER.warn("Unbekanntes Controlelement {} wird referenziert in {}", id,
+                control.getId());
+          return formControls.containsKey(id);
+        }).map(formControls::get).forEach(f -> f.addDependingPlausiFormField(control)));
     control.addDependingPlausiFormField(control);
   }
 }

@@ -18,7 +18,7 @@ import de.muenchen.allg.itd51.wollmux.core.util.L;
 
 /**
  * Beschreibung eines Formularelementes samt Business-Logik (Plausis)
- * 
+ *
  * @author daniel.sikeler
  *
  */
@@ -174,7 +174,7 @@ public class Control
   /**
    * Fügt eine neue Option hinzu. Wenn bisher noch keine Option gesetzt wurde, dann wird die Option
    * zusätzlich als value gesetzt.
-   * 
+   *
    * @param option
    *          Die Option.
    */
@@ -302,32 +302,63 @@ public class Control
   /**
    * Setzt den Wert des Formularelementes, berechnet die Sichtbarkeiten neu und informartiert die
    * Listener.
-   * 
+   *
    * @param value
    *          Der neue Wert.
    * @param values
-   *          Die anderen Werte des Models.
+   *          Die neuen Werte des Models.
    */
   public void setValue(String value, SimpleMap values)
   {
     this.value = value;
-    values.put(id, value);
     listener.forEach(l -> l.valueChanged(id, value));
-    dependingAutoFillFormFields.forEach(f -> f.initValue(values));
     dependingGroups.forEach(g -> g.computeVisibility(values));
     dependingPlausiFormFields.forEach(f -> f.setOkay(values));
   }
 
   /**
-   * Initialisiert den Wert aus der Autofill-Funtkionen und den bisherigen Werten aus dem Model.
-   * 
+   * Berechnet für alle abhängigen Felder die Werte neu. Dabei werden Zyklen aufgelöst. Für jedes
+   * Feld wird nur einmal der Wert berechnet.
+   *
+   * @param value
+   *          Der neue Wert dieses Feldes.
+   * @param values
+   *          Die bisherigen Werte aller Felder.
+   * @param modified
+   *          Eine Map, in die alle geänderten Felder eingetragen werden.
+   */
+  public void computeNewValues(String value, SimpleMap values, SimpleMap modified)
+  {
+    modified.put(id, value);
+    SimpleMap newValues = new SimpleMap(values);
+    newValues.putAll(modified);
+    for (Control control : dependingAutoFillFormFields)
+    {
+      if (!modified.hasValue(control.id))
+      {
+        String v = control.computeValue(newValues);
+        if (v != null)
+        {
+          control.computeNewValues(v, newValues, modified);
+        }
+      }
+    }
+  }
+
+  /**
+   * Berechnet den Wert aus der Autofill-Funtkion und den bisherigen Werten aus dem Model.
+   *
    * @param values
    *          Die Werte aus dem Model.
+   * @return Den berechneten Wert oder null wenn keine Autofill-Funktion vorhanden ist. Der Wert
+   *         muss mit {@link #setValue(String, SimpleMap)} gesetzt werden.
    */
-  public void initValue(SimpleMap values)
+  public String computeValue(SimpleMap values)
   {
-    autofill.ifPresent(f -> setValue(f.getString(values), values));
-    dependingPlausiFormFields.forEach(f -> f.setOkay(values));
+    if (autofill.isPresent())
+      return autofill.get().getString(values);
+    else
+      return "";
   }
 
   public void addFormModelChangedListener(FormValueChangedListener l)
@@ -337,7 +368,7 @@ public class Control
 
   /**
    * Überprüft ob das Element, ein gültigen Wert enthält und informiert die Listener.
-   * 
+   *
    * @param values
    *          Die Werte aus dem Model.
    */
@@ -358,7 +389,7 @@ public class Control
 
   /**
    * Parst ein Formularelement.
-   * 
+   *
    * @param controlConf
    *          Die Beschreibung des Fromularelementes.
    * @return Ein Control, das dem Formularelement entspricht.

@@ -377,6 +377,18 @@ public class FormModel
   }
 
   /**
+   * Besitzt das Formular ein Feld mit der ID fieldId?
+   *
+   * @param fieldId
+   *          Die ID des gesuchten Feldes.
+   * @return True falls ein solches Feld existiert, sonst False.
+   */
+  public boolean hasFieldId(String fieldId)
+  {
+    return formControls.containsKey(fieldId);
+  }
+
+  /**
    * Erzeugt aus den Werten eine Map für die Funktionen.
    *
    * @return Ein Map mit Werten die Funktionen als Parameter übergeben werden können.

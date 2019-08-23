@@ -1319,7 +1319,8 @@ public class LDAPDatasource implements Datasource
 
           try
           {
-            value = (String) attributes.get(attributeName).get();
+            if (attributes.get(attributeName) != null)
+              value = (String) attributes.get(attributeName).get();
           }
           catch (NamingException | NullPointerException e)
           {

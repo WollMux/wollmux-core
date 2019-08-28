@@ -622,15 +622,12 @@ public class DocumentCommands implements Iterable<DocumentCommand>
    */
   public SetJumpMark getFirstJumpMark()
   {
-    try
+    if (setJumpMarkCommands.isEmpty())
     {
-      return setJumpMarkCommands.getFirst();
-    }
-    catch (NoSuchElementException e)
-    {
-      LOGGER.trace("", e);
+      LOGGER.trace("Keine Jump Mark gefunden");
       return null;
     }
+    return setJumpMarkCommands.getFirst();
   }
 
   /**

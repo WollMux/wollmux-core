@@ -696,7 +696,7 @@ public class LDAPDatasource implements Datasource
 
       String columnObjectClass = colDef.columnObjectClass;
       String currentSearchFilter =
-          "(" + ldapEscape(attributeName) + "~=" + ldapEscape(attributeValue)
+          "(" + ldapEscape(attributeName) + "=" + ldapEscape(attributeValue)
               + ")";
       if (columnObjectClass != null)
       {

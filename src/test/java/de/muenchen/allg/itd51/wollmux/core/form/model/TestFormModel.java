@@ -111,8 +111,9 @@ public class TestFormModel
     Map<Object, Object> functionContext = new HashMap<>();
     DialogLibrary dialogLib = new DialogLibrary();
     dialogLib.add("Empfaengerauswahl", dialog);
-    model = new FormModel(conf, frameTitle, functionContext, funcLib, dialogLib, presetValues,
-        valueListener, visibilityListener);
+    model = new FormModel(conf, frameTitle, functionContext, funcLib, dialogLib, presetValues);
+    model.addFormModelChangedListener(valueListener, true);
+    model.addVisibilityChangedListener(visibilityListener, true);
   }
 
   @Test

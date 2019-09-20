@@ -134,6 +134,17 @@ public class FormModel
   private Map<String, List<Control>> mapDialogNameToListOfControlsWithDependingAutofill = new HashMap<>();
 
   /**
+   * Sammlung aller Listener, die informiert werden, wenn sich ein Formularfeld ändert (Wert oder
+   * Status).
+   */
+  private List<FormValueChangedListener> listener = new ArrayList<>();
+
+  /**
+   * Sammlung aller Listener, die informiert werden, wenn sich eine Sichtbarkeit verändert.
+   */
+  private List<VisibilityChangedListener> vListener = new ArrayList<>(1);
+
+  /**
    * Ein neues Formular.
    *
    * @param conf
@@ -156,10 +167,10 @@ public class FormModel
    * @throws FormModelException
    *           Fehlerhaftes Formular.
    */
+  @SuppressWarnings("squid:S3776")
   public FormModel(ConfigThingy conf, String frameTitle,
       Map<Object, Object> functionContext, FunctionLibrary funcLib, DialogLibrary dialogLib,
-      Map<String, String> presetValues, FormValueChangedListener listener,
-      VisibilityChangedListener vListener) throws FormModelException
+      Map<String, String> presetValues) throws FormModelException
   {
     this.functionContext = functionContext;
     this.funcLib = funcLib;
@@ -186,7 +197,6 @@ public class FormModel
         tabs.put(tab.getId(), tab);
         for (Control control : tab.getControls())
         {
-          control.addFormModelChangedListener(listener);
           addFormField(control);
         }
       }
@@ -210,10 +220,28 @@ public class FormModel
       plausiMarkerColor = Color.PINK;
     }
 
-    // Gespeicherte Werte setzen
-    for (Map.Entry<String, String> entry : presetValues.entrySet())
+    // Gespeicherte Werte und/oder Autofill setzen
+    SimpleMap values = idToValue();
+    for (Control control : formControls.values())
     {
-      setValue(entry.getKey(), entry.getValue());
+      String value = "";
+      if (presetValues.containsKey(control.getId()))
+      {
+        value = presetValues.get(control.getId());
+      } else
+      {
+        value = control.computeValue(values);
+      }
+      if (!value.equals(control.getValue()))
+      {
+        control.setValue(value);
+        values.put(control.getId(), value);
+      }
+    }
+
+    for (Map.Entry<String, Control> entry : formControls.entrySet())
+    {
+      entry.getValue().setOkay(values);
     }
 
     // Sichtbarkeiten auswerten
@@ -224,7 +252,7 @@ public class FormModel
       {
         visibilityDesc = visibilityDesc.getLastChild();
       }
-      setVisibility(visibilityDesc, vListener);
+      setVisibility(visibilityDesc);
     } catch (NodeNotFoundException x)
     {
       LOGGER.error("", x);
@@ -310,16 +338,38 @@ public class FormModel
    */
   public void setValue(final String id, final String value)
   {
-    if (formControls.containsKey(id))
+    if (formControls.containsKey(id) && !formControls.get(id).getValue().equals(value))
     {
       Control field = formControls.get(id);
       SimpleMap modified = new SimpleMap();
+
+      // Abhängige Felder berechnen
       field.computeNewValues(value, idToValue(), modified);
       SimpleMap newValues = idToValue();
       newValues.putAll(modified);
+      List<VisibilityGroup> modifiedGroups = new ArrayList<>();
+
+      // Neue Werte übernehmen und Listener informieren
       for (Map.Entry<String, String> changedEntries : modified)
       {
-        formControls.get(changedEntries.getKey()).setValue(changedEntries.getValue(), newValues);
+        Control control = formControls.get(changedEntries.getKey());
+        control.setValue(changedEntries.getValue());
+        control.setOkay(newValues);
+        for (FormValueChangedListener l : listener)
+        {
+          l.valueChanged(control.getId(), control.getValue());
+          l.statusChanged(control.getId(), control.isOkay());
+        }
+        modifiedGroups.addAll(control.getDependingGroups());
+      }
+      modifiedGroups.forEach(g -> g.computeVisibility(newValues));
+
+      for (VisibilityChangedListener l : vListener)
+      {
+        for (VisibilityGroup g : modifiedGroups)
+        {
+          l.visibilityChanged(g.getGroupId(), g.isVisible());
+        }
       }
     }
   }
@@ -372,7 +422,7 @@ public class FormModel
     for (Control c : mapDialogNameToListOfControlsWithDependingAutofill.get(dialogName))
     {
       c.getAutofill()
-          .ifPresent(autofill -> c.setValue(autofill.getString(idToValue()), idToValue()));
+          .ifPresent(autofill -> setValue(c.getId(), autofill.getString(idToValue())));
     }
   }
 
@@ -459,7 +509,6 @@ public class FormModel
   private void storeDepsForFormField(Control control)
   {
     storeDeps(control);
-    control.setValue(control.computeValue(idToValue()), idToValue());
     storeAutofillFunctionDialogDeps(control);
   }
 
@@ -470,7 +519,7 @@ public class FormModel
    *          der Sichtbarkeit-Knoten der Formularbeschreibung oder ein leeres ConfigThingy falls
    *          der Knoten nicht existiert.
    */
-  private void setVisibility(ConfigThingy visibilityDesc, VisibilityChangedListener listener)
+  private void setVisibility(ConfigThingy visibilityDesc)
   {
     for (ConfigThingy visRule : visibilityDesc)
     {
@@ -501,7 +550,6 @@ public class FormModel
       {
         LOGGER.error(e.getMessage(), e);
       }
-      group.addVisibilityChangedListener(listener);
 
       // Für jeden Parameter der condition-Funktion eine Abhängigkeit im FormControl registrieren.
       String[] deps = cond.parameters();
@@ -543,5 +591,42 @@ public class FormModel
           return formControls.containsKey(id);
         }).map(formControls::get).forEach(f -> f.addDependingPlausiFormField(control)));
     control.addDependingPlausiFormField(control);
+  }
+
+  /**
+   * Fügt dem Modell einen weiteren Listener für Wert- oder Statusänderungen hinzu.
+   *
+   * @param l
+   *          Der neue Listener.
+   * @param notify
+   *          Soll der Listener über den aktuellen Zustand des Modells informiert werden?
+   */
+  public void addFormModelChangedListener(FormValueChangedListener l, boolean notify)
+  {
+    this.listener.add(l);
+    if (notify)
+    {
+      formControls.values().forEach(c -> {
+        l.valueChanged(c.getId(), c.getValue());
+        l.statusChanged(c.getId(), c.isOkay());
+      });
+    }
+  }
+
+  /**
+   * Fügt dem Modell einen weiteren Listener für Sichtbarkeitsänderungen hinzu.
+   *
+   * @param l
+   *          Der neue Listener.
+   * @param notify
+   *          Soll der Listener über den aktuellen Zustand des Modells informiert werden?
+   */
+  public void addVisibilityChangedListener(VisibilityChangedListener l, boolean notify)
+  {
+    this.vListener.add(l);
+    if (notify)
+    {
+      visiblities.values().forEach(g -> l.visibilityChanged(g.getGroupId(), g.isVisible()));
+    }
   }
 }

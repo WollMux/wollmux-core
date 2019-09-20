@@ -1,7 +1,5 @@
 package de.muenchen.allg.itd51.wollmux.core.form.model;
 
-import java.util.ArrayList;
-import java.util.List;
 import java.util.Optional;
 
 import de.muenchen.allg.itd51.wollmux.core.functions.Function;
@@ -17,11 +15,6 @@ import de.muenchen.allg.itd51.wollmux.core.util.L;
  */
 public class VisibilityGroup
 {
-
-  /**
-   * Die Mitglieder der Gruppe.
-   */
-  private List<VisibilityChangedListener> listener = new ArrayList<>(1);
 
   /**
    * Die Bedingung für die Sichtbarkeit (true = sichtbar), wenn keine Sichtbarkeitsbedingung
@@ -90,17 +83,5 @@ public class VisibilityGroup
   public void computeVisibility(Values values)
   {
     visible = condition.orElse(FunctionFactory.alwaysTrueFunction()).getBoolean(values);
-    listener.forEach(l -> l.visibilityChanged(groupId, visible));
-  }
-
-  /**
-   * Fügt dieser Gruppe ein weiteres Mitglied hinzu.
-   * 
-   * @param member
-   *          Das neue Mitglied.
-   */
-  public void addVisibilityChangedListener(VisibilityChangedListener member)
-  {
-    listener.add(member);
   }
 }

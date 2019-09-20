@@ -141,11 +141,6 @@ public class Control
    */
   private List<Control> dependingPlausiFormFields = new ArrayList<>(1);
 
-  /**
-   * Die Listener, die informiert werden, wenn sich der Wert oder Zustand ändert.
-   */
-  private List<FormValueChangedListener> listener = new ArrayList<>(1);
-
   public String getId()
   {
     return id;
@@ -291,6 +286,11 @@ public class Control
     dependingPlausiFormFields.add(control);
   }
 
+  public List<VisibilityGroup> getDependingGroups()
+  {
+    return dependingGroups;
+  }
+
   public void addDependingGroup(VisibilityGroup group)
   {
     if (!dependingGroups.contains(group))
@@ -308,12 +308,15 @@ public class Control
    * @param values
    *          Die neuen Werte des Models.
    */
-  public void setValue(String value, SimpleMap values)
+  public void setValue(String value)
   {
-    this.value = value;
-    listener.forEach(l -> l.valueChanged(id, value));
-    dependingGroups.forEach(g -> g.computeVisibility(values));
-    dependingPlausiFormFields.forEach(f -> f.setOkay(values));
+    if (options != null && !options.isEmpty() && !options.contains(value))
+    {
+      this.value = options.get(0);
+    } else
+    {
+      this.value = value;
+    }
   }
 
   /**
@@ -361,11 +364,6 @@ public class Control
       return "";
   }
 
-  public void addFormModelChangedListener(FormValueChangedListener l)
-  {
-    listener.add(l);
-  }
-
   /**
    * Überprüft ob das Element, ein gültigen Wert enthält und informiert die Listener.
    *
@@ -379,7 +377,6 @@ public class Control
       return;
 
     okay = newOkay;
-    listener.forEach(l -> l.statusChanged(id, okay));
   }
 
   public List<VisibilityGroup> getGroups()

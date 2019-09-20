@@ -708,14 +708,6 @@ public final class FormFieldFactory
       {
         // Neuen Inhalt in inputField schreiben
         Utils.setProperty(inputField, "Content", value);
-
-        // Refresh auf alle Textfelder im Dokument, damit neuer Inhalt angezeigt wird
-        XEnumerationAccess textFields = UNO.XTextFieldsSupplier(doc).getTextFields();
-        XRefreshable xRefreshable = UNO.XRefreshable(textFields);
-        if (xRefreshable != null)
-        {
-          xRefreshable.refresh();
-        }
       }
     }
 

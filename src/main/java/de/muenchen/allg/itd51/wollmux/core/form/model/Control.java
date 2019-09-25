@@ -46,7 +46,7 @@ public class Control
   /**
    * Eine Liste von Optionen für Comboboxen. Kann null sein.
    */
-  private List<String> options;
+  private List<String> options = new ArrayList<>();
   /**
    * Anzahl der Zeilen für Textareas.
    */
@@ -175,10 +175,6 @@ public class Control
    */
   public void addOption(String option)
   {
-    if (options == null)
-    {
-      options = new ArrayList<>();
-    }
     if (options.isEmpty())
     {
       value = option;

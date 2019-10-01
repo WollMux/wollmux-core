@@ -447,8 +447,14 @@ public abstract class DocumentCommand
       return done.booleanValue();
     else if (isDefinedState("DONE"))
     {
-      String doneStr = getState("DONE").toString();
-      return doneStr.compareToIgnoreCase("true") == 0;
+      try
+      {
+        String doneStr = getState("DONE").toString();
+        return doneStr.compareToIgnoreCase("true") == 0;
+      } catch (NodeNotFoundException e)
+      {
+        return false;
+      }
     }
     else
       return STATE_DEFAULT_DONE.booleanValue();
@@ -485,7 +491,13 @@ public abstract class DocumentCommand
       return error.booleanValue();
     else if (isDefinedState("ERROR"))
     {
-      return Boolean.parseBoolean(getState("ERROR").toString());
+      try
+      {
+        return Boolean.parseBoolean(getState("ERROR").toString());
+      } catch (NodeNotFoundException e)
+      {
+        return false;
+      }
     }
     else
       return STATE_DEFAULT_ERROR.booleanValue();
@@ -605,7 +617,13 @@ public abstract class DocumentCommand
    */
   protected boolean isDefinedState(String key)
   {
-    return getState(key) != null;
+    try
+    {
+      return getState(key) != null;
+    } catch (NodeNotFoundException e)
+    {
+      return false;
+    }
   }
 
   /**
@@ -613,20 +631,11 @@ public abstract class DocumentCommand
    *
    * @param key
    * @return Das ConfigThingy, mit dem Key key.
+   * @throws NodeNotFoundException
    */
-  protected ConfigThingy getState(String key)
+  protected ConfigThingy getState(String key) throws NodeNotFoundException
   {
-    ConfigThingy state;
-    try
-    {
-      state = wmCmd.get("STATE");
-      return state.get(key);
-    }
-    catch (NodeNotFoundException e1)
-    {
-      LOGGER.trace("", e1);
-      return null;
-    }
+    return wmCmd.get("STATE").get(key);
   }
 
   /**
@@ -650,7 +659,6 @@ public abstract class DocumentCommand
     }
     catch (NodeNotFoundException e1)
     {
-      LOGGER.trace("", e1);
       state = wmCmd.add("STATE");
     }
 
@@ -662,7 +670,6 @@ public abstract class DocumentCommand
     }
     catch (NodeNotFoundException e)
     {
-      LOGGER.trace("", e);
       ctKey = state.add(key);
     }
 
@@ -673,7 +680,6 @@ public abstract class DocumentCommand
     }
     catch (NodeNotFoundException e)
     {
-      LOGGER.trace("", e);
       ctKey.add(value);
     }
   }

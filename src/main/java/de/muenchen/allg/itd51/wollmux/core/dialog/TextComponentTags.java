@@ -3,7 +3,7 @@
  * Projekt  : WollMux
  * Funktion : Erweiterte eine JTextComponent um die Fähigkeit, Tags, die als
  *            <tag> angezeigt werden, wie atomare Elemente zu behandeln.
- * 
+ *
  * Copyright (c) 2008-2015 Landeshauptstadt München
  *
  * This program is free software: you can redistribute it and/or modify
@@ -24,12 +24,12 @@
  * -------------------------------------------------------------------
  * 13.02.2008 | LUT | Erstellung als JTextFieldWithTags
  * 13.02.2008 | LUT | Verallgemeinerung zur Klasse TextComponentTags
- * 13.02.2008 | BNK | public Methoden zusammengruppiert, Ortografie         
+ * 13.02.2008 | BNK | public Methoden zusammengruppiert, Ortografie
  * -------------------------------------------------------------------
  *
  * @author Christoph Lutz (D-III-ITD D.10)
  * @version 1.0
- * 
+ *
  */
 package de.muenchen.allg.itd51.wollmux.core.dialog;
 
@@ -130,7 +130,7 @@ public class TextComponentTags
    * Fügt an der aktuellen Cursorposition ein neues Tag tag ein, das
    * anschließend mit der Darstellung &quot;&lt;tag&gt;&quot; angezeigt wird und
    * bezüglich der Editierung wie ein atomares Element behandelt wird.
-   * 
+   *
    * @param tag
    *          Der Name des tags, das in dieser JTextComponent an der
    *          Cursorposition eingefügt und angezeigt werden soll.
@@ -190,7 +190,7 @@ public class TextComponentTags
   /**
    * Liefert den Inhalt der Textkomponente in der durch syntaxType
    * spezifizierten Syntax.
-   * 
+   *
    * @see #CAT_VALUE_SYNTAX
    * @throws IllegalArgumentException
    *           falls der syntaxType nicht existiert.
@@ -226,7 +226,7 @@ public class TextComponentTags
    * wobei an Stelle jedes Tags der entsprechende Inhalt eingesetzt wird, der in
    * mapTagToValue unter dem Schlüssel des Tagnamens gefunden wird oder der
    * String "&lt;tagname&gt;", wenn das Tag nicht aufgelöst werden kann.
-   * 
+   *
    * @param mapTagToValue
    *          Map mit Schlüssel-/Wertpaaren, die die entsprechenden Werte für
    *          die Tags enthält.
@@ -254,7 +254,7 @@ public class TextComponentTags
 
   /**
    * Das Gegenstück zu {@link #getContent(int)}.
-   * 
+   *
    * @throws IllegalArgumentException
    *           wenn syntaxType illegal oder ein Fehler in conf ist.
    */
@@ -317,7 +317,7 @@ public class TextComponentTags
    * Kann überschrieben werden um eine Logik zu hinterlegen, die berechnet, ob
    * das Feld einen gültigen Inhalt besitzt. Ist der Inhalt nicht gültig, dann
    * wird das Feld mit einem roten Hintergrund hinterlegt.
-   * 
+   *
    * @return true, wenn der Inhalt gültig ist und false, wenn der Inhalt nicht
    *         gültig ist.
    */
@@ -437,9 +437,9 @@ public class TextComponentTags
 
     compo.getActionMap().put(expandRightKeyStroke, new ExpandAction(expandRightKeyStroke, false));
 
-    compo.getActionMap().put(deleteRightKeyStroke, new DeleteAction(deleteLeftKeyStroke, true));
+    compo.getActionMap().put(deleteRightKeyStroke, new DeleteAction(deleteRightKeyStroke, false));
 
-    compo.getActionMap().put(deleteLeftKeyStroke, new DeleteAction(deleteRightKeyStroke, false));
+    compo.getActionMap().put(deleteLeftKeyStroke, new DeleteAction(deleteLeftKeyStroke, true));
 
   }
 
@@ -567,7 +567,7 @@ public class TextComponentTags
 
   /**
    * Highlightet den Textbereich zwischen pos1 und pos2
-   * 
+   *
    * @param pos1
    * @param pos2
    */

@@ -3,7 +3,7 @@
 	<modelVersion>4.0.0</modelVersion>
 	<groupId>de.muenchen</groupId>
 	<artifactId>wollmux-core</artifactId>
-	<version>18.1.7-SNAPSHOT</version>
+	<version>18.1.7</version>
 	<name>WollMux Core Classes</name>
 
 	<properties>
@@ -13,7 +13,7 @@
 
 	<scm>
 		<developerConnection>scm:git:https://github.com/WollMux/wollmux-core.git</developerConnection>
-		<tag>HEAD</tag>
+		<tag>wollmux-core-18.1.7</tag>
 	</scm>
 
 	<distributionManagement>

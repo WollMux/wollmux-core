@@ -62,7 +62,6 @@ import com.sun.star.text.XTextDocument;
 import com.sun.star.text.XTextField;
 import com.sun.star.text.XTextRange;
 import com.sun.star.uno.UnoRuntime;
-import com.sun.star.util.XRefreshable;
 
 import de.muenchen.allg.afid.UNO;
 import de.muenchen.allg.itd51.wollmux.core.document.commands.DocumentCommand.InsertFormValue;
@@ -909,14 +908,6 @@ public final class FormFieldFactory
       {
         extendItemsList(value);
         Utils.setProperty(dropdownField, "SelectedItem", value);
-
-        // Refresh auf alle Textfelder im Dokument, damit neuer Inhalt angezeigt wird
-        XEnumerationAccess textFields = UNO.XTextFieldsSupplier(doc).getTextFields();
-        XRefreshable xRefreshable = UNO.XRefreshable(textFields);
-        if (xRefreshable != null)
-        {
-          xRefreshable.refresh();
-        }
       }
     }
 
@@ -1229,14 +1220,6 @@ public final class FormFieldFactory
       if (value != null && textfield != null && doc != null)
       {
         Utils.setProperty(master, "Content", value);
-
-        // Refresh auf alle Textfelder im Dokument, damit neuer Inhalt angezeigt wird
-        XEnumerationAccess textFields = UNO.XTextFieldsSupplier(doc).getTextFields();
-        XRefreshable xRefreshable = UNO.XRefreshable(textFields);
-        if (xRefreshable != null)
-        {
-          xRefreshable.refresh();
-        }
       }
     }
 

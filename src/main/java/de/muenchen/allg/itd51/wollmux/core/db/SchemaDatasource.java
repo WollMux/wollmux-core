@@ -36,11 +36,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 import java.util.regex.Pattern;
 
@@ -73,7 +71,7 @@ public class SchemaDatasource implements Datasource
 
   private String name;
 
-  private Set<String> schema;
+  private List<String> schema;
 
   private Map<String, String> mapNewToOld;
 
@@ -104,7 +102,7 @@ public class SchemaDatasource implements Datasource
           "Fehler bei Initialisierung von Datenquelle \"%1\": Referenzierte Datenquelle \"%2\" nicht (oder fehlerhaft) definiert",
           name, sourceName));
 
-    schema = new HashSet<>(source.getSchema());
+    schema = new ArrayList<>(source.getSchema());
     mapNewToOld = new HashMap<>();
 
     List<String> columnsToDrop = dropColumns(sourceDesc.query("DROP"));
@@ -198,7 +196,7 @@ public class SchemaDatasource implements Datasource
   }
 
   @Override
-  public Set<String> getSchema()
+  public List<String> getSchema()
   {
     return schema;
   }

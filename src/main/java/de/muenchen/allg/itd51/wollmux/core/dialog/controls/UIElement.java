@@ -2,7 +2,7 @@
  * Dateiname: UIElement.java
  * Projekt  : WollMux
  * Funktion : Interface das von den konkreten UI Elementen (Combobox etc.) abstrahiert.
- * 
+ *
  * Copyright (c) 2008-2015 Landeshauptstadt München
  *
  * This program is free software: you can redistribute it and/or modify
@@ -28,14 +28,14 @@
  * 18.05.2006 | BNK | +isStatic()
  * 30.05.2006 | BNK | UIElement.Listbox unterstützt jetzt Zusatzfunktionen
  * 16.06.2006 | BNK | +hasFocus(), +takeFocus()
- * 29.09.2006 | BNK | Verbessertes Auslesen von ComboBox-Daten 
+ * 29.09.2006 | BNK | Verbessertes Auslesen von ComboBox-Daten
  * 25.01.2006 | BNK | [R5038]Hintergrundfarbe von Textareas korrekt setzen
  * 05.07.2007 | BNK | [R7464]revalidate() auf Parent nach setVisible()
  * -------------------------------------------------------------------
  *
  * @author Matthias Benkmann (D-III-ITD 5.1)
  * @version 1.0
- * 
+ *
  */
 package de.muenchen.allg.itd51.wollmux.core.dialog.controls;
 
@@ -141,10 +141,25 @@ public interface UIElement extends Value
   public String getId();
 
   /**
+   * Liefert den Index des Tabs, auf dem sich das UIElement befindet.
+   *
+   * @return Der Index, oder -1 wenn kein Tab gesetzt wurde.
+   */
+  public int getTab();
+
+  /**
+   * Setzt den Tab, auf dem sich das UIElement befindet.
+   *
+   * @param tab
+   *          Der Index des Tabs.
+   */
+  public void setTab(int tab);
+
+  /**
    * Setzt eine neue Hintergrundfarbe für das UIElement.
    */
   public void setBackground(Color bg);
-  
+
   public void setEnabled(boolean enabled);
 
   /**

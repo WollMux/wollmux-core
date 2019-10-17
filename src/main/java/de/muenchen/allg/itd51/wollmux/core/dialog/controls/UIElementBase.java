@@ -11,7 +11,7 @@ import de.muenchen.allg.itd51.wollmux.core.functions.Function;
 
 /**
  * Abstrakte Basis-Klasse für UIElemente.
- * 
+ *
  * @author Matthias Benkmann (D-III-ITD 5.1)
  */
 public abstract class UIElementBase implements UIElement
@@ -31,12 +31,26 @@ public abstract class UIElementBase implements UIElement
 
   protected Control field = null;
 
+  protected int tab = -1;
+
+  @Override
+  public int getTab()
+  {
+    return tab;
+  }
+
+  @Override
+  public void setTab(int tab)
+  {
+    this.tab = tab;
+  }
+
   @Override
   public void setBackground(Color bg)
   {
     this.getComponent().setBackground(bg);
   }
-  
+
   @Override
   public void setEnabled(boolean enabled)
   {

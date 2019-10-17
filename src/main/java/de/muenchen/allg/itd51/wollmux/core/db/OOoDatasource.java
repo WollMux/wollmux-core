@@ -37,13 +37,12 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import org.slf4j.Logger;
@@ -170,7 +169,7 @@ public class OOoDatasource implements Datasource
   /**
    * Das Schema dieser Datenquelle.
    */
-  private Set<String> schema;
+  private List<String> schema;
 
   /**
    * Die Namen der Spalten, die den Primärschlüssel bilden.
@@ -194,13 +193,14 @@ public class OOoDatasource implements Datasource
    * Wie {@link #OOoDatasource(Map, ConfigThingy, URL, boolean)}, wobei noKey==false
    * übergeben wird.
    */
-  public OOoDatasource(Map<String, Datasource> nameToDatasource, ConfigThingy sourceDesc, URL context)
+  public OOoDatasource(Map<String, Datasource> nameToDatasource, ConfigThingy sourceDesc)
   {
-    this(nameToDatasource, sourceDesc, context, false);
+    this(nameToDatasource, sourceDesc, false);
   }
 
   /**
-   * Erzeugt eine neue OOoDatasource.
+   * Erzeugt eine neue OOoDatasource. Wenn kein SQL_SYNTAX Parameter in ConfigThingy
+   * gesetzt ist, wird 'mysql' als Standard verwendet.
    * 
    * @param nameToDatasource
    *          enthält alle bis zum Zeitpunkt der Definition dieser OOoDatasource
@@ -209,9 +209,6 @@ public class OOoDatasource implements Datasource
    * @param sourceDesc
    *          der "Datenquelle"-Knoten, der die Beschreibung dieser OOoDatasource
    *          enthält.
-   * @param context
-   *          der Kontext relativ zu dem URLs aufgelöst werden sollen (zur Zeit nicht
-   *          verwendet).
    * @param noKey
    *          Falls true, so wird immer die erste Spalte als Schlüsselspalte
    *          verwendet. Diese Option sollte nur verwendet werden, wenn keine
@@ -226,7 +223,7 @@ public class OOoDatasource implements Datasource
    *           leer behandelt. TESTED
    */
   public OOoDatasource(Map<String, Datasource> nameToDatasource,
-      ConfigThingy sourceDesc, URL context, boolean noKey)
+      ConfigThingy sourceDesc, boolean noKey)
   {
     datasourceName = parseConfig(sourceDesc, "NAME", () -> L.m("NAME der Datenquelle fehlt"));
     oooDatasourceName = parseConfig(sourceDesc, "SOURCE", () -> L.m(
@@ -238,6 +235,9 @@ public class OOoDatasource implements Datasource
     password = sourceDesc.getString("PASSWORD", "");
 
     String sqlSyntaxStr = sourceDesc.getString("SQL_SYNTAX", "");
+    
+    sqlSyntaxStr = sqlSyntaxStr == null || sqlSyntaxStr.isEmpty() ? "mysql" : sqlSyntaxStr;
+    
     if ("ansi".equalsIgnoreCase(sqlSyntaxStr))
       sqlSyntax = SQL_SYNTAX_ANSI;
     else if ("oracle".equalsIgnoreCase(sqlSyntaxStr))
@@ -250,7 +250,7 @@ public class OOoDatasource implements Datasource
       throw new ConfigurationErrorException(L.m(
         "SQL_SYNTAX \"%1\" nicht unterstützt", sqlSyntaxStr));
 
-    schema = new HashSet<>();
+    schema = new ArrayList<>();
     ConfigThingy schemaConf = sourceDesc.query("Schema");
     if (schemaConf.count() != 0)
     {
@@ -325,8 +325,7 @@ public class OOoDatasource implements Datasource
           }
         }
         String[] colNames = columns.getElementNames();
-        for (int i = 0; i < colNames.length; ++i)
-          schema.add(colNames[i]);
+        Arrays.asList(colNames).forEach(colName -> schema.add(colName));
 
         if (schema.isEmpty())
           throw new ConfigurationErrorException(L.m(
@@ -417,7 +416,7 @@ public class OOoDatasource implements Datasource
   }
 
   @Override
-  public Set<String> getSchema()
+  public List<String> getSchema()
   {
     return schema;
   }

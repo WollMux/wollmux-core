@@ -37,11 +37,9 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.regex.Pattern;
 
 import org.slf4j.Logger;
@@ -84,7 +82,7 @@ public class ThingyDatasource extends RAMDatasource
 
       ConfigThingy schemaDesc = conf.get("Schema");
 
-      Set<String> schema = new HashSet<>();
+      List<String> schema = new ArrayList<>();
       String[] schemaOrdered = new String[schemaDesc.count()];
       int i = 0;
       for (ConfigThingy spalteConfig : schemaDesc)
@@ -132,7 +130,8 @@ public class ThingyDatasource extends RAMDatasource
     }
   }
 
-  private List<Dataset> parseData(ConfigThingy dataDesc, String name, Set<String> schema, String[] schemaOrdered, String[] keyCols)
+  private List<Dataset> parseData(ConfigThingy dataDesc, String name, List<String> schema,
+      String[] schemaOrdered, String[] keyCols)
   {
     List<Dataset> data = new ArrayList<>();
     try
@@ -156,7 +155,7 @@ public class ThingyDatasource extends RAMDatasource
     return data;
   }
 
-  private String[] parseKeys(ConfigThingy sourceDesc, String name, Set<String> schema)
+  private String[] parseKeys(ConfigThingy sourceDesc, String name, List<String> schema)
   {
     List<String> keyCols = new ArrayList<>();
     try
@@ -197,7 +196,8 @@ public class ThingyDatasource extends RAMDatasource
    * @throws ConfigurationErrorException
    *           im Falle von Verstössen gegen diverse Regeln.
    */
-  private Dataset createDataset(ConfigThingy dsDesc, Set<String> schema, String[] schemaOrdered, String[] keyCols)
+  private Dataset createDataset(ConfigThingy dsDesc, List<String> schema, String[] schemaOrdered,
+      String[] keyCols)
   { // TESTED
     if (!dsDesc.getName().isEmpty())
       throw new ConfigurationErrorException(L.m("Öffnende Klammer erwartet vor \"%1\"", dsDesc.getName()));
@@ -225,7 +225,7 @@ public class ThingyDatasource extends RAMDatasource
    * @throws ConfigurationErrorException
    *           bei verstössen gegen diverse Regeln
    */
-  private Dataset createDatasetUnordered(ConfigThingy dsDesc, Set<String> schema, String[] keyCols)
+  private Dataset createDatasetUnordered(ConfigThingy dsDesc, List<String> schema, String[] keyCols)
   { // TESTED
     Map<String, String> data = new HashMap<>();
     Iterator<ConfigThingy> iter = dsDesc.iterator();
@@ -248,7 +248,8 @@ public class ThingyDatasource extends RAMDatasource
    * @throws ConfigurationErrorException
    *           bei verstössen gegen diverse Regeln
    */
-  private Dataset createDatasetOrdered(ConfigThingy dsDesc, Set<String> schema, String[] schemaOrdered, String[] keyCols)
+  private Dataset createDatasetOrdered(ConfigThingy dsDesc, List<String> schema,
+      String[] schemaOrdered, String[] keyCols)
   { // TESTED
     if (dsDesc.count() > schemaOrdered.length)
       throw new ConfigurationErrorException(L.m("Datensatz hat mehr Felder als das Schema"));
@@ -274,16 +275,16 @@ public class ThingyDatasource extends RAMDatasource
 
     private String key;
 
-    private Set<String> schema;
+    private List<String> schema;
 
-    public MyDataset(Set<String> schema, String[] keyCols)
+    public MyDataset(List<String> schema, String[] keyCols)
     {
       this.schema = schema;
       data = new HashMap<>();
       initKey(keyCols);
     }
 
-    public MyDataset(Set<String> schema, Map<String, String> data, String[] keyCols)
+    public MyDataset(List<String> schema, Map<String, String> data, String[] keyCols)
     { // TESTED
       this.schema = schema;
       this.data = data;

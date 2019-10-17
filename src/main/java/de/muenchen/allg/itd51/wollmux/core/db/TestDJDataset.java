@@ -34,8 +34,8 @@
 package de.muenchen.allg.itd51.wollmux.core.db;
 
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
-import java.util.Set;
 
 /**
  * Implementierung von DJDataset zu Testzwecken. Eine zentrale Eigenschaft von
@@ -80,7 +80,7 @@ public class TestDJDataset extends DJDatasetBase
    *          String!) versucht, anhand dieser Map den Spaltennamen auf einen anderen
    *          Spaltennamen umzusetzen, dessen Wert dann geliefert wird.
    */
-  public TestDJDataset(Map<String, String> backingStore, Set<String> schema,
+  public TestDJDataset(Map<String, String> backingStore, List<String> schema,
       boolean isFromLOS, Map<String, String> fallback)
   {
     super(backingStore, isFromLOS ? new HashMap<String, String>() : null, schema);

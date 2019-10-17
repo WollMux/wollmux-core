@@ -56,6 +56,7 @@ package de.muenchen.allg.itd51.wollmux.core.db;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -183,7 +184,7 @@ public class DatasourceJoiner
     }
 
     myLOS = los;
-    Set<String> schema = myLOS.getSchema();
+    List<String> schema = myLOS.getSchema();
 
     if (!nameToDatasource.containsKey(mainSourceName))
     {
@@ -244,8 +245,8 @@ public class DatasourceJoiner
    * 
    * @return Schema der Hauptdatenquelle.
    */
-  public Set<String> getMainDatasourceSchema()
-  { // TESTED
+  public List<String> getMainDatasourceSchema()
+  {
     return mainDatasource.getSchema();
   }
   
@@ -466,7 +467,7 @@ public class DatasourceJoiner
   public ConfigThingy saveCacheAndLOS(File cacheFile)
   {
     LOGGER.debug(L.m("Speichere Cache nach %1.", cacheFile));
-    Set<String> schema = myLOS.getSchema();
+    List<String> schema = myLOS.getSchema();
     if (schema == null)
     {
       LOGGER.error(L.m("Kann Cache nicht speichern, weil nicht initialisiert."));
@@ -592,7 +593,7 @@ public class DatasourceJoiner
   
   public Dataset getCachedLdapResultByOID(String oid)
   {
-    if (this.cachedQueryResults == null)
+    if (this.cachedQueryResults == null || this.cachedQueryResults.isEmpty())
       return null;
 
     Dataset result = null;
@@ -629,6 +630,19 @@ public class DatasourceJoiner
     
     return oids;
   }
+
+  public static final Comparator<DJDataset> sortPAL = (ds1, ds2) ->
+  {
+    try
+    {
+      return ds1.get("Nachname").compareTo(ds2.get("Nachname"));
+    } catch (ColumnNotFoundException e)
+    {
+      LOGGER.error("", e);
+    }
+
+    return 0;
+  };
 
   /**
    * Legt einen neuen Datensatz im LOS an, der nicht mit einer Hintergrunddatenbank
@@ -725,6 +739,29 @@ public class DatasourceJoiner
     public String getKey()
     {
       return myDS.getKey();
+    }
+
+    @Override
+    public String toString()
+    {
+      StringBuilder stringBuilder = new StringBuilder();
+
+      try
+      {
+        String rolle = get("Rolle");
+        String nachname = get("Nachname");
+        String vorname = get("Vorname");
+
+        stringBuilder.append(rolle == null || rolle.isEmpty() ? "" : "(" + rolle + ") ");
+        stringBuilder.append(nachname == null || nachname.isEmpty() ? "" : nachname);
+        stringBuilder.append(", ");
+        stringBuilder.append(vorname == null || vorname.isEmpty() ? "" : vorname);
+      } catch (ColumnNotFoundException e)
+      {
+        LOGGER.error("", e);
+      }
+
+      return stringBuilder.toString();
     }
   }
 }

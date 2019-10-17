@@ -52,7 +52,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
    * Falls beim Laden des Cache ein Fehler auftritt kann dies auch nach dem
    * Konstruktor noch null sein.
    */
-  private Set<String> losSchema = null;
+  private List<String> losSchema = null;
 
   /**
    * Der ausgewählte Datensatz. Nur dann null, wenn data leer ist.
@@ -84,7 +84,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
          * temporären Variablen und kopieren diese nachher in die Felder
          * losSchema und this.data.
          */
-        Set<String> newSchema = new HashSet<>();
+        List<String> newSchema = new ArrayList<>();
         List<LOSDJDataset> newData = new LinkedList<>();
         for (ConfigThingy schema : cacheData.get("Schema"))
           newSchema.add(schema.toString());
@@ -123,7 +123,8 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
     selectDataset(selectKey, sameKeyIndexInt);
   }
 
-  private LOSDJDataset parseData(String losCachePath, ConfigThingy dsconf, Set<String> newSchema) throws NodeNotFoundException
+  private LOSDJDataset parseData(String losCachePath, ConfigThingy dsconf, List<String> newSchema)
+      throws NodeNotFoundException
   {
     Map<String, String> dscache = null;
     ConfigThingy cacheColumns = dsconf.query("Cache");
@@ -463,10 +464,10 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
    * @see de.muenchen.allg.itd51.wollmux.db.LOSInterface#getSchema()
    */
   @Override
-  public Set<String> getSchema()
+  public List<String> getSchema()
   {
     return losSchema;
-  } // TESTED
+  }
 
   /*
    * (non-Javadoc)
@@ -523,11 +524,11 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
    * de.muenchen.allg.itd51.wollmux.db.LOSInterface#setSchema(java.util.Set)
    */
   @Override
-  public void setSchema(Set<String> schema)
-  { // TESTED
+  public void setSchema(List<String> schema)
+  {
     if (losSchema == null)
     {
-      losSchema = new HashSet<>(schema);
+      losSchema = new ArrayList<>(schema);
       return;
     }
 
@@ -597,7 +598,7 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
    * 
    * @author Matthias Benkmann (D-III-ITD 5.1)
    */
-  private class LOSDJDataset extends DJDatasetBase
+  public class LOSDJDataset extends DJDatasetBase
   {
     /**
      * Der Schlüsselwert dieses Datensatzes.
@@ -617,8 +618,9 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
      * @param key
      *          der Schlüsselwert dieses Datensatzes.
      */
-    public LOSDJDataset(Map<String, String> dscache, Map<String, String> dsoverride, Set<String> schema, String key)
-    { // TESTED
+    public LOSDJDataset(Map<String, String> dscache, Map<String, String> dsoverride,
+        List<String> schema, String key)
+    {
       super(dscache, dsoverride, schema);
       this.key = key;
     }
@@ -642,6 +644,31 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
       }
     }
 
+    public boolean isDifferentFromLdapDataset(String columnName, LOSDJDataset dataset)
+    {
+      if (dataset.getLOS() == null || dataset.getBS() == null)
+        return false;
+
+      String losValue = dataset.getLOS().get(columnName);
+      String bsValue = dataset.getBS().get(columnName);
+
+      if (losValue == null)
+      {
+        if (bsValue == null || bsValue.isEmpty())
+          return false;
+        return false;
+      }
+
+      if (losValue.isEmpty())
+      {
+        if (bsValue == null || bsValue.isEmpty())
+          return false;
+        return true;
+      }
+
+      return !losValue.equals(bsValue);
+    }
+
     /**
      * Ändert die Referenz auf das Schema dieses Datensatzes. Eine Anpassung der
      * im Datensatz gespeicherten Werte geschieht nicht. Dafür muss drop()
@@ -649,8 +676,8 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
      * 
      * @author Matthias Benkmann (D-III-ITD 5.1)
      */
-    public void setSchema(Set<String> losSchema)
-    { // TESTED
+    public void setSchema(List<String> losSchema)
+    {
       this.schema = losSchema;
     }
 

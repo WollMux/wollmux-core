@@ -36,11 +36,9 @@ import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import java.util.Vector;
 
 import org.slf4j.Logger;
@@ -99,7 +97,7 @@ public class AttachDatasource implements Datasource
 
   private Datasource source2;
 
-  private Set<String> schema;
+  private List<String> schema;
 
   private String[] match1;
 
@@ -138,12 +136,12 @@ public class AttachDatasource implements Datasource
           L.m("Fehler bei Initialisierung von Datenquelle \"%1\": Referenzierte Datenquelle \"%2\" nicht (oder fehlerhaft) definiert", name,
               source2Name));
 
-    Set<String> schema1 = source1.getSchema();
-    Set<String> schema2 = source2.getSchema();
+    List<String> schema1 = source1.getSchema();
+    List<String> schema2 = source2.getSchema();
 
     source2Prefix = source2Name + CONCAT_SEPARATOR;
 
-    schema = new HashSet<>(schema1);
+    schema = new ArrayList<>(schema1);
     for (String spalte : schema2)
     {
       spalte = source2Prefix + spalte;
@@ -196,7 +194,7 @@ public class AttachDatasource implements Datasource
    * @see de.muenchen.allg.itd51.wollmux.db.Datasource#getSchema()
    */
   @Override
-  public Set<String> getSchema()
+  public List<String> getSchema()
   {
     return schema;
   }

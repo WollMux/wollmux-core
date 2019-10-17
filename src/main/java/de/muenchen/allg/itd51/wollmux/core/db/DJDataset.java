@@ -134,4 +134,5 @@ public interface DJDataset extends Dataset
    *           falls dieser Datensatz nicht aus dem LOS kommt.
    */
   public void remove();
+
 }

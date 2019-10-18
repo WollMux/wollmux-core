@@ -8,7 +8,7 @@
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<libreoffice.version>6.1.5</libreoffice.version>
+		<libreoffice.version>6.4.0-SNAPSHOT</libreoffice.version>
 	</properties>
 
 	<scm>

@@ -387,7 +387,7 @@ public class UIElementFactory
     scrollPane.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
     panel.add(scrollPane);
     uiElement = new Textarea(control.getId(), textarea, panel, layoutConstraints, labelType,
-        control.getId(), labelLayoutConstraints);
+        control.getLabel(), labelLayoutConstraints);
     textarea.getDocument().addDocumentListener(new UIElementDocumentListener(
         context.getUiElementEventHandler(), uiElement, "valueChanged", new Object[] {}));
     textarea.addFocusListener(

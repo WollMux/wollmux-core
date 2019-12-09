@@ -296,23 +296,14 @@ public class Control
   }
 
   /**
-   * Setzt den Wert des Formularelementes, berechnet die Sichtbarkeiten neu und informartiert die
-   * Listener.
+   * Setzt den Wert des Formularelementes.
    *
    * @param value
    *          Der neue Wert.
-   * @param values
-   *          Die neuen Werte des Models.
    */
   public void setValue(String value)
   {
-    if (options != null && !options.isEmpty() && !options.contains(value))
-    {
-      this.value = options.get(0);
-    } else
-    {
-      this.value = value;
-    }
+    this.value = value;
   }
 
   /**

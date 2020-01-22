@@ -5,6 +5,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Optional;
 
+import org.apache.commons.lang3.RandomStringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -366,6 +367,31 @@ public class Control
     okay = newOkay;
   }
 
+  public boolean isVisible()
+  {
+    switch (type)
+    {
+    case BUTTON:
+    case CHECKBOX:
+    case COMBOBOX:
+    case LABEL:
+    case LISTBOX:
+    case TEXTAREA:
+    case TEXTFIELD:
+      return groups.stream().allMatch(VisibilityGroup::isVisible);
+    case MENUITEM:
+    case DEFAULT:
+    case GLUE:
+    case H_GLUE:
+    case V_GLUE:
+    case SEPARATOR:
+    case H_SEPARATOR:
+    case V_SEPARATOR:
+    default:
+      return false;
+    }
+  }
+
   public List<VisibilityGroup> getGroups()
   {
     return groups;
@@ -384,7 +410,7 @@ public class Control
   {
     Control control = new Control();
     control.type = FormType.getType(controlConf.getString("TYPE", ""));
-    control.id = controlConf.getString("ID", "");
+    control.id = controlConf.getString("ID", RandomStringUtils.randomAlphanumeric(10));
     control.label = controlConf.getString("LABEL", "");
     control.tip = controlConf.getString("TIP", "");
     String hotkeyString = controlConf.getString("HOTKEY", "");

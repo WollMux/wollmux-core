@@ -307,6 +307,13 @@ public class FormModel
     return visiblities.get(groupId);
   }
 
+  /**
+   * Get a control.
+   *
+   * @param controlId
+   *          The id of the control.
+   * @return The control or null if there is no control with this id.
+   */
   public Control getControl(String controlId)
   {
     return formControls.get(controlId);

@@ -8,6 +8,8 @@ import java.awt.Color;
 import java.awt.event.ActionListener;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.text.DecimalFormat;
+import java.text.NumberFormat;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -146,6 +148,10 @@ public class TestFormModel
     assertEquals("flascher Wert für EmpfaengerZeile4", "", model.getValue("EmpfaengerZeile4"));
     assertEquals("flascher Wert für EmpfaengerZeile5", "", model.getValue("EmpfaengerZeile5"));
     assertEquals("flascher Wert für EmpfaengerZeile6", "", model.getValue("EmpfaengerZeile6"));
+    model.setValue("DarlBetrag", "10000");
+    char decimalPoint = ((DecimalFormat) NumberFormat.getInstance()).getDecimalFormatSymbols()
+        .getDecimalSeparator();
+    assertEquals("wrong autofill for ", "12000" + decimalPoint + "00", model.getValue("DarlehenplusZusatzkosten"));
   }
 
   @Test
@@ -163,14 +169,22 @@ public class TestFormModel
   @Test
   public void testVisibility() throws FormModelException
   {
+    assertTrue("AbtretungNotOK", model.getGroup("AbtretungNotOK").isVisible());
+    assertFalse("AbtretungOK", model.getGroup("AbtretungOK").isVisible());
+
+    Control c = model.getControl("twoGroups");
     model.setValue("AbtLohn", "true");
     assertFalse("AbtretungNotOK", model.getGroup("AbtretungNotOK").isVisible());
     assertTrue("AbtretungOK", model.getGroup("AbtretungOK").isVisible());
     assertTrue("AbtLohn", model.getGroup("AbtLohn").isVisible());
+
+    assertFalse("Control is visible", c.isVisible());
+    model.setValue("AbtAnteile", "true");
+    assertTrue("Control is visible", c.isVisible());
+
     model.setValue("AbtLohn", "");
-    assertTrue("AbtretungNotOK", model.getGroup("AbtretungNotOK").isVisible());
-    assertFalse("AbtretungOK", model.getGroup("AbtretungOK").isVisible());
     assertFalse("AbtLohn", model.getGroup("AbtLohn").isVisible());
+    assertFalse("Control is visible", c.isVisible());
   }
 
 }

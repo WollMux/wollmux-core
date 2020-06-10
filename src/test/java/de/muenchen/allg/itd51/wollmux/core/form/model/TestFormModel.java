@@ -126,6 +126,7 @@ public class TestFormModel
     assertEquals("Falsche Anzahl an Tabs", 4, model.getTabs().size());
     assertEquals("Falscher gesetzter Wert für EmpfaengerZeile6", "zeile6",
         model.getValue("EmpfaengerZeile6"));
+    assertEquals("Arbeitgeber", model.getValue("ArbeitgeberDienstherren"));
     assertTrue("Falscher Status für EmpfaengerZeile6", model.getStatus("EmpfaengerZeile6"));
     assertFalse("Falscher Status für SGVorname", model.getStatus("SGVorname"));
     assertTrue("AbtretungNotOK", model.getGroup("AbtretungNotOK").isVisible());

@@ -503,15 +503,12 @@ public class LocalOverrideStorageStandardImpl implements LocalOverrideStorage
       }
 
       ConfigThingy overrideConf = dsConf.add("Override");
-      Iterator<Map.Entry<String, String>> entries = ds.getLOS().entrySet().iterator();
-      while (entries.hasNext())
+      for (String column : losSchema)
       {
-        Map.Entry<String, String> ent = entries.next();
-        String spalte = ent.getKey();
-        String wert = ent.getValue();
+        String wert = ds.getLOS().get(column);
         if (wert != null)
         {
-          overrideConf.add(spalte).add(wert);
+          overrideConf.add(column).add(wert);
         }
       }
     }

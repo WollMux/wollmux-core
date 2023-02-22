@@ -293,4 +293,46 @@ public class RDFBasedPersistentDataContainer implements
       LOGGER.error(L.m("Kann RDF-Metadaten nicht persistieren."), e);
     }
   }
+
+  @Override
+  public boolean isWollmuxDatenGraphNull()
+  {
+    XNamedGraph g = getWollMuxDatenGraph();
+    return (g==null);
+  }
+
+  @Override
+  public void retoreWollmuxDatenGraph(String Formularwerte, String WollMuxVersion, String OOoVersion)
+  {
+    try
+    {
+      XNamedGraph g = getWollMuxDatenGraph();
+      if(g==null)
+      {
+        //Workaround, der Fehler liegt in libreoffice:
+        //Wollmuxdaten werden im Dokument durch Einfügen von RTF-formatiertem Text gelöscht.
+        //Daher werden die Wollmuxdaten neu aufgebaut
+        xDMA = UNO.XDocumentMetadataAccess(doc);
+        if (xDMA == null) {
+          throw new RDFMetadataNotSupportedException();
+        }
+        xRepos = xDMA.getRDFRepository();
+        wollmuxDatenURI = URI.create(UNO.defaultContext, WOLLMUX_DATEN_URI_STR);
+        getOrCreateWollMuxDatenGraph();
+
+        setData(DataID.SETTYPE, "formDocument");
+        setData(DataID.TOUCH_WOLLMUXVERSION, WollMuxVersion);
+        setData(DataID.TOUCH_OOOVERSION, OOoVersion);
+        setData(DataID.FORMULARWERTE, Formularwerte);
+        //documentController.storeCurrentFormDescription();
+      }
+
+      xDMA.storeMetadataToStorage(UNO.XStorageBasedDocument(doc).getDocumentStorage());
+    }
+    catch (Exception e)
+    {
+      LOGGER.error(L.m("Kann RDF-Metadaten nicht persistieren."), e);
+    }
+  }
+
 }

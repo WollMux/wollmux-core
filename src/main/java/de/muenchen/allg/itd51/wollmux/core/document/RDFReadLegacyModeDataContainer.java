@@ -161,6 +161,18 @@ public class RDFReadLegacyModeDataContainer implements
     legacy.flush();
   }
 
+  @Override
+  public boolean isWollmuxDatenGraphNull()
+  {
+    return rdfData.isWollmuxDatenGraphNull();
+  }
+
+  @Override
+  public void retoreWollmuxDatenGraph(String Formularwerte, String WollMuxVersion, String OOoVersion)
+  {
+	rdfData.retoreWollmuxDatenGraph(Formularwerte, WollMuxVersion, OOoVersion);
+  }
+
   /*
    * (non-Javadoc)
    * 

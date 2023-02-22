@@ -317,4 +317,16 @@ public class AnnotationBasedPersistentDataContainer implements
   {
     //
   }
+
+  @Override
+  public boolean isWollmuxDatenGraphNull()
+  {
+    return false;
+  }
+
+  @Override
+  public void retoreWollmuxDatenGraph(String Formularwerte, String WollMuxVersion, String OOoVersion)
+  {
+    //
+  }
 }

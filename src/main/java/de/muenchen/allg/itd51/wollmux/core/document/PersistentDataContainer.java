@@ -87,6 +87,17 @@ public interface PersistentDataContainer
   public void flush();
 
   /**
+   * Gibt Auskunft darüber, ob der WollmuxDatenGraph zerstört wurde. Falls ja, wird
+   * mit den Formularwerten neu initialisiert.
+   */
+  public boolean isWollmuxDatenGraphNull();
+
+  /**
+   * Falls der WollmuxDatenGraph zerstört wurde, werden die Formularwerten neu initialisiert.
+   */
+  public void retoreWollmuxDatenGraph(String Formularwerte, String WollMuxVersion, String OOoVersion);
+
+  /**
    * Liste aller möglichen DataIDs des WollMux.
    *
    * @author Christoph Lutz (D-III-ITD-D101)
